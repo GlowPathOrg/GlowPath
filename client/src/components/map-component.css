@@ -1,0 +1,31 @@
+
+    .dark {
+    height: 80vh;
+    width: 92vw;
+    position: relative;
+    }
+
+   .dark .leaflet-layer,
+.dark .leaflet-control-zoom-in,
+.dark .leaflet-control-zoom-out,
+.dark .leaflet-control-attribution {
+  filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+}
+    .light {
+        position: relative;
+    height: 80vh;
+    width: 92vw;
+
+    }
+
+    .map-controls {
+        position: absolute;
+    top: 5%;
+    left: 25%;
+    z-index: 1000;
+    display: flex;
+    gap: 10px;
+    }
+
+
+
