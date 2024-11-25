@@ -1,0 +1,42 @@
+.journey-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+  }
+  
+  .progress-bar {
+    width: 100%;
+    margin: 1rem 0;
+  }
+  
+  .progress-bar-track {
+    background: #ddd;
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  
+  .progress-bar-fill {
+    background: green;
+    height: 100%;
+  }
+  
+  .features-container {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .feature-button,
+  .sos-button {
+    padding: 0.5rem 1rem;
+    background-color: #ff5757;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .weather-info {
+    margin: 1rem 0;
+  } 
