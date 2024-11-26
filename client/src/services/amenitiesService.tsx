@@ -1,31 +1,39 @@
-import { latLng, LatLng } from "leaflet";
-
+import { Bounds, latLng, LatLng } from "leaflet";
 
 export interface Amenity  {
-  type: "node";
+  type: "node" | "way";
   id: number;
   lat: number;
   lon: number;
   tags: AmenityTags;
+  bounds?: Bounds;
+  geometry?: [];
+  nodes?: [];
+
+
 }
 
 
 export interface AmenityTags {
   name?: string;
   amenity?: string;
-  bench?: "yes" | "no";
-  bin?: "yes" | "no";
-  bus?: "yes" | "no";
+  bench?: string;
+  bin?: string;
+  bus?: string;
   highway?: string;
-  lit?: "yes" | "no";
-  public_transport?: "platform" | "station" | "stop";
-  shelter?: "yes" | "no";
+  lit?: string;
+  public_transport?: string;
+  shelter?: string;
   opening_hours?: string;
+  wheelchair: string;
+
 
 }
 
-export const fetchAmenities = async (coords: LatLng = latLng(52.4919, 13.4217)) => {
-    const bbox = coords.toBounds(500);
+
+export const fetchAmenities = async (radius: number, coords: LatLng = latLng(52.4919, 13.4217)) => {
+
+  const bbox = coords.toBounds(radius);
   const sw = bbox.getSouthWest();
   const ne = bbox.getNorthEast();
   const bbQuery = `${sw.lat},${sw.lng},${ne.lat},${ne.lng}`
@@ -53,9 +61,6 @@ out geom;
       "https://overpass-api.de/api/interpreter",
       {
         method: "POST",
-        // The body contains the query
-        // to understand the query language see "The Programmatic Query Language" on
-        // https://wiki.openstreetmap.org/wiki/Overpass_API#The_Programmatic_Query_Language_(OverpassQL)
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
@@ -65,9 +70,15 @@ out geom;
 
     if (result.ok) {
       const data = await result.json();
-      return data
+      if (Object.keys(data).includes('elements')) {
+        const elements: Amenity[] = data.elements;
+        return elements;
+
+      } else {
+        console.error('error returning amen. data', result.status, result.statusText);
+      }
     } else {
-      console.error('error parsing result: ', result.status, result.statusText);
+      console.error('error fetching: ', result.status, result.statusText);
       return result.status
     }
   }

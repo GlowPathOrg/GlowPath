@@ -11,8 +11,11 @@ const MapComponent: React.FC = () => {
   const [searchParams] = useSearchParams(); // query parameters
   const [position, setPosition] = useState<LatLng>(latLng(52.4771, 13.4310)); // this is the default location
   const [address, setAddress] = useState<string>('Default Location'); // address on the popup
-  const [amenities, setAmenities] = useState<Amenity[]>([]) // bound to 10m from position - adjust bounding in service file
+  const [amenities, setAmenities] = useState<Amenity[]>([])
+  const mapStyle = { height: '80vh', width: '90vw' }; // might move later?
 
+
+  // setting user's location
   useEffect(() => {
     const lat = parseFloat(searchParams.get('lat') || '52.4771');
     const lon = parseFloat(searchParams.get('lon') || '13.4310');
@@ -23,26 +26,28 @@ const MapComponent: React.FC = () => {
     setAddress(addr);
   }, [searchParams]);
 
+    // setting safe place markers
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await fetchAmenities(position);
-        if (data) {
+        const data = await fetchAmenities(500, position);
 
-          const fetchedAmenities: Amenity[] = data.elements;
-          console.log(fetchedAmenities)
-          setAmenities(fetchedAmenities)
+        if (data && Array.isArray(data)) {
+          console.log('found: ', data)
+          setAmenities(data)
+
         }
-        else throw new Error ('could not set amenities')
+        else throw new Error ('Invalid Response received or no amenities found.')
       }
-      catch {
-        console.log('ups')
+      catch (error) {
+        console.log('error with fetchAmenities function on load: ', error);
+
       }
     };
     fetchData();
   }, [position]);
 
-  const mapStyle = { height: '80vh', width: '90vw' };
+
 
   return (
     <div className="map-component">
@@ -58,20 +63,27 @@ const MapComponent: React.FC = () => {
           </Popup>
         </Marker>
         {amenities && amenities.map((amenity: Amenity, index: number) => {
-          const { lat, lon, tags } = amenity;
+          let { lat, lon } = amenity;
+          const {tags, type} = amenity;
 
 
           if (!lat || !lon || !tags) {
-            console.error(`Missing data for amenity at index ${index}`, amenity);
-            return null;
+            if (type === 'way' && amenity.geometry) {
+              lat = amenity.geometry[0].lat.toFixed(4);
+              lon = amenity.geometry[0].lon.toFixed(4);
+            } else {
+            console.error(`Missing data for amenity at index ${index}`, 'Lat: ', amenity.lat, amenity.tags, amenity.lon);
+            return null;}
           }
+
 
           const name = tags.name || 'Unnamed Amenity';
           return (
             <Marker key={index} position={latLng(lat, lon)}>
               <Popup>
                 {name} <br />
-                Lighting? {tags.lit} <br />
+                {tags.public_transport ? tags.public_transport : ``} <br />
+                {tags.lit ? `Lit space` : ``} <br />
               </Popup>
             </Marker>
           );
