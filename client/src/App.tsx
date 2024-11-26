@@ -1,13 +1,9 @@
 
-
-
-
-
-
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import JourneyPage from './pages/journeyPage/JourneyPage';
-import MapComponent from './components/map-component'
+import WhereToPage from './pages/WhereToPage';
+
 
 /* import HistoryPage from 
 import SettingsPage from 
@@ -17,11 +13,7 @@ import VisualizationsPage from  */
 const App: React.FC = () => {
   return (
     <>
-
-    </>
-  )
-}
-    <Router>
+ <Router>
       <div className="app">
         {/* Global Navigation */}
         <header>
@@ -33,6 +25,7 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<Navigate to="/journey" />} />
             <Route path="/journey" element={<JourneyPage />} />
+            <Route path="/where-to" element={<WhereToPage />} />
            {/*  <Route path="/history" element={<HistoryPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/chat" element={<ChatPage />} />
@@ -40,13 +33,13 @@ const App: React.FC = () => {
           </Routes>
         </main>
 
-        {/* Global Footer */}
-        <footer>
-          <p>© 2024 SafeWalk. All Rights Reserved.</p>
-        </footer>
+      
+        
       </div>
     </Router>
-  );
-};
-
+    </>
+  )
+}
+   
+  
 export default App;

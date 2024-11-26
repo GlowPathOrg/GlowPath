@@ -3,7 +3,7 @@
 const SosButton: React.FC = () => {
   const handleSOS = () => {
     alert('SOS Triggered! Sending help...');
-    // we need to add more SOS functionality
+    // we need to add more SOS functionality?
   };
 
   return (

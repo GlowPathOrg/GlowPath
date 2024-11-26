@@ -6,20 +6,18 @@
   }
   
   .progress-bar {
-    width: 100%;
-    margin: 1rem 0;
-  }
-  
-  .progress-bar-track {
-    background: #ddd;
-    height: 8px;
-    border-radius: 4px;
-    overflow: hidden;
+    width: 100%; 
+    background-color: #ddd; /* Background track */
+    height: 10px; 
+    border-radius: 5px; 
+    overflow: hidden; /* Prevent overflow */
+    margin: 20px 0;
   }
   
   .progress-bar-fill {
-    background: green;
-    height: 100%;
+    height: 100%; 
+    background-color: #4caf50; 
+    transition: width 0.5s ease-in-out; /* Smooth transition */
   }
   
   .features-container {
@@ -35,6 +33,15 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
+  }
+  .alarm-button {
+    padding: 0.5rem 1rem;
+    background-color: #ff5757; 
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
   }
   
   .weather-info {
