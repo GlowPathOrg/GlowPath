@@ -31,7 +31,12 @@ export const usePosition = () => {
 
   useEffect(() => {
     if ("geolocation" in navigator) {
-      navigator.geolocation.watchPosition(handleSuccess, handleError);
+      const options = {
+        enableHighAccuracy: true,
+        maximumAge: 30000,
+        timeout: 60000
+      }
+      navigator.geolocation.watchPosition(handleSuccess, handleError, options);
     } else {
       setError("Navigator doesn't support geolocation");
     }
