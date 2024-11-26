@@ -1,10 +1,31 @@
 import { latLng, LatLng } from "leaflet";
 
 
+export interface Amenity  {
+  type: "node";
+  id: number;
+  lat: number;
+  lon: number;
+  tags: AmenityTags;
+}
+
+
+export interface AmenityTags {
+  name?: string;
+  amenity?: string;
+  bench?: "yes" | "no";
+  bin?: "yes" | "no";
+  bus?: "yes" | "no";
+  highway?: string;
+  lit?: "yes" | "no";
+  public_transport?: "platform" | "station" | "stop";
+  shelter?: "yes" | "no";
+  opening_hours?: string;
+
+}
 
 export const fetchAmenities = async (coords: LatLng = latLng(52.4919, 13.4217)) => {
-    const bbox = coords.toBounds(1000);
-  console.log(bbox);
+    const bbox = coords.toBounds(500);
   const sw = bbox.getSouthWest();
   const ne = bbox.getNorthEast();
   const bbQuery = `${sw.lat},${sw.lng},${ne.lat},${ne.lng}`
@@ -41,10 +62,10 @@ out geom;
         body: "data=" + encodeURIComponent(query)
       },
     );
-    console.log('query is: ', query)
+
     if (result.ok) {
       const data = await result.json();
-      return data;
+      return data
     } else {
       console.error('error parsing result: ', result.status, result.statusText);
       return result.status
@@ -57,10 +78,3 @@ out geom;
 
 }
 
-
-// for testing in console:
-fetchAmenities().then((data) => {
-  console.log(JSON.stringify(data, null, 2));
-}).catch((error) => {
-  console.error("Error fetching amenities:", error);
-});

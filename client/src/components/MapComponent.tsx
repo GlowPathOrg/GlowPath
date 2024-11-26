@@ -1,31 +1,52 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
-import { LatLngTuple } from 'leaflet';
+import { latLng, LatLng } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { Amenity, fetchAmenities } from '../services/amenitiesService';
+
+
 
 const MapComponent: React.FC = () => {
   const [searchParams] = useSearchParams(); // query parameters
-  const [position, setPosition] = useState<LatLngTuple>([52.4771, 13.4310]); // this is the default location
+  const [position, setPosition] = useState<LatLng>(latLng(52.4771, 13.4310)); // this is the default location
   const [address, setAddress] = useState<string>('Default Location'); // address on the popup
+  const [amenities, setAmenities] = useState<Amenity[]>([]) // bound to 10m from position - adjust bounding in service file
 
   useEffect(() => {
-    const lat = parseFloat(searchParams.get('lat') || '52.4771'); 
-    const lon = parseFloat(searchParams.get('lon') || '13.4310'); 
-    const addr = searchParams.get('address') || 'Default Location'; 
+    const lat = parseFloat(searchParams.get('lat') || '52.4771');
+    const lon = parseFloat(searchParams.get('lon') || '13.4310');
+    const addr = searchParams.get('address') || 'Default Location';
 
     // Update map position and address
-    setPosition([lat, lon]);
+    setPosition(latLng(lat, lon));
     setAddress(addr);
   }, [searchParams]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchAmenities(position);
+        if (data) {
 
+          const fetchedAmenities: Amenity[] = data.elements;
+          console.log(fetchedAmenities)
+          setAmenities(fetchedAmenities)
+        }
+        else throw new Error ('could not set amenities')
+      }
+      catch {
+        console.log('ups')
+      }
+    };
+    fetchData();
+  }, [position]);
 
   const mapStyle = { height: '80vh', width: '90vw' };
 
   return (
     <div className="map-component">
-      <MapContainer center={position} zoom={13} scrollWheelZoom={false} style={mapStyle}>
+      <MapContainer center={position} zoom={14} scrollWheelZoom={false} style={mapStyle}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -33,9 +54,28 @@ const MapComponent: React.FC = () => {
         <Marker position={position}>
           <Popup>
             {address} <br />
-            Coordinates: {position[0].toFixed(4)}, {position[1].toFixed(4)}
+            Coordinates: {position.lat.toFixed(4)}, {position.lng.toFixed(4)}
           </Popup>
         </Marker>
+        {amenities && amenities.map((amenity: Amenity, index: number) => {
+          const { lat, lon, tags } = amenity;
+
+
+          if (!lat || !lon || !tags) {
+            console.error(`Missing data for amenity at index ${index}`, amenity);
+            return null;
+          }
+
+          const name = tags.name || 'Unnamed Amenity';
+          return (
+            <Marker key={index} position={latLng(lat, lon)}>
+              <Popup>
+                {name} <br />
+                Lighting? {tags.lit} <br />
+              </Popup>
+            </Marker>
+          );
+        })}
       </MapContainer>
     </div>
   );
