@@ -68,9 +68,9 @@ const MapComponent: React.FC = () => {
 
 
           if (!lat || !lon || !tags) {
-            if (type === 'way' && amenity.geometry) {
-              lat = amenity.geometry[0].lat.toFixed(4);
-              lon = amenity.geometry[0].lon.toFixed(4);
+            if (type === 'way' && Array.isArray(amenity.geometry) && amenity.geometry) {
+            /*   lat = amenity.geometry[0].lat.toFixed(4);
+              lon = amenity.geometry[0].lon.toFixed(4); */
             } else {
             console.error(`Missing data for amenity at index ${index}`, 'Lat: ', amenity.lat, amenity.tags, amenity.lon);
             return null;}
