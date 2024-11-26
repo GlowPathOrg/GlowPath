@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",                     // You can stick with ES2022 or go back to ES2020
+    "lib": ["ES2023"],                // You may still want "dom" if using libraries like Express with DOM/Browser features
+    "module": "CommonJS",                    // Use CommonJS for Node.js apps
+    "moduleResolution": "node",              // Use Node's module resolution algorithm
+    "esModuleInterop": true,                 // Allow default imports from non-ES modules (important for Express)
+    "skipLibCheck": true,                    // Skip type checking of declaration files for faster build
+    "strict": true,                          // Enable all strict type checking options
+    "noUnusedLocals": true,                  // Remove unused variables
+    "noUnusedParameters": true,              // Remove unused parameters
+    "noFallthroughCasesInSwitch": true,      // Prevent fall-through in switch statements
+    "noUncheckedSideEffectImports": true,    // Prevent side effect imports
+    "resolveJsonModule": true,               // Allow importing of .json files
+    "allowJs": true,                         // Allow JavaScript files
+    "outDir": "./build",
+    "noEmitOnError": true,                   // Don't emit files if there are TypeScript errors
+    "sourceMap": true                        // Generate source maps for debugging
+  },
+  "include": [
+    "**/*.ts"                             // Include your backend source files
+  ],
+  "exclude": [
+    "node_modules",
+    ".env"
+  ],
+  "typeRoots": [
+    "./node_modules/@types"                 // Include type definitions from node_modules
+
+  ],
+  "types": [
+    "node",                                  // Include Node.js types
+    "express"                                // Include Express types
+  ]
+}
