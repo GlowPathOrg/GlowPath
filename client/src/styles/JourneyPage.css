@@ -1,0 +1,49 @@
+.journey-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+  }
+  
+  .progress-bar {
+    width: 100%; 
+    background-color: #ddd; /* Background track */
+    height: 10px; 
+    border-radius: 5px; 
+    overflow: hidden; /* Prevent overflow */
+    margin: 20px 0;
+  }
+  
+  .progress-bar-fill {
+    height: 100%; 
+    background-color: #4caf50; 
+    transition: width 0.5s ease-in-out; /* Smooth transition */
+  }
+  
+  .features-container {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .feature-button,
+  .sos-button {
+    padding: 0.5rem 1rem;
+    background-color: #ff5757;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .alarm-button {
+    padding: 0.5rem 1rem;
+    background-color: #ff5757; 
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .weather-info {
+    margin: 1rem 0;
+  } 
