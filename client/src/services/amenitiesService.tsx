@@ -75,9 +75,11 @@ out geom;
 
     if (result.ok) {
       const data = await result.json();
+      // checks that result has something in it
       if (Object.keys(data).includes('elements')) {
         const elements: Amenity[] = data.elements;
        const reviewedElements = elements.map((el) => {
+        // checks if it's not a node with lat long but rather a way with bounds, adn converts
            if (el.type === "way" && Object.keys(el).includes('bounds') && el.bounds) {
             const mylatLngBounds = latLngBounds(
               latLng(el.bounds.minlat, el.bounds.minlon),
