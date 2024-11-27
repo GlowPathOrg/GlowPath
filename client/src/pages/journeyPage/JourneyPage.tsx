@@ -10,7 +10,7 @@ const JourneyPage: React.FC = () => {
  
   return (
     <div className="journey-page">
-      {/* Map Section :The MapComponent now receives origin, destination, and transportMode as props to fetch and render the route.*/}
+      {/* Map Section :The MapComponent receives origin, destination, and transportMode as props to fetch and render the route.*/}
       <MapComponent />
 
       {/* Progress Bar */}

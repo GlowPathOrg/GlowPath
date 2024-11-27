@@ -1,149 +1,114 @@
 import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { MapContainer, Marker, Popup, TileLayer, Polyline, useMap } from 'react-leaflet';
-import { latLng, LatLng, LatLngTuple } from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-import { fetchRoute } from '../services/RoutingService';
-import { decode } from '@here/flexpolyline';
+import { useSearchParams } from 'react-router-dom'; // Hook 
+import { MapContainer, Marker, Popup, TileLayer, Polyline, useMap } from 'react-leaflet'; 
+import { latLng, LatLng, LatLngTuple } from 'leaflet'; 
+import 'leaflet/dist/leaflet.css'; //this is default style
+import { fetchRoute } from '../services/RoutingService'; // Custom service for fetching routes
+import { decode } from '@here/flexpolyline'; // Polyline decoding function from npm 
 import '../styles/MapComponent.css';
 
 const MapComponent: React.FC = () => {
-  const [searchParams] = useSearchParams(); // Extract query parameters from the URL
+  const [searchParams] = useSearchParams(); // Access query parameters from the whereToPage url
+  const [origin, setOrigin] = useState<LatLng | null>(null); // Origin state
+  const [destination, setDestination] = useState<LatLng | null>(null); // Destination state
+  const [address, setAddress] = useState<string>('Destination'); // Destination address for popup
+  const [theme, setTheme] = useState<string>('standard'); // Map theme state
+  const [route, setRoute] = useState<LatLngTuple[]>([]); // Route polyline state
+  const [transportMode, setTransportMode] = useState<'pedestrian' | 'publicTransport' | 'bicycle'>('pedestrian'); // Transport mode state
 
-  // State variables
-  const [origin, setOrigin] = useState<LatLng>(latLng(52.4771, 13.4310)); // Default origin location
-  const [destination, setDestination] = useState<LatLng | null>(null); // Destination location
-  const [address, setAddress] = useState<string>('Default Location'); // Address to display in the destination marker
-  const [theme, setTheme] = useState<string>('standard'); // Map theme (standard, dark, satellite)
-  const [route, setRoute] = useState<LatLngTuple[]>([]); // Decoded route polyline
-  const [transportMode, setTransportMode] = useState<'pedestrian' | 'publicTransport' | 'bicycle'>('pedestrian'); // Transport mode
+  const mapStyle = { height: '80vh', width: '90vw' }; 
 
-  // Map themes
+  // map themes with corresponding tile URLs
   const themes = {
-    standard: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', // Standard theme
-    dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', // Dark theme
-    satellite: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', // Satellite theme
+    standard: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', 
+    dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', 
+    satellite: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', 
   };
 
-  // Parse query parameters to set origin, destination, and address
+  // Parse query parameters and set states accordingly
   useEffect(() => {
-    const lat = parseFloat(searchParams.get('destinationLat') || '52.4771'); // Latitude of the destination
-    const lon = parseFloat(searchParams.get('destinationLon') || '13.4310'); // Longitude of the destination
-    const addr = searchParams.get('address') || 'Default Location'; // Destination address
+    const originLat = parseFloat(searchParams.get('originLat') || '52.4771'); // Default origin latitude
+    const originLon = parseFloat(searchParams.get('originLon') || '13.4310'); // Default origin longitude
+    const destinationLat = parseFloat(searchParams.get('destinationLat') || '52.4771'); // Default destination latitude
+    const destinationLon = parseFloat(searchParams.get('destinationLon') || '13.4310'); // Default destination longitude
+    const addr = searchParams.get('address') || 'Destination'; // Destination address
+    const mode = searchParams.get('transportMode') as typeof transportMode; // Transport mode from query parameters
+    const themeParam = searchParams.get('theme') || 'standard'; // Map theme from query parameters
 
-    console.log('Destination Coordinates:', { lat, lon, addr });
-
-    // Set origin, destination, and address state variables
-    setOrigin(latLng(52.4771, 13.4310)); // Static origin (e.g., Berlin)
-    setDestination(latLng(lat, lon)); // Dynamic destination
-    setAddress(addr); // Address to display in the popup
+    setOrigin(latLng(originLat, originLon)); // Set origin
+    setDestination(latLng(destinationLat, destinationLon)); // Set destination
+    setAddress(addr); // Set address
+    setTransportMode(mode || 'pedestrian'); // Set transport mode
+    setTheme(themeParam || 'standard'); // Set theme
   }, [searchParams]);
 
-  // Fetch and decode the route whenever destination or transport mode changes
+  // Fetch route data whenever origin, destination, or transport mode changes
   useEffect(() => {
     const fetchRouteData = async () => {
-      if (!destination) return; // No destination, skip fetching
+      if (!origin || !destination) return; // ignore if origin or destination is missing
 
       try {
         // Fetch route data from the RoutingService
         const { polyline } = await fetchRoute(
           [origin.lat, origin.lng], // Origin coordinates
           [destination.lat, destination.lng], // Destination coordinates
-          transportMode // Selected transport mode
+          transportMode // Transport mode
         );
-
-        console.log('Polyline response:', polyline);
 
         // Decode the polyline into coordinates
         const decoded = decode(polyline);
-        console.log('Decoded result:', decoded);
-
-        // Check if the decoded polyline is valid and set the route
         if (decoded && Array.isArray(decoded.polyline)) {
-          const routeCoordinates = decoded.polyline.map(([lat, lon]) => [lat, lon] as LatLngTuple);
-          setRoute(routeCoordinates); // Update state with decoded route
+          const routeCoordinates = decoded.polyline.map(([lat, lon]) => [lat, lon] as LatLngTuple); // Map coordinates
+          
+          // Log the route coordinates for you Mellissa 
+        console.log('Decoded Route Coordinates:', routeCoordinates);
+
+          setRoute(routeCoordinates); // Update route state
         } else {
-          console.error('Decoded polyline is not a valid array:', decoded);
+          console.error('Decoded polyline is not a valid array:', decoded); 
         }
       } catch (error) {
-        console.error('Error fetching route:', error); // Log any errors
+        console.error('Error fetching route:', error); 
       }
     };
 
-    fetchRouteData(); // Trigger route fetching
-  }, [origin, destination, transportMode]); // Dependencies for re-fetching the route
+    fetchRouteData();
+  }, [origin, destination, transportMode]);
 
-  // Component to adjust the map bounds to fit both origin and destination
+  // adjust map view to fit both origin and destination markers
   const FitBounds: React.FC<{ origin: LatLng; destination: LatLng | null }> = ({ origin, destination }) => {
-    const map = useMap(); // Access the Leaflet map instance
+    const map = useMap(); // useMap from leaflet
 
     useEffect(() => {
-      if (destination) {
-        const bounds = [origin, destination]; // Create bounds for the map
-        map.fitBounds(bounds, { padding: [50, 50] }); // Adjust map to fit the bounds
+      if (origin && destination) {
+        const bounds = [origin, destination]; // Create bounds for the map view
+        map.fitBounds(bounds, { padding: [50, 50] }); // Adjust map to fit bounds
       }
     }, [origin, destination, map]);
 
-    return null; // No rendering needed
+    return null; 
   };
-
-  const mapStyle = { height: '80vh', width: '90vw' }; // Map container styling
 
   return (
     <div className="map-component">
-      {/* Transport Mode Selector */}
-      <div style={{ marginBottom: '10px' }}>
-        <label htmlFor="transport-mode" style={{ marginRight: '10px' }}>
-          Select Transport Mode:
-        </label>
-        <select
-          id="transport-mode"
-          value={transportMode}
-          onChange={(e) => setTransportMode(e.target.value as typeof transportMode)}
-          style={{ padding: '5px', marginRight: '15px' }}
-        >
-          <option value="pedestrian">Walking</option>
-          <option value="publicTransport">Public Transport</option>
-          <option value="bicycle">Bicycle</option>
-        </select>
-
-        {/* Map Theme Selector */}
-        <label htmlFor="theme-select" style={{ marginRight: '10px' }}>
-          Select Map Theme:
-        </label>
-        <select
-          id="theme-select"
-          value={theme}
-          onChange={(e) => setTheme(e.target.value)}
-          style={{ padding: '5px' }}
-        >
-          <option value="standard">Standard</option>
-          <option value="dark">Dark</option>
-          <option value="satellite">Satellite</option>
-        </select>
-      </div>
-
       {/* Map Container */}
-      <MapContainer center={origin} zoom={13} scrollWheelZoom={false} style={mapStyle}>
-        {/* Tile Layer */}
-        <TileLayer attribution='&copy; OpenStreetMap contributors' url={themes[theme]} />
-        {/* Adjust map view */}
-        <FitBounds origin={origin} destination={destination} />
-        {/* Origin Marker */}
-        <Marker position={origin}>
-          <Popup>Origin</Popup>
-        </Marker>
-        {/* Destination Marker */}
+      <MapContainer center={origin || latLng(52.4771, 13.4310)} zoom={13} scrollWheelZoom={false} style={mapStyle}>
+        <TileLayer attribution='&copy; OpenStreetMap contributors' url={themes[theme]} /> 
+        {origin && destination && <FitBounds origin={origin} destination={destination} />} 
+        {origin && (
+          <Marker position={origin}> 
+            <Popup>Your Location</Popup>
+          </Marker>
+        )}
         {destination && (
-          <Marker position={destination}>
+          <Marker position={destination}> 
             <Popup>
               {address} <br />
               Coordinates: {destination.lat.toFixed(4)}, {destination.lng.toFixed(4)}
             </Popup>
           </Marker>
         )}
-        {/* Polyline for the route */}
-        {route.length > 0 && <Polyline positions={route} pathOptions={{ className: 'glowing-polyline' }} />}
+        {route.length > 0 && <Polyline positions={route} pathOptions={{ className: 'glowing-polyline' }} />} {/* Route polyline */}
       </MapContainer>
     </div>
   );

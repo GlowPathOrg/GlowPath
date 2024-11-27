@@ -1,47 +1,65 @@
 import axios from 'axios';
-import { decode } from '@here/flexpolyline'; // Import the decoding function
 
+// fetch a route from the HERE API
 export const fetchRoute = async (
-  origin: [number, number],
-  destination: [number, number],
-  transportMode: 'pedestrian' | 'publicTransport' | 'bicycle' | 'car'
+  origin: [number, number], // Origin coordinates as [latitude, longitude]
+  destination: [number, number], // Destination coordinates as [latitude, longitude]
+  transportMode: 'pedestrian' | 'publicTransport' | 'bicycle' | 'car' // Transport mode for the route
 ) => {
+  // Destructure origin and destination coordinates for API parameters
   const [originLat, originLon] = origin;
   const [destinationLat, destinationLon] = destination;
 
+  // HERE Routing API url
   const url = 'https://router.hereapi.com/v8/routes';
 
+  // API key loaded from .env
+  const apiKey = import.meta.env.VITE_HERE_API_KEY;
+
+  // Check if the API key is available (for debugging if needed)
+  if (!apiKey) {
+    console.error('API Key is undefined. Please check your environment configuration.');
+    throw new Error('API Key is missing');
+  }
+
   try {
-    console.log('Request Parameters:', {
-      apiKey: 'Td0D7cZ_SXDeE-9FCx_8o2BA47tlOjvMXlnDo8maJcM',
+    // Log the parameters being sent to the API for debugging purposes
+    /* console.log('Request Parameters:', {
+      apiKey,
       transportMode,
       origin: `${originLat},${originLon}`,
       destination: `${destinationLat},${destinationLon}`,
-      return: 'polyline,summary,instructions',
-    });
+      return: 'polyline,summary,instructions,actions',
+    }); */
 
+    // Send a GET request to the HERE API with the specified parameters
     const response = await axios.get(url, {
       params: {
-        apiKey: 'Td0D7cZ_SXDeE-9FCx_8o2BA47tlOjvMXlnDo8maJcM',
-        transportMode,
-        origin: `${originLat},${originLon}`,
-        destination: `${destinationLat},${destinationLon}`,
-        return: 'polyline,summary,instructions,actions',
+        apiKey, 
+        transportMode, 
+        origin: `${originLat},${originLon}`, // Origin location as a string
+        destination: `${destinationLat},${destinationLon}`, // Destination location as a string
+        return: 'polyline,summary,instructions,actions', // API response fields requested
       },
     });
 
-    if (response.data.routes.length > 0) {
-      const route = response.data.routes[0].sections[0];
+    // Check if the API response contains routes
+    if (response.data.routes && response.data.routes.length > 0) {
+      const route = response.data.routes[0].sections[0]; // Extract the first route section this might be changed later
+
+      // Return the polyline, summary, and instructions for the route
       return {
-        polyline: route.polyline,
-        summary: route.summary,
-        instructions: route.actions || [],
+        polyline: route.polyline, // Encoded polyline for the route
+        summary: route.summary, // Summary details like duration and distance
+        instructions: route.actions || [], // Turn-by-turn instructions
       };
     } else {
-      throw new Error('No route found');
+      
+      throw new Error('No route found in the API response');
     }
   } catch (error) {
-    console.error('Error fetching route:', error);
-    throw error;
+    
+    console.error('Request failed. Ensure that your API key is valid and the parameters are correct.');
+    throw error; 
   }
 };
