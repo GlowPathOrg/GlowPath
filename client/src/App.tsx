@@ -24,7 +24,7 @@ const App: React.FC = () => {
         {/* Routes */}
         <main>
           <Routes>
-            <Route path="/glowpath/" element={<Navigate to="/journey" />} />
+            <Route path="/" element={<Navigate to="/journey" />} />
             <Route path="/journey" element={<JourneyPage />} />
             <Route path="/where-to" element={<WhereToPage />} />
            {/*  <Route path="/history" element={<HistoryPage />} />
