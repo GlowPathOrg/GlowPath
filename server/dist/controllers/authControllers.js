@@ -14,8 +14,10 @@ const registerController = async (req, res) => {
         if (!email || !password || !role) {
             throw new Error(`Email, password and role are all required`);
         }
-        const user = { email, password, role };
+        const hashedPassword = await bcrypt_1.default.hash(password, 10);
+        const user = { email, password: hashedPassword, role };
         console.log(user);
+        // todo add logic to save to model
         // await user.save();
         users.push(user);
         console.log('User array updated: ', user);
@@ -50,7 +52,7 @@ const loginController = async (req, res) => {
         console.log('JWT_SECRET in function:', process.env.JWT_SECRET);
         // Generate JWT token
         if (typeof process.env.JWT_SECRET === undefined) {
-            console.log("BONGOHORSE");
+            console.log("No JWT Secret Found!");
             res.status(500).json({ error: 'JWT_SECRET is not defined in environment variables' });
             return;
         }

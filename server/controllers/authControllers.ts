@@ -15,8 +15,10 @@ export const registerController = async (req: Request, res: Response): Promise<v
         if (!email || !password || !role) {
             throw new Error(`Email, password and role are all required`)
         }
-        const user: UserI = { email, password, role }
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const user: UserI = { email, password: hashedPassword, role };
         console.log(user)
+        // todo add logic to save to model
         // await user.save();
         users.push(user);
         console.log('User array updated: ', user)
@@ -55,7 +57,7 @@ export const loginController = async (req: Request, res: Response): Promise<void
         console.log('JWT_SECRET in function:', process.env.JWT_SECRET);
         // Generate JWT token
         if (typeof process.env.JWT_SECRET === undefined) {
-            console.log("BONGOHORSE");
+            console.log("No JWT Secret Found!");
             res.status(500).json({ error: 'JWT_SECRET is not defined in environment variables' });
             return;
         }
