@@ -1,6 +1,6 @@
 
 const WeatherInfo: React.FC = () => {
-  const weather = 'Clear skies'; // we need to replace with real weather data from the API?
+  const weather = 'Clear skies'; // we need to replace with real weather data from the API
 
   return (
     <div className="weather-info">

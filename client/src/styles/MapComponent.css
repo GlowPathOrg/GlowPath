@@ -1,0 +1,19 @@
+.glowing-polyline {
+    stroke: #00ff00; /* Green color for the line */
+    stroke-width: 4px; /* Thickness of the line */
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+    filter: url(#glow);
+  }
+  
+  svg {
+    filter: url('#glow');
+  }
+  
+  .glow {
+    stroke: rgba(0, 255, 0, 0.5);
+    stroke-width: 10px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
