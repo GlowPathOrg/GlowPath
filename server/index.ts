@@ -3,6 +3,7 @@ import { setupSocket } from "./socket" // This is needed to setup socket.io
 import { configDotenv } from "dotenv"; // to access .env
 import cors, { CorsOptions } from "cors";
 import authRoutes from "./routes/authRoutes";
+import shareRoutes from "./routes/shareRoutes";
 configDotenv();
 const app = express();
 const SERVER_PORT = process.env.SERVER_PORT || 3002;
@@ -28,6 +29,8 @@ var whitelist = [`https://glowpathorg.github.io/`, `http://localhost/${CLIENT_PO
 }
 //websockets content
 const server = setupSocket(app); // This is needed to setup socket.io
+
+// TODO: remove the following block when no longer needed for testing websockets
 app.get("/", cors(corsOptions), (req, res) => {
   // todo might need to change /index.html to '/public'
   res.sendFile(__dirname + "/index.html");
@@ -36,6 +39,7 @@ app.get("/", cors(corsOptions), (req, res) => {
 //server routes
 app.use(express.json());
 app.use('/auth', authRoutes);
+app.use(shareRoutes);
 
 server.listen(SERVER_PORT, () => {
   console.log(`Server listening on port ${SERVER_PORT}`);
