@@ -1,17 +1,17 @@
-
-import ProgressBar from './ProgressBar'
+import ProgressBar from './ProgressBar';
 import SosButton from './SosButton';
 import WeatherInfo from './WeatherInfo';
-import MapComponent from '../../components/MapComponent'
+import MapComponent from '../../components/MapComponent';
 import '../../styles/JourneyPage.css';
 import AlarmButton from './AlarmButton';
 
 
 const JourneyPage: React.FC = () => {
+ 
   return (
     <div className="journey-page">
-      {/* Map Section here*/}
-  <MapComponent/>
+      {/* Map Section :The MapComponent now receives origin, destination, and transportMode as props to fetch and render the route.*/}
+      <MapComponent />
 
       {/* Progress Bar */}
       <ProgressBar />
@@ -27,8 +27,6 @@ const JourneyPage: React.FC = () => {
 
       {/* Weather Alerts */}
       <WeatherInfo />
-
-    
     </div>
   );
 };
