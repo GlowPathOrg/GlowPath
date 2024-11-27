@@ -14,7 +14,7 @@ import VisualizationsPage from  */
 const App: React.FC = () => {
   return (
     <>
- <Router>
+ <Router basename={import.meta.env.BASE_URL}>
       <div className="app">
         {/* Global Navigation */}
         <header>
