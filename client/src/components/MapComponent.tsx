@@ -33,7 +33,6 @@ const MapComponent: React.FC = () => {
         const data = await fetchAmenities(500, position);
 
         if (data && Array.isArray(data)) {
-          console.log('found: ', data)
           setAmenities(data)
 
         }
@@ -62,18 +61,12 @@ const MapComponent: React.FC = () => {
             Coordinates: {position.lat.toFixed(4)}, {position.lng.toFixed(4)}
           </Popup>
         </Marker>
-        {amenities && amenities.map((amenity: Amenity, index: number) => {
-          let { lat, lon } = amenity;
-          const {tags, type} = amenity;
+        {amenities && amenities.lat && amenities.lon && amenities.map((amenity: Amenity, index: number) => {
+          const { lat, lon, tags } = amenity;
+                  if (!lat || !lon || !tags) {
 
-
-          if (!lat || !lon || !tags) {
-            if (type === 'way' && Array.isArray(amenity.geometry) && amenity.geometry) {
-            /*   lat = amenity.geometry[0].lat.toFixed(4);
-              lon = amenity.geometry[0].lon.toFixed(4); */
-            } else {
             console.error(`Missing data for amenity at index ${index}`, 'Lat: ', amenity.lat, amenity.tags, amenity.lon);
-            return null;}
+            return null;
           }
 
 

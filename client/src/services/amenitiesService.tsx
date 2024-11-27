@@ -1,4 +1,4 @@
-import { Bounds, latLng, LatLng } from "leaflet";
+import { latLng, LatLng, latLngBounds } from "leaflet";
 
 export interface Amenity  {
   type: "node" | "way";
@@ -6,7 +6,12 @@ export interface Amenity  {
   lat: number;
   lon: number;
   tags: AmenityTags;
-  bounds?: Bounds;
+  bounds?: {
+    minlat: number;
+    minlon: number;
+    maxlat: number;
+    maxlon: number;
+  }
   geometry?: [];
   nodes?: [];
 
@@ -72,7 +77,21 @@ out geom;
       const data = await result.json();
       if (Object.keys(data).includes('elements')) {
         const elements: Amenity[] = data.elements;
-        return elements;
+       const reviewedElements = elements.map((el) => {
+           if (el.type === "way" && Object.keys(el).includes('bounds') && el.bounds) {
+            const mylatLngBounds = latLngBounds(
+              latLng(el.bounds.minlat, el.bounds.minlon),
+              latLng(el.bounds.maxlat, el.bounds.maxlon)
+            );
+            const center: LatLng = mylatLngBounds.getCenter();
+            el.lat = center.lat;
+            el.lon = center.lng;
+
+          }
+          return el
+
+        })
+        return reviewedElements;
 
       } else {
         console.error('error returning amen. data', result.status, result.statusText);
