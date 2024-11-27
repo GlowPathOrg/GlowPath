@@ -61,7 +61,7 @@ const MapComponent: React.FC = () => {
             Coordinates: {position.lat.toFixed(4)}, {position.lng.toFixed(4)}
           </Popup>
         </Marker>
-        {amenities && amenities.lat && amenities.lon && amenities.map((amenity: Amenity, index: number) => {
+        {amenities && amenities.map((amenity: Amenity, index: number) => {
           const { lat, lon, tags } = amenity;
                   if (!lat || !lon || !tags) {
 
