@@ -5,15 +5,15 @@ import JourneyPage from './pages/journeyPage/JourneyPage';
 import WhereToPage from './pages/WhereToPage';
 
 
-/* import HistoryPage from 
-import SettingsPage from 
-import ChatPage from 
+/* import HistoryPage from
+import SettingsPage from
+import ChatPage from
 import VisualizationsPage from  */
 
 const App: React.FC = () => {
   return (
     <>
- <Router>
+ <Router basename={import.meta.env.BASE_URL}>
       <div className="app">
         {/* Global Navigation */}
         <header>
@@ -33,13 +33,13 @@ const App: React.FC = () => {
           </Routes>
         </main>
 
-      
-        
+
+
       </div>
     </Router>
     </>
   )
 }
-   
-  
+
+
 export default App;
