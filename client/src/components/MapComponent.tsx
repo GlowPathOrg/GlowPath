@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom'; // Hook for accessing query parameters
 import { MapContainer, Marker, Popup, TileLayer, Polyline, useMap } from 'react-leaflet'; 
 import { latLng, LatLng, LatLngTuple } from 'leaflet'; 
-import L from 'leaflet'; // Leaflet for map functionality
 import 'leaflet/dist/leaflet.css'; // Default Leaflet styling
 import { fetchRoute } from '../services/RoutingService'; // Service for fetching routes
 import { decode } from '@here/flexpolyline'; // Polyline decoding function from npm 
@@ -25,10 +24,10 @@ const MapComponent: React.FC = () => {
   const mapStyle = { height: '80vh', width: '90vw' }; // Map container style
 
   // Map themes with corresponding tile URLs
-  const themes = {
-    standard: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', 
-    dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', 
-    satellite: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', 
+  const themes: Record<'standard' | 'dark' | 'satellite', string> = {
+    standard: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+    satellite: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
   };
 
   // Parse query parameters and set states accordingly
