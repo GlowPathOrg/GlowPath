@@ -1,17 +1,15 @@
-import express from 'express';
-import dotenv from 'dotenv';
-
-
-dotenv.config();
-
+import express from "express";
+import { setupSocket } from "./socket" // This is needed to setup socket.io
 const app = express();
-const port = process.env.PORT;
+const PORT = 3000;
+const server = setupSocket(app); // This is needed to setup socket.io
 
-app.get('/', (req, res) => {
-    console.log(req);
-    res.send('Express + TypeScript Server');
+// ...
+
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/index.html");
 });
 
-app.listen(port, () => {
-    console.log(`[server]: Server is running at http://localhost:${port}`);
+server.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
 });
