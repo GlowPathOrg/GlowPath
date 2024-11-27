@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
+
 import { useSearchParams } from 'react-router-dom'; // Hook 
 import { MapContainer, Marker, Popup, TileLayer, Polyline, useMap } from 'react-leaflet'; 
 import { latLng, LatLng, LatLngTuple } from 'leaflet'; 
+import L from 'leaflet';
 import 'leaflet/dist/leaflet.css'; //this is default style
 import { fetchRoute } from '../services/RoutingService'; // Custom service for fetching routes
 import { decode } from '@here/flexpolyline'; // Polyline decoding function from npm 
 import '../styles/MapComponent.css';
+import { Amenity, fetchAmenities } from '../services/amenitiesService';
+
 
 const MapComponent: React.FC = () => {
   const [searchParams] = useSearchParams(); // Access query parameters from the whereToPage url
@@ -15,7 +19,7 @@ const MapComponent: React.FC = () => {
   const [theme, setTheme] = useState<string>('standard'); // Map theme state
   const [route, setRoute] = useState<LatLngTuple[]>([]); // Route polyline state
   const [transportMode, setTransportMode] = useState<'pedestrian' | 'publicTransport' | 'bicycle'>('pedestrian'); // Transport mode state
-
+  const [amenities, setAmenities] = useState<Amenity[]>([])
   const mapStyle = { height: '80vh', width: '90vw' }; 
 
   // map themes with corresponding tile URLs
@@ -85,9 +89,39 @@ const MapComponent: React.FC = () => {
         map.fitBounds(bounds, { padding: [50, 50] }); // Adjust map to fit bounds
       }
     }, [origin, destination, map]);
-
     return null; 
   };
+    
+    /* import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png'; */
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+})
+ 
+    // setting safe place markers
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchAmenities(500, position);
+
+        if (data && Array.isArray(data)) {
+          setAmenities(data)
+
+        }
+        else throw new Error ('Invalid Response received or no amenities found.')
+      }
+      catch (error) {
+        console.log('error with fetchAmenities function on load: ', error);
+
+      }
+    };
+    fetchData();
+  }, [position]);
+    
 
   return (
     <div className="map-component">
@@ -108,7 +142,30 @@ const MapComponent: React.FC = () => {
             </Popup>
           </Marker>
         )}
-        {route.length > 0 && <Polyline positions={route} pathOptions={{ className: 'glowing-polyline' }} />} {/* Route polyline */}
+        
+       {route.length > 0 && <Polyline positions={route} pathOptions={{ className: 'glowing-polyline' }} />} {/* Route polyline */}
+        
+         {/* amenities */}
+        {amenities && amenities.map((amenity: Amenity, index: number) => {
+          const { lat, lon, tags } = amenity;
+                  if (!lat || !lon || !tags) {
+
+            console.error(`Missing data for amenity at index ${index}`, 'Lat: ', amenity.lat, amenity.tags, amenity.lon);
+            return null;
+          }
+
+          const name = tags.name || 'Unnamed Amenity';
+          return (
+            <Marker key={index} position={latLng(lat, lon)}>
+              <Popup>
+                {name} <br />
+                {tags.public_transport ? tags.public_transport : ``} <br />
+                {tags.lit ? `Lit space` : ``} <br />
+              </Popup>
+            </Marker>
+          );
+        })}
+
       </MapContainer>
     </div>
   );

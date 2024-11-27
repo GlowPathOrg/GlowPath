@@ -6,6 +6,7 @@ import '../../styles/JourneyPage.css';
 import AlarmButton from './AlarmButton';
 
 
+
 const JourneyPage: React.FC = () => {
  
   return (
@@ -14,7 +15,7 @@ const JourneyPage: React.FC = () => {
       <MapComponent />
 
       {/* Progress Bar */}
-      <ProgressBar />
+      <ProgressBar progress={0}/>
 
       {/* Buttons and Features */}
       <div className="features-container">
@@ -27,6 +28,7 @@ const JourneyPage: React.FC = () => {
 
       {/* Weather Alerts */}
       <WeatherInfo />
+
     </div>
   );
 };
