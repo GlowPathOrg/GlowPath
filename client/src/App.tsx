@@ -3,9 +3,6 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import JourneyPage from './pages/journeyPage/JourneyPage';
 import WhereToPage from './pages/WhereToPage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import ProfilePage from './pages/ProfilePage';
 
 
 
@@ -17,8 +14,7 @@ import VisualizationsPage from  */
 const App: React.FC = () => {
   return (
     <>
-
- <Router>
+ <Router basename={import.meta.env.BASE_URL}>
       <div className="app">
         {/* Global Navigation */}
         <header>
@@ -28,7 +24,7 @@ const App: React.FC = () => {
         {/* Routes */}
         <main>
           <Routes>
-            <Route path="/glowpath/" element={<Navigate to="/journey" />} />
+            <Route path="/" element={<Navigate to="/journey" />} />
             <Route path="/journey" element={<JourneyPage />} />
             <Route path="/where-to" element={<WhereToPage />} />
             <Route path="/login" element={<LoginPage />} />

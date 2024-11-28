@@ -1,6 +1,6 @@
-import { latLng, LatLng, latLngBounds } from "leaflet";
+import { latLng, latLngBounds, LatLng } from "leaflet";
 
-export interface Amenity  {
+export interface Amenity {
   type: "node" | "way";
   id: number;
   lat: number;
@@ -11,13 +11,10 @@ export interface Amenity  {
     minlon: number;
     maxlat: number;
     maxlon: number;
-  }
+  };
   geometry?: [];
   nodes?: [];
-
-
 }
-
 
 export interface AmenityTags {
   name?: string;
@@ -31,19 +28,24 @@ export interface AmenityTags {
   shelter?: string;
   opening_hours?: string;
   wheelchair: string;
-
-
 }
 
+export const fetchAmenities = async (
+  radius: number,
+  coords: { lat: number; lon: number } // Ensure coords is a plain object with lat/lon properties
+) => {
+  // Convert coords to a valid Leaflet LatLng object
+  const center = latLng(coords.lat, coords.lon);
 
-export const fetchAmenities = async (radius: number, coords: LatLng = latLng(52.4919, 13.4217)) => {
+  // Create a bounding box around the center using the radius
+  const bbox = center.toBounds(radius);
 
-  const bbox = coords.toBounds(radius);
+  // Extract bounding box coordinates
   const sw = bbox.getSouthWest();
   const ne = bbox.getNorthEast();
-  const bbQuery = `${sw.lat},${sw.lng},${ne.lat},${ne.lng}`
+  const bbQuery = `${sw.lat},${sw.lng},${ne.lat},${ne.lng}`;
 
-
+  // Overpass API query for amenities
   const query = `[out:json][timeout:25];
 (
 
@@ -59,26 +61,22 @@ out geom;
 `;
 
   try {
-
-    const result = await fetch(
-      "https://overpass-api.de/api/interpreter",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: "data=" + encodeURIComponent(query)
+    const result = await fetch("https://overpass-api.de/api/interpreter", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
       },
-    );
+      body: "data=" + encodeURIComponent(query),
+    });
 
     if (result.ok) {
       const data = await result.json();
-      // checks that result has something in it
-      if (Object.keys(data).includes('elements')) {
+      if (Object.keys(data).includes("elements")) {
         const elements: Amenity[] = data.elements;
-       const reviewedElements = elements.map((el) => {
-        // checks if it's not a node with lat long but rather a way with bounds, adn converts
-           if (el.type === "way" && Object.keys(el).includes('bounds') && el.bounds) {
+
+        const reviewedElements = elements.map((el) => {
+          if (el.type === "way" && el.bounds) {
+            // If amenity is a "way" with bounds, calculate its center
             const mylatLngBounds = latLngBounds(
               latLng(el.bounds.minlat, el.bounds.minlon),
               latLng(el.bounds.maxlat, el.bounds.maxlon)
@@ -86,25 +84,20 @@ out geom;
             const center: LatLng = mylatLngBounds.getCenter();
             el.lat = center.lat;
             el.lon = center.lng;
-
           }
-          return el
-
-        })
+          return el;
+        });
         return reviewedElements;
-
       } else {
-        console.error('error returning amen. data', result.status, result.statusText);
+        console.error("Error returning amenity data", result.status, result.statusText);
+        return [];
       }
     } else {
-      console.error('error fetching: ', result.status, result.statusText);
-      return result.status
+      console.error("Error fetching data:", result.status, result.statusText);
+      return [];
     }
+  } catch (error) {
+    console.error("Caught error:", error);
+    return [];
   }
-  catch (error) {
-    console.log('caught error: ', error);
-
-  }
-
-}
-
+};

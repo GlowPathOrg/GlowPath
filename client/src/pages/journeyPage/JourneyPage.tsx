@@ -1,20 +1,22 @@
-
-import ProgressBar from './ProgressBar'
+import ProgressBar from './ProgressBar';
 import SosButton from './SosButton';
 import WeatherInfo from './WeatherInfo';
-import MapComponent from '../../components/MapComponent'
+import MapComponent from '../../components/MapComponent';
 import '../../styles/JourneyPage.css';
 import AlarmButton from './AlarmButton';
-import Navbar from '../../components/Navbar';
-
+import { usePosition } from '../../hooks/usePosition';
 
 
 const JourneyPage: React.FC = () => {
+
+  const { latitude, longitude, error } = usePosition();
   return (
     <div className="journey-page">
-      <div>  <Navbar /></div>
-      {/* Map Section here*/}
-  <MapComponent/>
+      {/* Map Section :The MapComponent receives origin, destination, and transportMode as props to fetch and render the route.*/}
+      <MapComponent
+      latitude={latitude}
+      longitude={longitude}
+      geolocationError={error || null}/>
 
       {/* Progress Bar */}
       <ProgressBar progress={0}/>
@@ -30,7 +32,6 @@ const JourneyPage: React.FC = () => {
 
       {/* Weather Alerts */}
       <WeatherInfo />
-
 
     </div>
   );
