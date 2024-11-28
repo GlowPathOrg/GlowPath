@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { login, profile } from "../services/authService";
+import { Navigate } from "react-router-dom";
 
 
 
@@ -8,7 +9,7 @@ const LoginPage = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [message, setMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  // todo const navigate = useNavigate();
+const navigate = useNavigate();
 
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,7 +26,8 @@ const LoginPage = () => {
         setMessage("Login successful!")
         setTimeout(()=>3);
         try {
-         await profile()
+         await profile();
+          navigate('/me');
         }
         catch (error) {
           console.log('error loading profile', error);

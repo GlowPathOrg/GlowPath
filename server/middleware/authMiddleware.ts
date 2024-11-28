@@ -20,10 +20,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
         try {
             // verify & decode token payload,
             const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
-
-            console.log('decoded is ', decoded)
             const { id } = decoded;
-            console.log('new ID: ', id);
             // attempt to find user object and set to req
             const user = await UserModel.findOne({ _id: id });
             if (user) req.user = user;
