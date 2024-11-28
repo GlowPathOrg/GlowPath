@@ -3,6 +3,9 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import JourneyPage from './pages/journeyPage/JourneyPage';
 import WhereToPage from './pages/WhereToPage';
+import RegisterPage from './pages/RegisterPage';
+import ProfilePage from './pages/ProfilePage';
+import LoginPage from './pages/LoginPage';
 
 
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import "../styles/Navbar.css"
 
 const Navbar: React.FC = () => {
    const navigate = useNavigate();
@@ -20,9 +21,9 @@ const Navbar: React.FC = () => {
 
   return (
     <nav className="navbar">
-      <h3>
-        <Link to="/journey">GlowPath</Link>
-      </h3>
+      <div><h3>
+        <Link to="/">GlowPath</Link>
+      </h3></div>
        <div className="nav-links">
         {isLoggedIn ? (
           <button onClick={handleLogout}>Logout</button>

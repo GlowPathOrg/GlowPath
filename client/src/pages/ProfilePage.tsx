@@ -8,7 +8,7 @@ export interface UserI {
   comparePassword: (candidatePassword: string) => Promise<boolean>;
 }
 
-const AdminDashboard = () => {
+const ProfilePage = () => {
   return (
     <div className="admin-dashboard">
       <h2>Welcome, XXXX</h2>
@@ -23,4 +23,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default ProfilePage;

@@ -18,19 +18,31 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
 
 
         try {
-            // verify & decode token payload,
             const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
             const { id } = decoded;
-            // attempt to find user object and set to req
             const user = await UserModel.findOne({ _id: id });
-            if (user) req.user = user;
-            next();
+            if (user) {req.user = user;
+            next();}
+            else {
+                res.status(404).json({ message: "User not found" });
+            }
         } catch (error) {
-            console.log('error in middleware', error)
-            res.sendStatus(401);
+
+           if (error instanceof Error) {
+               if (error.name === "TokenExpiredError") {
+                   res.status(401).json({ message: "Token has expired" });
+               } else if (error.name === "JsonWebTokenError") {
+                   res.status(401).json({ message: "Invalid token" });
+               }
+           }
+
+            else {
+                res.status(500).json({ message: "Internal server error" });
+            }
         }
+
     }
-    else res.sendStatus(403).json({message: 'Headers arent there!'})
+
 
 };
 
