@@ -5,11 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <script src="/socket.io/socket.io.js"></script>
-   <script>
-      const socket = io();
-   </script>
 </head>
 <body>
-  <h1>Socket.io client</h1>
+  <h1>Socket.io client receiver</h1>
+  <button>Join</button>
+  <script>
+    const socket = io();
+    socket.on("connect", () => {
+      console.log("Receiver connected to server");
+    })
+    const button = document.querySelector("button")
+    button.addEventListener("click", async () => {
+      const result = await fetch("http://localhost:3000/share/123456789");
+      const share = await result.json();
+      console.log("Receiver received share info: ", share);
+      socket.emit("join-share", share.id);
+    })
+ </script>
 </body>
 </html>
