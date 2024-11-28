@@ -151,7 +151,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ latitude, longitude, geoloc
         )}
         {route.length > 0 && <Polyline positions={route} pathOptions={{ className: 'glowing-polyline' }} />} {/* Route polyline */}
         {instructions.map((instruction, index) => {
-          const { geometry, instruction: text, action, length } = instruction; // Geometry and action for the step
+          const {instruction: text, action, length } = instruction; // Geometry and action for the step
           const icon = actionIcons[action] || '➡️'; // Fallback to generic arrow
           return (
             <li key={index}>
