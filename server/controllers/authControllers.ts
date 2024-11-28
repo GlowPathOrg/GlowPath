@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import UserModel from '../models/user';
 import crypto from 'crypto';
+import { UserI } from '../Types/user';
 dotenv.config();
 
 const jwtSecret = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex')
@@ -18,11 +19,15 @@ export const registerController = async (req: Request, res: Response): Promise<v
         if (!email || !password || !role) {
             throw new Error(`Email, password and role are all required`)
         }
+        if (password.length < 8 || !/[A-Z]/.test(password) || !/[0-9]/.test(password)) {
+            res.status(400).json({ error: 'Password does not meet strength requirements' });
+        }
         const existingUser = await UserModel.findOne({ email });
         if (existingUser) {
             res.status(400).json({ message: 'User already exists' });
             return;
         };
+
         const user = new UserModel({ email, password, role });
         await user.save();
         const token = jwt.sign(
@@ -73,5 +78,18 @@ export const loginController = async (req: Request, res: Response): Promise<void
     } catch (error) {
         console.error('Error during login:', error);
         res.status(500).json({ error: 'Server error' });
+    }
+};
+
+export const profileController = async (req: Request, res: Response) => {
+    try {
+        const thisUser: UserI | undefined = req.user;
+        if (thisUser && thisUser._id) {
+            res.status(200).send(thisUser);
+        } else {
+            res.status(404).send({ Error, message: 'User not found' });
+        }
+    } catch (error) {
+        res.status(500).send({ message: 'Internal server error', error });
     }
 };

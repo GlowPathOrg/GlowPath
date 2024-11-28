@@ -19,6 +19,11 @@ const RegisterPage = () => {
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
+      const password = formData.password;
+  if (password.length < 8) {
+    alert('Password must be at least 8 characters long');
+    return;
+  }
     try {
       await register(formData);
       setMessage("Registration successful!");

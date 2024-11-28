@@ -11,6 +11,7 @@
     "this": "vite-node src/services/amenitiesService.tsx"
   },
   "dependencies": {
+    "@types/jsonwebtoken": "^9.0.7",
     "axios": "^1.7.8",
     "boundingbox": "^1.4.0",
     "leaflet": "^1.9.4",

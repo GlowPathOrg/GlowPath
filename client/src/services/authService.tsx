@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 
 
+
 // Base URL for the backend API
 const BACKEND_URL = "http://localhost:3002/auth";
 // Get the stored token from localStorage
@@ -27,6 +28,8 @@ export const register = async (
 
   userData: UserData
 ): Promise<AxiosResponse<AuthResponse> | undefined> => {
+
+
   try {
 
     const response = await axios.post<AuthResponse>(`${BACKEND_URL}/register`, userData, {
@@ -66,6 +69,22 @@ catch (error){
 console.log('service error logging in: ', error)
 throw error
 }
+};
+
+export const profile = async (accessToken: JsonWebKey) => {
+  // REMOVE-START
+  return fetch(`${URL}/me`, {
+    method: 'GET',
+    credentials: 'include',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+    .then((res) => res.json())
+    .catch((err) => console.log(err));
+  // REMOVE-END
 };
 
 // Log out the user by removing the token from localStorage

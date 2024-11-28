@@ -46,13 +46,11 @@ export const fetchAmenities = async (radius: number, coords: LatLng = latLng(52.
 
   const query = `[out:json][timeout:25];
 (
-  nwr["amenity"="restaurant"](${bbQuery});
-  nwr["amenity"="library"](${bbQuery});
+
   node["public_transport"="platform"](${bbQuery});
   nwr["amenity"="fuel"](${bbQuery});
   nwr["amenity"="bank"](${bbQuery});
   nwr["amenity"="clinic"](${bbQuery});
-  nwr["shop"="chemist"](${bbQuery});
   nwr["amenity"="fire_station"](${bbQuery});
   nwr["amenity"="police"](${bbQuery});
   nwr["amenity"="hospital"](${bbQuery});
