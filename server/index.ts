@@ -17,7 +17,7 @@ DBConnect();
 
 
 // cors
-var whitelist = [`https://glowpathorg.github.io/`, `http://localhost:${CLIENT_PORT}` ] // cors whitelist
+var whitelist = [`https://glowpathorg.github.io`, `http://localhost:${CLIENT_PORT}` ] // cors whitelist
  var corsOptions: CorsOptions = {
   origin: function (origin, callback) {
 
