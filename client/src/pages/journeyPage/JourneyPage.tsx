@@ -4,15 +4,19 @@ import WeatherInfo from './WeatherInfo';
 import MapComponent from '../../components/MapComponent';
 import '../../styles/JourneyPage.css';
 import AlarmButton from './AlarmButton';
-
+import { usePosition } from '../../hooks/usePosition';
 
 
 const JourneyPage: React.FC = () => {
  
+  const { latitude, longitude, error } = usePosition();
   return (
     <div className="journey-page">
       {/* Map Section :The MapComponent receives origin, destination, and transportMode as props to fetch and render the route.*/}
-      <MapComponent />
+      <MapComponent 
+      latitude={latitude}
+      longitude={longitude}
+      geolocationError={error || null}/>
 
       {/* Progress Bar */}
       <ProgressBar progress={0}/>
