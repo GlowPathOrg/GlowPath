@@ -4,6 +4,7 @@ import { configDotenv } from "dotenv"; // to access .env
 import cors, { CorsOptions } from "cors";
 import authRoutes from "./routes/authRoutes";
 import shareRoutes from "./routes/shareRoutes";
+import DBConnect from "./models";
 configDotenv();
 const app = express();
 const SERVER_PORT = process.env.SERVER_PORT || 3002;

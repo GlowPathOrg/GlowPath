@@ -5,7 +5,7 @@ dotenv.config();
 
 const path: string = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/glowpath"
 
-export async function DBConnect () {
+const DBConnect = async () => {
     try {
         await mongoose.connect(path);
         console.log('Connected to local database');
@@ -20,3 +20,4 @@ export async function DBConnect () {
         };
     }
 }
+export default DBConnect;
