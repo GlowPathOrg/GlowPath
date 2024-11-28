@@ -1,12 +1,15 @@
 import axios, { AxiosResponse } from "axios";
 
+
 // Base URL for the backend API
 const BACKEND_URL = "http://localhost:3002/auth";
+
 
 // Define the structure of the user data for registration and login
 export interface UserData {
   email: string;
   password: string;
+  role?: string;
 }
 
 // Define the structure of the API responses
@@ -24,13 +27,22 @@ export const register = async (
 
 // Log in a user and store the token in localStorage
 export const login = async (userData: UserData): Promise<AuthResponse> => {
-  const response = await axios.post<AuthResponse>(`${BACKEND_URL}/login`, userData);
+try {
+  const response = await axios.post<AuthResponse>(`${BACKEND_URL}/login`, userData, {
+    withCredentials: true,
+    headers: { 'Content-Type': 'application/json' }
+  });
 
   if (response.data.token) {
     localStorage.setItem("token", response.data.token); // Store token in localStorage
+    console.log('token stored')
   }
 
   return response.data;
+}
+catch (error){
+console.log('service error logging in: ', error)
+}
 };
 
 // Log out the user by removing the token from localStorage

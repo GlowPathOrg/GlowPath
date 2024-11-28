@@ -14,22 +14,23 @@ const CLIENT_PORT = process.env.CLIENT_PORT;
 
 // connection to database
 DBConnect();
-import crypto from 'crypto';
-const jwtSecret = crypto.randomBytes(64).toString('hex');
-console.log(jwtSecret);
+
 
 // cors
-var whitelist = [`https://glowpathorg.github.io/`, `http://localhost/${CLIENT_PORT}` ] // cors whitelist
+var whitelist = [`https://glowpathorg.github.io/`, `http://localhost:${CLIENT_PORT}` ] // cors whitelist
  var corsOptions: CorsOptions = {
   origin: function (origin, callback) {
 
       if (!origin || whitelist.indexOf(origin) !== -1) {
         callback(null, true)
       } else {
-        callback(new Error('Not included in CORS policy.'))
+        callback(new Error(origin + ' is not included in CORS policy.' + CLIENT_PORT))
       }
 
-  }
+  },
+   methods: 'GET,POST',
+   allowedHeaders: 'Content-Type, Authorization',
+   credentials: true
 }
 //websockets content
 const server = setupSocket(app); // This is needed to setup socket.io
@@ -40,7 +41,7 @@ app.get("/", cors(corsOptions), (req, res) => {
 
 //server routes
 app.use(express.json());
-app.use('/auth', authRoutes);
+app.use('/auth', cors(corsOptions), authRoutes);
 
 server.listen(SERVER_PORT, () => {
   console.log(`GlowPath server listening on port ${SERVER_PORT}`);

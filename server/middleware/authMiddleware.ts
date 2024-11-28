@@ -12,7 +12,6 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction):
     }
 
     try {
-        // todo update this
         const decoded = jwt.verify(token, process.env.JWT_SECRET!) as UserI;
         req.user = decoded;
         next();

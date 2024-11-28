@@ -3,6 +3,8 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import JourneyPage from './pages/journeyPage/JourneyPage';
 import WhereToPage from './pages/WhereToPage';
+import LoginPage from './pages/LoginPage';
+
 
 
 /* import HistoryPage from
@@ -13,6 +15,7 @@ import VisualizationsPage from  */
 const App: React.FC = () => {
   return (
     <>
+
  <Router>
       <div className="app">
         {/* Global Navigation */}
@@ -26,6 +29,7 @@ const App: React.FC = () => {
             <Route path="/glowpath/" element={<Navigate to="/journey" />} />
             <Route path="/journey" element={<JourneyPage />} />
             <Route path="/where-to" element={<WhereToPage />} />
+            <Route path="/login" element={<LoginPage />} />
            {/*  <Route path="/history" element={<HistoryPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/chat" element={<ChatPage />} />
@@ -37,7 +41,6 @@ const App: React.FC = () => {
 
       </div>
     </Router>
-
     </>
   )
 }

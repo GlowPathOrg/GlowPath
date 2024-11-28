@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { geocodeAddress } from '../services/geocodingService';
 import AddressSearch from '../components/AddressSearch';
+import Navbar from '../components/Navbar';
 
 const WhereToPage: React.FC = () => {
   const navigate = useNavigate();
@@ -16,11 +17,13 @@ const WhereToPage: React.FC = () => {
       navigate(`/journey?lat=${lat}&lon=${lon}&address=${encodeURIComponent(address)}`);
     } catch (err) {
       setError('Failed to find the location. Please try again.');
+      return err
     }
   };
 
   return (
     <div className="where-to-page">
+      <div>  <Navbar /></div>
       <h1>Where to?</h1>
       <AddressSearch onSearch={handleSearch} />
       {error && <p className="error">{error}</p>}
