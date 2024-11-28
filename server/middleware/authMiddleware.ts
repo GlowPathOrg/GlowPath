@@ -13,8 +13,8 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction):
 
     try {
         // todo update this
-        const decoded = jwt.verify(token, process.env.JWT_SECRET!)
-        console.log(decoded);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as UserI;
+        req.user = decoded;
         next();
     } catch (error) {
         res.status(400).json({ error: "Invalid token" });
