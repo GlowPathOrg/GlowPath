@@ -62,8 +62,6 @@ export const login = async (userData: UserData): Promise<AuthResponse> => {
 
     if (response.data.token) {
       localStorage.setItem("token", response.data.token);
-      console.log('token stored')
-      console.log(response.data)
     }
     return response.data;
 
@@ -78,8 +76,6 @@ export const profile = async () => {
 
   try {
     const token = getToken();
-    console.log('here is the client token', token)
-
     const response = await axios.get<AuthResponse>(`${BACKEND_URL}/me`,  {
       withCredentials: true,
       headers: {
@@ -87,7 +83,6 @@ export const profile = async () => {
         'Authorization': `Bearer ${token}`,
       }
     });
-    console.log('here is the response: ', response)
     return response;
   }
   catch (error) {

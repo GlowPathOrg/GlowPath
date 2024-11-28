@@ -21,9 +21,9 @@ const Navbar: React.FC = () => {
 
   return (
     <nav className="navbar">
-      <div><h3>
-        <Link to="/">GlowPath</Link>
-      </h3></div>
+      <div className="logo-container">
+        <Link className='logo-container' to="/">GlowPathLogo</Link>
+      </div>
        <div className="nav-links">
         {isLoggedIn ? (
           <button onClick={handleLogout}>Logout</button>
