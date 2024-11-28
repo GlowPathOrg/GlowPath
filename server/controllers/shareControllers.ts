@@ -7,14 +7,28 @@ import { v4 as uuid } from 'uuid';
 // - saves a new share to the database
 // - responds with the share id
 export const createShare = async (req: Request, res: Response): Promise<void> => {
-  const { route } = req.body;
-  const user = req.user;
-  const password = uuid();
-  const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(password, salt);
-  // TODO: validate that route conforms to database expectations
-  const newShare = await Share.create({owner: user, route, password: hashedPassword});
-  res.status(200).json({id: newShare._id, password}); // TODO: this needs to be checked to conform to frontend expectations
+  try {
+    const { route } = req.body;
+    if (!route) {
+      res.status(400).json({error: "Please provide a route to share"});
+      return;
+    }
+    const sanitizedRoute = route.replace(/[$/(){}]/g, ""); // TODO: relace by validating the route
+    const user = req.user;
+    if (!user) { // TODO: this should be prohibited by the auth middleware
+      res.status(401).json({error: "Unauthorized"})
+      return;
+    }
+    const password = uuid();
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    // TODO: validate that route conforms to database expectations
+    const newShare = await Share.create({owner: user, route: sanitizedRoute, password: hashedPassword});
+    res.status(200).json({id: newShare._id, password}); // TODO: this needs to be checked to conform to frontend expectations
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({error: "Internal server error"});
+  }
 }
 
 // Reveiver requests access to a shared journey
@@ -23,27 +37,15 @@ export const createShare = async (req: Request, res: Response): Promise<void> =>
 // - checks if password is correct
 // - responds with data for the requested share
 export const accessShare = async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params;
-  const { password } = req.body;
-  if (!id || !password) {
-    res.status(400).json({error: "Please provide both id and password"});
-    return;
+  try {
+    const share = req.share;
+    if (!share) {
+      res.status(401).json({error: "Unauthorized"})
+      return;
+    }
+    res.status(200).json({id: share._id, route: share.route, owner: share.owner}); // TODO: Right now this only returns id of owner
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({error: "Internal server error"});
   }
-  if (typeof id !== "string" || typeof password !== "string") {
-    res.status(400).json({error: "All values must be valid strings"});
-    return;
-  }
-  const sanitizedId = id.replace(/[$/(){}]/g, "");
-  const sanitizedPassword = password.replace(/[$/(){}]/g, "");
-  const share = await Share.findOne({_id: sanitizedId});
-  if (!share) {
-    res.status(401).json({error: "Can't access share"});
-    return;
-  }
-  const matchingPasswords = await bcrypt.compare(sanitizedPassword, share.password);
-  if (!matchingPasswords) {
-     res.status(401).json({error: "Can't access share"});
-     return;
-  }
-  res.status(200).json(share); // TODO: Strip of sensitive information
 }
