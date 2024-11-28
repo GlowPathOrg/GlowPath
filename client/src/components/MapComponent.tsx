@@ -1,15 +1,15 @@
 import  { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom'; // Hook for accessing query parameters
-import { MapContainer, Marker, Popup, TileLayer, Polyline, useMap } from 'react-leaflet'; 
-import { latLng, LatLng, LatLngTuple,latLngBounds } from 'leaflet'; 
+import { MapContainer, Marker, Popup, TileLayer, Polyline, useMap } from 'react-leaflet';
+import { latLng, LatLng, LatLngTuple,latLngBounds } from 'leaflet';
 import 'leaflet/dist/leaflet.css'; // Default Leaflet styling
 import { fetchRoute } from '../services/RoutingService'; // Service for fetching routes
-import { decode } from '@here/flexpolyline'; // Polyline decoding function from npm 
+import { decode } from '@here/flexpolyline'; // Polyline decoding function from npm
 import '../styles/MapComponent.css'; // Custom styling
 import { Amenity, fetchAmenities } from '../services/amenitiesService'; // Fetch amenities service
 
 
-//this is added to define the types of the props 
+//this is added to define the types of the props
 //I added this after removing usePosition to the JourneyPage
 interface MapComponentProps {
   latitude: number | undefined;
@@ -76,7 +76,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ latitude, longitude, geoloc
           transportMode
         );
 
-        //this for you guys to check the data 
+        //this for you guys to check the data
         console.log('API Route Response:', { polyline, instructions, summary });
 
         const decoded = decode(polyline);
@@ -85,8 +85,8 @@ const MapComponent: React.FC<MapComponentProps> = ({ latitude, longitude, geoloc
           setRoute(routeCoordinates);
         }
 
-        //these for you to check the data 
-        console.log('Instructions Data:', instructions); 
+        //these for you to check the data
+        console.log('Instructions Data:', instructions);
         console.log('Route Summary:', summary);
         setInstructions(instructions); // Store instructions
         setSummary({ distance: summary.length, duration: summary.duration }); // Set the summary state
@@ -128,21 +128,21 @@ const MapComponent: React.FC<MapComponentProps> = ({ latitude, longitude, geoloc
       }
     }, [origin, destination, map]);
 
-    return null; 
+    return null;
   };
 
   return (
     <div className="map-component">
       <MapContainer center={origin || latLng(52.4771, 13.4310)} zoom={13} scrollWheelZoom={false} style={mapStyle}>
-        <TileLayer attribution='&copy; OpenStreetMap contributors' url={themes[theme]} /> 
-        {origin && destination && <FitBounds origin={origin} destination={destination} />} 
+        <TileLayer attribution='&copy; OpenStreetMap contributors' url={themes[theme]} />
+        {origin && destination && <FitBounds origin={origin} destination={destination} />}
         {origin && (
-          <Marker position={origin} > 
+          <Marker position={origin} >
             <Popup>Your Location</Popup>
           </Marker>
         )}
         {destination && (
-          <Marker position={destination}> 
+          <Marker position={destination}>
             <Popup>
               {address} <br />
               Coordinates: {destination.lat.toFixed(4)}, {destination.lng.toFixed(4)}

@@ -38,11 +38,13 @@ const WhereToPage: React.FC = () => {
     } catch (err) {
       console.error('Error during geocoding:', err);
       setError('Failed to find the location. Please try again.');
+      return err
     }
   };
 
   return (
     <div className="where-to-page">
+      <div>  <Navbar /></div>
       <h1>Where to?</h1>
 
       {/* Display live location */}

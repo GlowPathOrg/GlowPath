@@ -1,0 +1,51 @@
+.register-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f9f9f9;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  max-width: 300px; /* Form width */
+  width: 100%;
+  padding: 20px 20px 40px 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 10px;
+  cursor: pointer;
+  background-color: rgb(156, 159, 160);
+  color: black;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.submit-btn:hover {
+  background-color: gray;
+}
+
+.message {
+  margin-top: 10px;
+  color: rgb(128, 5, 5);
+}
