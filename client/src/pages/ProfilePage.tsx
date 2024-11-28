@@ -1,3 +1,4 @@
+import Navbar from "../components/Navbar";
 
 
 export interface UserI {
@@ -11,6 +12,7 @@ export interface UserI {
 const ProfilePage = () => {
   return (
     <div className="admin-dashboard">
+      <Navbar/>
       <h2>Welcome, XXXX</h2>
       <div className="dashboard-options">
         <h3>My Contacts</h3>

@@ -1,5 +1,7 @@
 import React, { FormEvent, useState } from "react";
-import { profile, register } from "../services/authService";
+import { register } from "../services/authService";
+import Navbar from "../components/Navbar";
+import '../styles/RegisterPage.css'
 
 
 const RegisterPage = () => {
@@ -30,45 +32,49 @@ const RegisterPage = () => {
 
 
 
+
     } catch (error) {
       setMessage("Error registering. Please try again:" + error);
     }
   };
 
   return (
-    <div className="register-page">
-      <form onSubmit={handleSubmit} className="register-form">
-        <h1>Register</h1>
-        <div className="form-group">
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <select name="role" onSelect={handleSelect} required>
-            <option value="adopter">Traveller</option>
-            <option value="shelter">Observer</option>
-          </select>
-        </div>
-        <button type="submit" className="submit-btn">
-          Register
-        </button>
-      </form>
-      {message && <p className="message">{message}</p>}
-    </div>
+   <>
+   <Navbar/>
+      <div className="register-page">
+        <form onSubmit={handleSubmit} className="register-form">
+          <h1>Register for GlowPath:</h1>
+          <div className="form-group">
+            <input
+              type="email"
+              name="email"
+              placeholder="Email (required)"
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <select name="role" onSelect={handleSelect} required>
+              <option value="adopter">Traveller</option>
+              <option value="shelter">Observer</option>
+            </select>
+          </div>
+          <button type="submit" className="submit-btn">
+            Register
+          </button>
+        </form>
+        {message && <p className="message">{message}</p>}
+      </div>
+   </>
   );
 };
 
