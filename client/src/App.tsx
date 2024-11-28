@@ -3,6 +3,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import JourneyPage from './pages/journeyPage/JourneyPage';
 import WhereToPage from './pages/WhereToPage';
+import HomePage from './pages/HomePage/HomePage';
 
 
 
@@ -24,7 +25,7 @@ const App: React.FC = () => {
         {/* Routes */}
         <main>
           <Routes>
-            <Route path="/" element={<Navigate to="/journey" />} />
+            <Route path="/" element={< HomePage/>} />
             <Route path="/journey" element={<JourneyPage />} />
             <Route path="/where-to" element={<WhereToPage />} />
            {/*  <Route path="/history" element={<HistoryPage />} />
