@@ -1,5 +1,5 @@
 import React, { FormEvent, useState } from "react";
-import { register } from "../services/authService";
+import { profile, register } from "../services/authService";
 
 
 const RegisterPage = () => {
@@ -27,6 +27,7 @@ const RegisterPage = () => {
     try {
       await register(formData);
       setMessage("Registration successful!");
+
 
 
     } catch (error) {

@@ -22,15 +22,13 @@ const LoginPage = () => {
     try {
    const response = await login(formData);
       if (response.token) {
-        const token = response.token as JsonWebKey
         setMessage("Login successful!")
         setTimeout(()=>3);
-
         try {
-         await profile(token)
+         await profile()
         }
         catch (error) {
-          console.log('error loading profile in auth service', error);
+          console.log('error loading profile', error);
           throw error;
         }
 

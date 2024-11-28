@@ -43,9 +43,9 @@ app.get("/", cors(corsOptions), (req, res) => {
 
 //server routes
 app.use(express.json());
-app.use('/auth', authRoutes);
+app.use('/auth', cors(corsOptions), authRoutes);
 app.use(shareRoutes);
 
 server.listen(SERVER_PORT, () => {
-  console.log(`GlowPath server listening on port ${SERVER_PORT}`);
+  console.log(`GlowPath CORS-enabled server listening on port ${SERVER_PORT}`);
 });

@@ -36,7 +36,8 @@ export const register = async (
       withCredentials: true,
       headers: {
         'Content-Type': 'application/json'
-      }});
+      }
+    });
     if (response) {
       return response;
 
@@ -49,42 +50,50 @@ export const register = async (
 
 // Log in a user and store the token in localStorage
 export const login = async (userData: UserData): Promise<AuthResponse> => {
-try {
-  const token = getToken();
-  const response = await axios.post<AuthResponse>(`${BACKEND_URL}/login`, userData, {
-    withCredentials: true,
-    headers: { 'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
-     }
-  });
+  try {
 
-  if (response.data.token) {
-    localStorage.setItem("token", response.data.token); // Store token in localStorage
-    console.log('token stored')
+    const response = await axios.post<AuthResponse>(`${BACKEND_URL}/login`, userData, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+
+      }
+    });
+
+    if (response.data.token) {
+      localStorage.setItem("token", response.data.token);
+      console.log('token stored')
+      console.log(response.data)
+    }
+    return response.data;
+
   }
-
-  return response.data;
-}
-catch (error){
-console.log('service error logging in: ', error)
-throw error
-}
+  catch (error) {
+    console.log('service error logging in: ', error)
+    throw error
+  }
 };
 
-export const profile = async (accessToken: JsonWebKey) => {
-  // REMOVE-START
-  return fetch(`${URL}/me`, {
-    method: 'GET',
-    credentials: 'include',
-    mode: 'cors',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
-    },
-  })
-    .then((res) => res.json())
-    .catch((err) => console.log(err));
-  // REMOVE-END
+export const profile = async () => {
+
+  try {
+    const token = getToken();
+    console.log('here is the client token', token)
+
+    const response = await axios.get<AuthResponse>(`${BACKEND_URL}/me`,  {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      }
+    });
+    console.log('here is the response: ', response)
+    return response;
+  }
+  catch (error) {
+    console.log('error loading profile', error);
+    throw error;
+  }
 };
 
 // Log out the user by removing the token from localStorage
