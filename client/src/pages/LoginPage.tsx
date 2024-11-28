@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { login } from "../services/authService";
 
 
+
 const LoginPage = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [message, setMessage] = useState<string | null>(null);
@@ -19,9 +20,10 @@ const LoginPage = () => {
     setErrorMessage(null);
     try {
    const response = await login(formData);
-   console.log('response is: ', response)
       if (response.token) {
         setMessage("Login successful!")
+        setTimeout(()=>3);
+
       } else {
         setErrorMessage("Please check your credentials.");
       }

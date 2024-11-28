@@ -3,8 +3,10 @@ import { Request, Response, NextFunction, } from "express";
 import { UserI } from "../Types/user";
 
 
-export const authMiddleware = (req: Request, res: Response, next: NextFunction): void => {
-    const token = req.headers.authorization?.split(" ")[1];
+export const authMiddleware = (req: Request, res: Response, next: NextFunction): Response<UserI> | void => {
+    const authHeaders = req.headers['authorization'];
+    if (!authHeaders) return res.sendStatus(403);
+    const token = authHeaders.split(' ')[1];
 
     if (!token) {
         res.status(401).json({ error: "Access denied, no token provided" });

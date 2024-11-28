@@ -18,11 +18,23 @@ export const registerController = async (req: Request, res: Response): Promise<v
         if (!email || !password || !role) {
             throw new Error(`Email, password and role are all required`)
         }
+        const existingUser = await UserModel.findOne({ email });
+        if (existingUser) {
+            res.status(400).json({ message: 'User already exists' });
+            return;
+        };
         const user = new UserModel({ email, password, role });
         await user.save();
+        const token = jwt.sign(
+            { userId: user._id, email: user.email, role: user.role },
+            jwtSecret,
+            { expiresIn: '48h' }
+        );
+        console.log('user successfully saved')
         res.status(201).json({
             message: 'User registered successfully',
-            user: { _id: user._id, email: user.email, role: user.role }
+            user: { _id: user._id, email: user.email, role: user.role },
+            token
         });
 
     }
@@ -51,7 +63,7 @@ export const loginController = async (req: Request, res: Response): Promise<void
         }
 
 
-        if (typeof process.env.JWT_SECRET === undefined) {
+        if (!process.env.JWT_SECRET) {
             console.log("No JWT Secret Found!");
             res.status(500).json({ error: 'JWT_SECRET is not defined in environment variables' });
             return;

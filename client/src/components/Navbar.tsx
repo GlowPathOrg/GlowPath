@@ -27,7 +27,10 @@ const Navbar: React.FC = () => {
         {isLoggedIn ? (
           <button onClick={handleLogout}>Logout</button>
         ) : (
-          <Link to="/login">Login</Link>
+            <>
+              <div><Link to="/login">Login </Link></div>
+            <div><Link to="/register">Register </Link></div>
+            </>
         )}
       </div>
     </nav>

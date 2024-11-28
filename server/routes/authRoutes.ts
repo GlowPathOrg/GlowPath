@@ -4,17 +4,10 @@ import { authMiddleware } from "../middleware/authMiddleware";
 
 
 const authRoutes = express.Router();
-// todo add controller functions
-// register controller
-
-
-// todo move interface into types file
-
-//
 
 
 authRoutes.post('/register', registerController);
-authRoutes.post('/login', authMiddleware, loginController);
+authRoutes.post('/login',  loginController);
 
 
 
