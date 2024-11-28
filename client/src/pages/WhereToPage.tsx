@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { geocodeAddress } from '../services/geocodingService';
 import { usePosition } from '../hooks/usePosition'; // Import the geolocation hook from Jonas's code
+import Navbar from '../components/Navbar';
 
 const WhereToPage: React.FC = () => {
   const navigate = useNavigate();
@@ -43,69 +44,70 @@ const WhereToPage: React.FC = () => {
   };
 
   return (
-    <div className="where-to-page">
-      <div>  <Navbar /></div>
-      <h1>Where to?</h1>
+    <>
+    <Navbar/>
+      <div className="where-to-page">
+        <h1>Where to?</h1>
+        {/* Display live location */}
+        <div>
+          <p>
+            <strong>Your Current Location:</strong>{' '}
+            {originCoords
+              ? `${originCoords.lat.toFixed(4)}, ${originCoords.lon.toFixed(4)}`
+              : 'Fetching your location...'}
+          </p>
+          {geoError && <p style={{ color: 'red' }}>Geolocation Error: {geoError}</p>}
+        </div>
 
-      {/* Display live location */}
-      <div>
-        <p>
-          <strong>Your Current Location:</strong>{' '}
-          {originCoords
-            ? `${originCoords.lat.toFixed(4)}, ${originCoords.lon.toFixed(4)}`
-            : 'Fetching your location...'}
-        </p>
-        {geoError && <p style={{ color: 'red' }}>Geolocation Error: {geoError}</p>}
+        {/* Destination input */}
+        <div>
+          <label htmlFor="destination">Destination:</label>
+          <input
+            type="text"
+            id="destination"
+            value={destination}
+            onChange={(e) => setDestination(e.target.value)}
+            placeholder="Enter destination"
+          />
+        </div>
+
+        {/* Transport Mode Selector */}
+        <div>
+          <label htmlFor="transport-mode">Transport Mode:</label>
+          <select
+            id="transport-mode"
+            value={transportMode}
+            onChange={(e) => setTransportMode(e.target.value as typeof transportMode)}
+          >
+            <option value="pedestrian">Walking</option>
+            <option value="publicTransport">Public Transport</option>
+            <option value="bicycle">Bicycle</option>
+          </select>
+        </div>
+
+        {/* Map Theme Selector */}
+        <div>
+          <label htmlFor="map-theme">Map Theme:</label>
+          <select
+            id="map-theme"
+            value={mapTheme}
+            onChange={(e) => setMapTheme(e.target.value)}
+          >
+            <option value="standard">Standard</option>
+            <option value="dark">Dark</option>
+            <option value="satellite">Satellite</option>
+          </select>
+        </div>
+
+        {/* Search Button */}
+        <button onClick={handleSearch} disabled={!originCoords}>
+          Search
+        </button>
+
+        {/* Error Message */}
+        {error && <p className="error">{error}</p>}
       </div>
-
-      {/* Destination input */}
-      <div>
-        <label htmlFor="destination">Destination:</label>
-        <input
-          type="text"
-          id="destination"
-          value={destination}
-          onChange={(e) => setDestination(e.target.value)}
-          placeholder="Enter destination"
-        />
-      </div>
-
-      {/* Transport Mode Selector */}
-      <div>
-        <label htmlFor="transport-mode">Transport Mode:</label>
-        <select
-          id="transport-mode"
-          value={transportMode}
-          onChange={(e) => setTransportMode(e.target.value as typeof transportMode)}
-        >
-          <option value="pedestrian">Walking</option>
-          <option value="publicTransport">Public Transport</option>
-          <option value="bicycle">Bicycle</option>
-        </select>
-      </div>
-
-      {/* Map Theme Selector */}
-      <div>
-        <label htmlFor="map-theme">Map Theme:</label>
-        <select
-          id="map-theme"
-          value={mapTheme}
-          onChange={(e) => setMapTheme(e.target.value)}
-        >
-          <option value="standard">Standard</option>
-          <option value="dark">Dark</option>
-          <option value="satellite">Satellite</option>
-        </select>
-      </div>
-
-      {/* Search Button */}
-      <button onClick={handleSearch} disabled={!originCoords}>
-        Search
-      </button>
-
-      {/* Error Message */}
-      {error && <p className="error">{error}</p>}
-    </div>
+    </>
   );
 };
 
