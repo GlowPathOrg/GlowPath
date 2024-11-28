@@ -46,8 +46,9 @@ export const fetchRoute = async (
     // Check if the API response contains routes
     if (response.data.routes && response.data.routes.length > 0) {
       const route = response.data.routes[0].sections[0]; // Extract the first route section this might be changed later
-
+      console.log('Route Summary:', route.summary);
       // Return the polyline, summary, and instructions for the route
+      console.log('Actions:', route.actions);
       return {
         polyline: route.polyline, // Encoded polyline for the route
         summary: route.summary, // Summary details like duration and distance
