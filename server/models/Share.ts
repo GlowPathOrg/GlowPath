@@ -1,8 +1,7 @@
-import { Schema } from "mongoose";
-import mongoose from "./index"
+import mongoose from "mongoose";
 import { ShareI } from "../Types/share";
 
-const shareSchema = new Schema<ShareI>({
+const shareSchema = new mongoose.Schema<ShareI>({
   owner: { type: String, required: true }, // TODO: Replace with reference to User schema when ready
   route: { type: String, required: true }, // TODO: Replace with reference to Route schema when ready
   password: { type: String, required: true }
