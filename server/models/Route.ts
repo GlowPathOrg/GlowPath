@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 const Schema = mongoose.Schema;
+import { RouteI } from "../@Types/Route";
 
 
 export const NavigationSchema = new Schema({
@@ -47,4 +48,5 @@ export const RouteSchema = new Schema({
     password: String,
 });
 
-module.exports = mongoose.model('Directions', RouteSchema);
+const RouteModel = mongoose.model<RouteI>('Route', RouteSchema);
+export default RouteModel;
