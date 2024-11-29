@@ -45,7 +45,7 @@ export const RouteSchema = new Schema({
         required: true },
     instructions: [NavigationSchema],
     summary: SummarySchema,
-    password: String,
+
 });
 
 const RouteModel = mongoose.model<RouteI>('Route', RouteSchema);
