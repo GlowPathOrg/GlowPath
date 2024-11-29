@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import UserModel from '../models/User';
 import crypto from 'crypto';
-import { UserI } from '../Types/user';
+import { UserI } from '../@Types/User';
 dotenv.config();
 
 const jwtSecret = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex')

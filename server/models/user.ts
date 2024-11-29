@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
-import { UserI } from '../Types/user';
+import { UserI } from '../@Types/User';
 
-const userSchema = new mongoose.Schema(
+export const userSchema = new mongoose.Schema(
     {
         email: {
             type: String,

@@ -1,4 +1,4 @@
-import { UserI } from "./user";
+import { UserI } from "./User";
 
 export interface ShareI {
   _id?: string;
