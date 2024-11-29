@@ -3,7 +3,7 @@ import { ShareI } from "../Types/share";
 
 const shareSchema = new mongoose.Schema<ShareI>({
   owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  route: { type: String, required: true }, // TODO: Replace with reference to Route schema when ready
+  route: { type: mongoose.Schema.Types.ObjectId, ref: "Route", required: true },
   password: { type: String, required: true }
 }, { timestamps: true });
 
