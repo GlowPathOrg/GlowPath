@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import Share from "../models/Share";
+import RouteModel from "../models/Route";
 import bcrypt from "bcrypt";
 import { v4 as uuid } from 'uuid';
 
@@ -13,7 +14,6 @@ export const createShare = async (req: Request, res: Response): Promise<void> =>
       res.status(400).json({error: "Please provide a route to share"});
       return;
     }
-    const sanitizedRoute = route.replace(/[$/(){}]/g, ""); // TODO: relace by validating the route
     const user = req.user;
     if (!user) { // TODO: this should be prohibited by the auth middleware
       res.status(401).json({error: "Unauthorized"})
@@ -22,8 +22,8 @@ export const createShare = async (req: Request, res: Response): Promise<void> =>
     const password = uuid();
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    // TODO: validate that route conforms to database expectations
-    const newShare = await Share.create({owner: user, route: sanitizedRoute, password: hashedPassword});
+    const newRoute = await RouteModel.create(route)
+    const newShare = await Share.create({owner: user, route: newRoute._id, password: hashedPassword});
     res.status(200).json({id: newShare._id, password}); // TODO: this needs to be checked to conform to frontend expectations
   } catch (error) {
     console.log(error);
@@ -43,7 +43,7 @@ export const accessShare = async (req: Request, res: Response): Promise<void> =>
       res.status(401).json({error: "Unauthorized"})
       return;
     }
-    res.status(200).json({id: share._id, route: share.route, owner: share.owner}); // TODO: Right now this only returns id of owner
+    res.status(200).json({id: share._id, route: share.route, owner: share.owner}); // TODO: Right now this only returns id of owner not the whole object
   } catch (error) {
     console.log(error);
     res.status(500).json({error: "Internal server error"});
