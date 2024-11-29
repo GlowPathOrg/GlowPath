@@ -24,5 +24,4 @@ export interface RouteI extends Document {
     polyline: string;
     instructions: NavigationI[];
     summary: SummaryI;
-    password?: string;
 }
