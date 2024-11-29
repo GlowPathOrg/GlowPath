@@ -28,10 +28,7 @@ export const register = async (
 
   userData: UserData
 ): Promise<AxiosResponse<AuthResponse> | undefined> => {
-
-
   try {
-
     const response = await axios.post<AuthResponse>(`${BACKEND_URL}/register`, userData, {
       withCredentials: true,
       headers: {
@@ -40,7 +37,6 @@ export const register = async (
     });
     if (response) {
       return response;
-
     }
   } catch (error) {
     console.log('auth service error on register: ', error)

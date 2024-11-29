@@ -1,6 +1,6 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { Request, Response, NextFunction, } from "express";
-import UserModel from "../models/user";
+import UserModel from "../models/User";
 import dotenv from 'dotenv';
 
 
@@ -12,11 +12,8 @@ const JWT_SECRET= process.env.JWT_SECRET;
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void>  => {
 
     const authHeaders = req.headers['authorization'];
-    console.log('here is the secret key: ', JWT_SECRET)
     if (authHeaders && JWT_SECRET)  {
         const token = authHeaders.split(' ')[1];
-
-
         try {
             const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
             const { id } = decoded;

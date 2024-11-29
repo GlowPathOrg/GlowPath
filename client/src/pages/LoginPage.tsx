@@ -52,16 +52,19 @@ const navigate = useNavigate();
       <form onSubmit={handleSubmit} className="login-form">
         <div className="form-group">
           <h1>Login</h1>
+    <label htmlFor="email">Enter email: </label>
           <input
+          id="email"
             type="email"
             name="email"
-            placeholder="Email"
             value={formData.email}
             onChange={handleChange}
           />
         </div>
         <div className="form-group">
+          <label htmlFor="password">Enter password: </label>
           <input
+          id="password"
             type="password"
             name="password"
             placeholder="Password"

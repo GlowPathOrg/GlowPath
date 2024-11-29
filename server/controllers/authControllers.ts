@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import UserModel from '../models/user';
+import UserModel from '../models/User';
 import crypto from 'crypto';
 import { UserI } from '../Types/user';
 dotenv.config();
@@ -45,7 +45,7 @@ export const registerController = async (req: Request, res: Response): Promise<v
     }
     catch (error) {
 
-        res.status(500).json({ error: `Server error in register controller: body is ${req.body}` + error })
+        res.status(500).json({ error: `Server error in register controller:` + error })
 
     }
 }
@@ -60,7 +60,7 @@ export const loginController = async (req: Request, res: Response): Promise<void
         if (!user) {
             return res.status(401).json({ error: 'User not found' });
 
-        }
+        } else {
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(401).json({ error: 'Invalid credentials' });
@@ -73,7 +73,7 @@ export const loginController = async (req: Request, res: Response): Promise<void
             ;
         }
         const token = jwt.sign({ id: user._id, role: user.role }, jwtSecret, { expiresIn: '1d' });
-        return res.status(200).json({ token, role: user.role });
+        res.status(200).json({ token, role: user.role });}
     } catch (error) {
         console.error('Error during login:', error);
         return res.status(500).json({ error: 'Server error' });
