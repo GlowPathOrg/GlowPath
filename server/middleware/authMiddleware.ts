@@ -9,7 +9,7 @@ dotenv.config();
 const JWT_SECRET= process.env.JWT_SECRET;
 
 
-export const authMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void>  => {
+export const authMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void>   => {
 
     const authHeaders = req.headers['authorization'];
     if (authHeaders && JWT_SECRET)  {
@@ -42,5 +42,3 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
 
 
 };
-
-//

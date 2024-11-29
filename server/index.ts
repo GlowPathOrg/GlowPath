@@ -17,7 +17,7 @@ DBConnect();
 
 
 // cors
-var whitelist = [`https://glowpathorg.github.io/`, `http://localhost:${CLIENT_PORT}` ] // cors whitelist
+var whitelist = [`https://glowpathorg.github.io`, `http://localhost:${CLIENT_PORT}` ] // cors whitelist
  var corsOptions: CorsOptions = {
   origin: function (origin, callback) {
 
@@ -43,7 +43,8 @@ app.get("/", cors(corsOptions), (req, res) => {
 
 //server routes
 app.use(express.json());
-app.use('/auth', cors(corsOptions), authRoutes);
+app.use(cors(corsOptions));
+app.use('/auth', authRoutes);
 app.use(shareRoutes);
 
 server.listen(SERVER_PORT, () => {
