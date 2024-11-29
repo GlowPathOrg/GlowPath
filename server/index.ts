@@ -43,7 +43,8 @@ app.get("/", cors(corsOptions), (req, res) => {
 
 //server routes
 app.use(express.json());
-app.use('/auth', cors(corsOptions), authRoutes);
+app.use(cors(corsOptions));
+app.use('/auth', authRoutes);
 app.use(shareRoutes);
 
 server.listen(SERVER_PORT, () => {

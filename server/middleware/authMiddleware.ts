@@ -9,7 +9,7 @@ dotenv.config();
 const JWT_SECRET= process.env.JWT_SECRET;
 
 
-export const authMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void>  => {
+export const authMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void>   => {
 
     const authHeaders = req.headers['authorization'];
     console.log('here is the secret key: ', JWT_SECRET)
