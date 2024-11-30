@@ -1,11 +1,11 @@
 import { useParams, useSearchParams } from 'react-router-dom';
-import MapComponent from '../../components/MapComponent/MapComponent';
+//import MapComponent from '../../components/MapComponent/MapComponent';
 import { useSocket } from '../../hooks/useSocket';
-import { useEffect, useState } from 'react';
-import { ShareI } from '../../services/shareService';
+import { useEffect } from 'react';
+//import { ShareI } from '../../services/shareService';
 
 const ObserverPage = () => {
-  const [share, setShare] = useState<ShareI | null>();
+  //const [share, setShare] = useState<ShareI | null>();
   const [searchParams] = useSearchParams();
   const { id } = useParams();
   const password = searchParams.get("password") || "";

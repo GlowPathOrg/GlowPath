@@ -18,15 +18,15 @@ export interface ShareI {
 }
 
 // Returns info about the created share or error
-export const createShare = (route: RouteI): Promise<ShareI | Error> => {
+export const createShare = (route: RouteI): Promise<ShareI> => {
   return api.post("/share", {
     route
-  }).catch(error => error)
+  });
 }
 
 // Returns info about the accessed share or error
-export const accessShare = (id: string, password: string): Promise<ShareI | Error> => {
+export const accessShare = (id: string, password: string): Promise<ShareI> => {
   return api.post("/share/" + id, {
     password
-  }).catch(error => error)
+  });
 }

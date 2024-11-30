@@ -15,8 +15,8 @@ import mapThemes, { getDefaultTheme, isValidTheme } from "./MapThemes";
 import FitBounds from "./FitBounds";
 
 interface MapComponentProps {
-  latitude: number | undefined;
-  longitude: number | undefined;
+  latitude: number | null;
+  longitude: number | null;
   geolocationError: string | null;
   route: LatLngTuple[]; // Route polyline
   summary: { distance: number; duration: number } | null; // Route summary
