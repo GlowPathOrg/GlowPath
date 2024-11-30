@@ -1,17 +1,27 @@
 import { useState, useEffect } from 'react';
 
-interface Position {
-  timestamp: number;
-  latitude: number;
-  longitude: number;
-  accuracy: number;
+interface PositionI {
+  timestamp: number | null;
+  latitude: number | null;
+  longitude: number | null;
+  accuracy: number | null;
   heading: number | null;
   speed: number | null;
   error?: string;
 }
 
+const initialPosition = {
+  timestamp: null,
+  latitude: null,
+  longitude: null,
+  accuracy: null,
+  heading: null,
+  speed: null,
+  error: ""
+}
+
 export const usePosition = () => {
-  const [position, setPosition] = useState<Position>({});
+  const [position, setPosition] = useState<PositionI>(initialPosition);
   const [error, setError] = useState("");
 
   function handleSuccess (position: GeolocationPosition) {
@@ -41,5 +51,6 @@ export const usePosition = () => {
       setError("Navigator doesn't support geolocation");
     }
   }, [])
-  return {...position, error} as Position;
+
+  return {...position, error} as PositionI;
 }
