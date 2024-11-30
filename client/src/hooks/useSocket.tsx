@@ -32,6 +32,10 @@ export const useSocket = ({ password }: {[key: string]: string}) => {
     )
   });
 
+  function connectSocket () {
+    if (!isConnected) socket.connect();
+  }
+
   function hostRoom (id: string) {
     if (isConnected) socket.emit("host-share", id);
   }
@@ -53,8 +57,6 @@ export const useSocket = ({ password }: {[key: string]: string}) => {
   }
 
   useEffect(() => {
-
-    socket.connect();
 
     socket.on("connect", () => {
       console.log("Socket connected");
@@ -85,5 +87,5 @@ export const useSocket = ({ password }: {[key: string]: string}) => {
 
   },[]);
 
-  return { position, messages, alarms, error, sendPosition, sendMessage, sendAlarm, hostRoom, joinRoom };
+  return { position, messages, alarms, error, sendPosition, sendMessage, sendAlarm, hostRoom, joinRoom, connectSocket };
 }
