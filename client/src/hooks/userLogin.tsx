@@ -13,11 +13,7 @@ export const useLoginStatus = () => {
 
         localStorage.setItem("token", token);
         localStorage.setItem("userData", JSON.stringify(userResponse));
-        console.log(userData)
-
         setUserData(thisUser);
-
-        console.log('why is this not working', userData)
 
     };
 

@@ -65,7 +65,6 @@ export const loginController = async (req: Request, res: Response): Promise<void
             throw new Error('Missing email or password')
         }
         const user = await UserModel.findOne({ email });
-        console.log('found: '+ user)
         if (!user) {
             res.status(401);
             throw new Error('No user found');

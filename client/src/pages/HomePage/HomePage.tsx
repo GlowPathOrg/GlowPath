@@ -2,6 +2,7 @@ import React from "react";
 import HomeMap from "../HomePage/HomeMap";
 import { Link } from "react-router-dom"; // Import Link for navigation
 import "../../styles/HomePage.css"; // Import custom styles if needed
+import '../../styles/Footer.css'
 
 
 const HomePage: React.FC = () => {

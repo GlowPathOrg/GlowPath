@@ -1,56 +1,60 @@
-.home-page {
+.profile-page {
     font-family: 'Arial', sans-serif;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    height: 100vh;
-   
-  }
-  
-  
-  /* Navigation Section */
-  .navigation-section {
+    justify-content: space-between; /* Keep footer at the bottom */
+    height: 100vh; /* Full viewport height */
+    background-color: var(--background-color); /* Theme-based color */
+    color: var(--text-color); /* Theme-based text color */
+}
+
+/* Side Panel */
+.side-panel {
+    width: 180px; /* Slightly smaller side panel */
+    background-color: var(--button-background);
     display: flex;
-    justify-content: space-around;
-    margin: 20px 0;
-  }
-  
-  .navigation-button {
-    width: auto;
-    padding: 15px;
-    font-size: 16px;
-    font-weight: bold;
-    color: white;
-    background-color: #6200ea;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.side-panel button {
+    margin-bottom: 15px;
+    padding: 10px;
+    width: 100%;
+    font-size: 16px; /* Font size matching the home page buttons */
+    background-color: var(--button-background);
+    color: var(--button-color);
     border: none;
-    border-radius: 8px;
+    border-radius: 8px; /* Matches the rounded style from the home page */
     cursor: pointer;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s ease;
-  }
-  
-  .navigation-button:hover {
-    background-color: #3700b3;
-  }
-  
-  /* Footer Section */
-  .footer-bar {
+}
+
+.side-panel button:hover {
+    background-color: #ccc;
+}
+
+/* Main Content */
+.main-content {
+    flex-grow: 1;
     display: flex;
-    justify-content: space-around;
-    padding: 10px 0;
-    background-color: #eeeeee;
-    border-top: 1px solid #cccccc;
-  }
-  
-  .footer-icon {
-    font-size: 24px;
-    color: #6200ea;
-    border: none;
-    background: none;
-    cursor: pointer;
-    transition: color 0.3s ease;
-  }
-  
-  .footer-icon:hover {
-    color: #3700b3;
-  }
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px;
+}
+
+.main-content h2 {
+    margin-bottom: 20px;
+}
+
+/* Container for dynamic components */
+.container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}

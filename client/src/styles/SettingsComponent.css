@@ -1,87 +1,88 @@
+/* General layout */
 .settings-comp {
     padding: 20px;
-    font-family: Arial, sans-serif;
-  }
+}
 
-  .settings-comp h1 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-
-  .settings-comp section {
-    margin-bottom: 30px;
-  }
-
-  .sos-button {
+.dropdown-header {
     display: block;
-    margin: 20px auto;
+    width: 100%;
+    padding: 10px;
+    background-color: #f50852;
+    color: white;
     border: none;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease;
-  }
+    text-align: left;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+    margin-bottom: 3px;
+}
 
-  .sos-button:hover {
-    transform: scale(1.05);
-  }
+.dropdown-header:hover {
+    background-color: #d40646;
+}
 
+.dropdown-content {
+    max-height: 400px;
+    overflow: hidden;
+    padding: 10px;
+    background-color: #f9f9f9;
+    color: black;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
 
+.dropdown-content {
+    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
 
-  /* Root variables for themes it changes it only for the settings comp for now */
-:root {
-    --background-color: #ffffff;
-    --text-color: #000000;
-    --button-background: #e0e0e0;
-    --button-color: #000000;
-  }
-
-  [data-theme='dark'] {
-    --background-color: #121212;
-    --text-color: #ffffff;
-    --button-background: #333333;
-    --button-color: #ffffff;
-  }
-
-  /* General comp styles */
-  .settings-comp {
-    background-color: var(--background-color);
-    color: var(--text-color);
-    padding: 20px;
-    font-family: Arial, sans-serif;
-  }
-
-  .settings-comp h1 {
-    text-align: center;
+.info-table {
+    width: 100%;
+    border-collapse: collapse;
     margin-bottom: 20px;
-  }
+}
 
-  .settings-comp section {
-    margin-bottom: 30px;
-  }
+.info-table td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
 
-  /* SOS Button styles */
-  .sos-button {
-    display: block;
-    margin: 20px auto;
+.info-table td strong {
+    color: #f50852;
+}
+
+.edit-info-button {
+    padding: 10px 15px;
+    background-color: #f50852;
+    color: white;
     border: none;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease;
-  }
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
 
-  .sos-button:hover {
-    transform: scale(1.05);
-  }
+.edit-info-button:hover {
+    background-color: #d40646;
+}
 
-  /* Theme Toggle Button */
-  .theme-toggle-button {
-    padding: 10px 20px;
-    font-size: 16px;
-    border: none;
+.sos-button {
+    margin-top: 20px;
+    background-color: red;
+    color: white;
+    padding: 15px 30px;
+    font-size: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.theme-toggle-button {
+    padding: 10px 15px;
     background-color: var(--button-background);
     color: var(--button-color);
+    border: none;
+    border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease;
-  }
+}
 
-  .theme-toggle-button:hover {
-    opacity: 0.8;
-  }
+.theme-toggle-button:hover {
+    background-color: #6200ea;
+}

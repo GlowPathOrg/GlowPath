@@ -1,0 +1,95 @@
+:root {
+  --background-color: #ffffff;
+  --text-color: #000000;
+  --button-background: #e0e0e0;
+  --button-color: #000000;
+}
+
+[data-theme="dark"] {
+  --background-color: #121212;
+  --text-color: #ffffff;
+  --button-background: #333333;
+  --button-color: #ffffff;
+}
+
+.profile-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Ensure the profile page takes full height of viewport */
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+.menu-panel {
+  width: 150px; /* Reduced width for the side panel */
+  background-color: var(--button-background);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.menu-button {
+  margin-bottom: 20px;
+  padding: 10px;
+  width: 100%;
+  background-color: var(--button-background);
+  color: var(--button-color);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.menu-button:hover {
+  background-color: #ccc;
+}
+
+.main-content {
+  flex: 1; /* Take up the remaining space */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 20px;
+}
+
+.main-content h2 {
+  margin-bottom: 20px;
+}
+
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+
+
+/* Ensure the profile page and footer take the full height of the viewport */
+body, html {
+  height: 100%; /* Ensure the body takes up full height */
+  margin: 0;
+  padding: 0;
+}
+
+.profile-page {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+}
+
+.main-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
