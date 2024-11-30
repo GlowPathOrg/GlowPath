@@ -1,34 +1,40 @@
-import { useState } from "react";
-import Navbar from "../../components/Navbar";
-import '../../styles/ProfilePage.css'
+import { useEffect, useState } from "react";
 import SettingsComponent from "./settingsComponent";
+import { useLoginStatus } from "../../hooks/userLogin";
+import RegisterComponent from "./RegisterComponent";
+import HelpComponent from "./helpComponent";
+import ContactsComponent from "./contactsComponent";
+import { UserI } from "../../Types/User";
 
 
 const ProfilePage = () => {
   const [ viewOption, setViewOption] = useState('');
+  const [sessionUser, setSessionUser] = useState<null | UserI>(null);
+  const { isAuthorized, userData } = useLoginStatus();
 
-  function handleProfileComponent (event: React.MouseEvent<HTMLButtonElement>) {
-    const value = event.currentTarget.value;
-    setViewOption(value)
-  }
+useEffect(()=>{
+  if (isAuthorized === false) {
+    setViewOption('register')
+  } else {
+  if (userData) {
+    const thisUser = userData;
+    setSessionUser(thisUser)
+
+  }}
+
+
+}, [isAuthorized, userData])
 
   return (
     <>
-      <Navbar />
       <div className="profile-page">
-        <div className="side-panel"><ul className="options-list">
-          <li><button name='settings' value='settings' onClick={handleProfileComponent} >Settings</button></li>
-          <li><button name='contacts' value='contacts' onClick={handleProfileComponent} >Manage Contacts</button></li>
-          <li><button name='help' value='help' onClick={handleProfileComponent} >Help</button></li>
-          </ul></div>
-        <div className="main-panel">
-          Welcome, XXX
+          Welcome{sessionUser? `, ${sessionUser.firstName}`: ''}!
           {viewOption === 'settings' && <SettingsComponent />}
-          {viewOption === 'activity' && <div>My Activity Component</div>}
-          {viewOption === 'help' && <div>Help Component</div>}
-          {viewOption === 'contacts' && <div>Contacts Component</div>}
+          {viewOption === 'register' && <RegisterComponent/>}
+          {viewOption === 'help' && <div><HelpComponent/></div>}
+          {viewOption === 'contacts' && <div><ContactsComponent/></div>}
           {!viewOption && <div>Select an option to begin!</div>}
-        </div>
+
 
 </div>
 

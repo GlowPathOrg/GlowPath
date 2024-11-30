@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../../styles/SettingsComp.css'
+import '../../styles/SettingsComponent.css';
 
 const SettingsComponent: React.FC = () => {
     // State for SOS settings

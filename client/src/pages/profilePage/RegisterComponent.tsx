@@ -1,11 +1,11 @@
 import React, { FormEvent, useState } from "react";
-import { register } from "../services/authService";
-import Navbar from "../components/Navbar";
-import '../styles/RegisterPage.css'
-import 'react-phone-number-input/style.css'
+import { register } from "../../services/authService";
+import '../../styles/RegisterComponent.css';
+import 'react-phone-number-input/style.css';
 import PhoneInput from "react-phone-number-input/input";
 
-const RegisterPage = () => {
+const RegisterComponent
+ = () => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -43,7 +43,7 @@ const RegisterPage = () => {
 
   return (
    <>
-   <Navbar/>
+
       <div className="register-page">
         <form onSubmit={handleSubmit} className="register-form">
           <h1>Register for GlowPath:</h1>
@@ -101,4 +101,5 @@ const RegisterPage = () => {
   );
 };
 
-export default RegisterPage;
+export default RegisterComponent
+;

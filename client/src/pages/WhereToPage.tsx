@@ -6,7 +6,6 @@ import { usePosition } from '../hooks/usePosition';
 import { LatLngTuple, latLng } from 'leaflet'; // Import LatLngTuple and latLng from Leaflet
 import { decode } from '@here/flexpolyline'; // Polyline decoding function from npm
 import MapComponent from '../components/MapComponent/MapComponent';
-import Navbar from '../components/Navbar';
 import { InstructionsI } from '../Types/Route';
 
 const WhereToPage: React.FC = () => {
@@ -80,7 +79,6 @@ const WhereToPage: React.FC = () => {
 
   return (
    <>
-   <Navbar/>
       <div className="where-to-page">
         <h1>Where to?</h1>
 

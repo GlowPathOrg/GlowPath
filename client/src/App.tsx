@@ -4,10 +4,7 @@ import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import JourneyPage from './pages/journeyPage/JourneyPage';
 import WhereToPage from './pages/WhereToPage';
 import HomePage from './pages/HomePage/HomePage';
-import RegisterPage from './pages/RegisterPage';
 import ProfilePage from './pages/profilePage/ProfilePage';
-import LoginPage from './pages/LoginPage';
-
 
 
 /* import HistoryPage from
@@ -31,8 +28,6 @@ const App: React.FC = () => {
             <Route path="/" element={< HomePage/>} />
             <Route path="/journey" element={<JourneyPage />} />
             <Route path="/where-to" element={<WhereToPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
               <Route path="/profile" element={<ProfilePage />} />
 
            {/*  <Route path="/history" element={<HistoryPage />} />

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { login, profile } from "../services/authService";
+import { login, profile } from "../../services/authService";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../components/Navbar";
 
 
 
@@ -48,7 +47,6 @@ const navigate = useNavigate();
 
   return (
     <div className="login-page">
-      <Navbar />
       <form onSubmit={handleSubmit} className="login-form">
         <div className="form-group">
           <h1>Login</h1>
