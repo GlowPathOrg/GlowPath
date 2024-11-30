@@ -29,7 +29,16 @@ export const registerController = async (req: Request, res: Response): Promise<v
         const user = new UserModel({ email, password, firstName, lastName, telephone });
         await user.save();
         const token = jwt.sign(
-            { userId: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName, telephone: user.telephone},
+            { userId: user._id,
+                email: user.email,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                telephone: user.telephone,
+                messages: [],
+                places: [],
+                contacts: [],
+                tripHistory: []
+},
             jwtSecret,
             { expiresIn: '48h' }
         );
@@ -70,7 +79,17 @@ export const loginController = async (req: Request, res: Response): Promise<void
             ;
         }
             const token = jwt.sign({ id: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName, telephone: user.telephone }, jwtSecret, { expiresIn: '1d' });
-            res.status(200).json({ token, email: user.email, firstName: user.firstName, lastName: user.lastName, telephone: user.telephone });
+            res.status(200).json({
+                userId: user._id,
+                email: user.email,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                telephone: user.telephone,
+                messages: [],
+                places: [],
+                contacts: [],
+                tripHistory: []
+            });
     }
 }
     catch (error) {

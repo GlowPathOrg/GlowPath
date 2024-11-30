@@ -1,4 +1,4 @@
-import { UserI } from "../../@Types/User";
+import { UserI } from "./User";
 import { RouteI } from "./Route";
 
 export interface ShareI {

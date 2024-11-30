@@ -5,18 +5,20 @@ import RegisterComponent from "./RegisterComponent";
 import HelpComponent from "./helpComponent";
 import ContactsComponent from "./contactsComponent";
 import { UserI } from "../../Types/User";
+import LoginComponent from "./LoginComponent";
 
 
 const ProfilePage = () => {
   const [ viewOption, setViewOption] = useState('');
   const [sessionUser, setSessionUser] = useState<null | UserI>(null);
+
   const { isAuthorized, userData } = useLoginStatus();
 
 useEffect(()=>{
-  if (isAuthorized === false) {
-    setViewOption('register')
+  if (isAuthorized === true) {
+    setViewOption('settings')
   } else {
-  if (userData) {
+  if (isAuthorized) {
     const thisUser = userData;
     setSessionUser(thisUser)
 
@@ -28,12 +30,13 @@ useEffect(()=>{
   return (
     <>
       <div className="profile-page">
-          Welcome{sessionUser? `, ${sessionUser.firstName}`: ''}!
+          My Profile{sessionUser? `, ${sessionUser.firstName}`: ''}!
           {viewOption === 'settings' && <SettingsComponent />}
-          {viewOption === 'register' && <RegisterComponent/>}
-          {viewOption === 'help' && <div><HelpComponent/></div>}
+          {!viewOption && <RegisterComponent setViewOption={setViewOption} />}
+        {viewOption === 'login' && <div><LoginComponent setViewOption={setViewOption} /></div>}
           {viewOption === 'contacts' && <div><ContactsComponent/></div>}
-          {!viewOption && <div>Select an option to begin!</div>}
+          {viewOption === 'contacts' && <div><HelpComponent/></div>}
+
 
 
 </div>

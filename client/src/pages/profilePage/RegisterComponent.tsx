@@ -3,9 +3,17 @@ import { register } from "../../services/authService";
 import '../../styles/RegisterComponent.css';
 import 'react-phone-number-input/style.css';
 import PhoneInput from "react-phone-number-input/input";
+import { useLoginStatus } from "../../hooks/userLogin";
 
-const RegisterComponent
- = () => {
+
+
+interface RegisterComponentProps {
+  setViewOption: (view: string) => void;
+}
+
+
+const RegisterComponent: React.FC<RegisterComponentProps>
+ = ({setViewOption}) => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -16,6 +24,8 @@ const RegisterComponent
   });
   const [message, setMessage] = useState("");
   const [value, setValue] = useState<string | undefined>();
+  const {handleLogin} = useLoginStatus();
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -34,10 +44,12 @@ const RegisterComponent
     return;
   }
     try {
-      await register(formData);
+      await register(formData, handleLogin);
       setMessage("Registration successful!");
+      setTimeout(() => 1);
+      setViewOption('settings')
     } catch (error) {
-      setMessage("Error registering. Please try again:" + error);
+      setMessage("Error registering. Please try again. " + error);
     }
   };
 
@@ -45,6 +57,7 @@ const RegisterComponent
    <>
 
       <div className="register-page">
+        <button onClick={() => setViewOption('login')}>Go to log in</button>
         <form onSubmit={handleSubmit} className="register-form">
           <h1>Register for GlowPath:</h1>
           <div className="form-group">
@@ -94,8 +107,10 @@ const RegisterComponent
           <button type="submit" className="submit-btn">
             Register
           </button>
+
+          {message && <p className="message">{message}</p>}
         </form>
-        {message && <p className="message">{message}</p>}
+
       </div>
    </>
   );

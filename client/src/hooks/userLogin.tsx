@@ -5,10 +5,16 @@ export const useLoginStatus = () => {
     const [isAuthorized, setIsAuthorized] = useState(!!localStorage.getItem("token"));
     const [userData, setUserData] = useState<UserI | null>(null);
 
-    // Function to handle logout
+    const handleLogin = (token: string, userData: UserI) => {
+        localStorage.setItem("token", token);
+        localStorage.setItem("userData", JSON.stringify(userData));
+        setIsAuthorized(true);
+        setUserData(userData);
+    };
+
     const handleLogout = () => {
         localStorage.removeItem("token");
-        localStorage.removeItem("userData"); // Assuming you're also storing user data in localStorage
+        localStorage.removeItem("userData");
         setIsAuthorized(false);
         setUserData(null);
     };
@@ -25,5 +31,5 @@ export const useLoginStatus = () => {
         }
     }, []);
 
-    return { isAuthorized, userData, handleLogout };
+    return { isAuthorized, userData, handleLogout, handleLogin };
 };
