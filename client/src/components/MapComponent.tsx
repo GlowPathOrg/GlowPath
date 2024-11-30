@@ -12,8 +12,8 @@ import { Amenity, fetchAmenities } from '../services/amenitiesService'; // Fetch
 //this is added to define the types of the props
 //I added this after removing usePosition to the JourneyPage
 interface MapComponentProps {
-  latitude: number | undefined;
-  longitude: number | undefined;
+  latitude: number | null;
+  longitude: number | null;
   geolocationError: string | null;
 }
 

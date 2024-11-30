@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-interface PositionI {
+export interface PositionI {
   timestamp: number | null;
   latitude: number | null;
   longitude: number | null;
