@@ -1,11 +1,11 @@
-const SettingsComponent: React.FC = () => {
+const HelpComponent: React.FC = () => {
 
 
     return (
         <>
-        SETTINGS COMPONENT
+        HELP COMPONENT
         </>
     );
 };
 
-export default SettingsComponent;
+export default HelpComponent;

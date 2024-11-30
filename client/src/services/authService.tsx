@@ -14,7 +14,9 @@ export const getToken = (): string | null => {
 export interface UserData {
   email: string;
   password: string;
-  role?: string;
+  firstName: string;
+  lastName: string;
+  telephone?: string;
 }
 
 // Define the structure of the API responses
@@ -29,6 +31,8 @@ export const register = async (
   userData: UserData
 ): Promise<AxiosResponse<AuthResponse> | undefined> => {
   try {
+
+
     const response = await axios.post<AuthResponse>(`${BACKEND_URL}/register`, userData, {
       withCredentials: true,
       headers: {

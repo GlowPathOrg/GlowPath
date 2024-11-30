@@ -3,7 +3,7 @@ import { createServer } from "node:http";
 import { Express } from "express";
 import Share from "../models/Share"
 import jwt, { JwtPayload } from "jsonwebtoken";
-import UserModel from "../models/user";
+import UserModel from "../models/User";
 import dotenv from 'dotenv';
 import bcrypt from "bcrypt";
 

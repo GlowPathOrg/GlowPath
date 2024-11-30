@@ -27,7 +27,6 @@ const ProfilePage = () => {
         <div className="side-panel"><ul className="options-list">
           <li><button name='settings' value='settings' onClick={handleProfileComponent} >Settings</button></li>
           <li><button name='activity' value='activity' onClick={handleProfileComponent} >My Activity</button></li>
-
           <li><button name='contacts' value='contacts' onClick={handleProfileComponent} >Manage Contacts</button></li>
           <li><button name='help' value='help' onClick={handleProfileComponent} >Help</button></li>
           </ul></div>

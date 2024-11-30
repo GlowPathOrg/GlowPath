@@ -1,11 +1,11 @@
-const SettingsComponent: React.FC = () => {
+const ActivityComponent: React.FC = () => {
 
 
     return (
         <>
-        SETTINGS COMPONENT
+        ACTIVTY COMPONENT
         </>
     );
 };
 
-export default SettingsComponent;
+export default ActivityComponent;
