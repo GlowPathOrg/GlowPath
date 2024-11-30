@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 const Schema = mongoose.Schema;
-import { RouteI } from "../@Types/Route";
+import { RouteI } from "../Types/Route";
 
 
 export const NavigationSchema = new Schema({

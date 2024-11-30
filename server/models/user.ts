@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
-import { UserI } from '../@Types/User';
+import { UserI } from '../Types/User';
 
 export const userSchema = new mongoose.Schema(
     {

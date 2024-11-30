@@ -6,6 +6,8 @@ import { usePosition } from '../hooks/usePosition';
 import { LatLngTuple, latLng } from 'leaflet'; // Import LatLngTuple and latLng from Leaflet
 import { decode } from '@here/flexpolyline'; // Polyline decoding function from npm
 import MapComponent from '../components/MapComponent/MapComponent';
+import Navbar from '../components/Navbar';
+import { InstructionsI } from '../Types/Route';
 
 const WhereToPage: React.FC = () => {
   const navigate = useNavigate();
@@ -14,7 +16,7 @@ const WhereToPage: React.FC = () => {
   const [destination, setDestination] = useState<string>('');
   const [route, setRoute] = useState<LatLngTuple[]>([]); // Route coordinates
   const [summary, setSummary] = useState<{ distance: number; duration: number } | null>(null);
-  const [instructions, setInstructions] = useState<any[]>([]);
+  const [instructions, setInstructions] = useState<InstructionsI[]>([]);
   const [transportMode, setTransportMode] = useState<'pedestrian' | 'publicTransport' | 'bicycle'>('pedestrian');
   const [mapTheme, setMapTheme] = useState<string>('standard');
   const [error, setError] = useState<string | null>(null);
@@ -77,29 +79,31 @@ const WhereToPage: React.FC = () => {
   };
 
   return (
-    <div className="where-to-page">
-      <h1>Where to?</h1>
+   <>
+   <Navbar/>
+      <div className="where-to-page">
+        <h1>Where to?</h1>
 
-      {/* Current Location */}
-      <div>
-        <p>
-          <strong>Your Current Location:</strong>{' '}
-          {originCoords ? `${originCoords.lat.toFixed(4)}, ${originCoords.lon.toFixed(4)}` : 'Fetching your location...'}
-        </p>
-        {geoError && <p style={{ color: 'red' }}>Geolocation Error: {geoError}</p>}
-      </div>
+        {/* Current Location */}
+        <div>
+          <p>
+            <strong>Your Current Location:</strong>{' '}
+            {originCoords ? `${originCoords.lat.toFixed(4)}, ${originCoords.lon.toFixed(4)}` : 'Fetching your location...'}
+          </p>
+          {geoError && <p style={{ color: 'red' }}>Geolocation Error: {geoError}</p>}
+        </div>
 
-      {/* Destination Input */}
-      <div>
-        <label htmlFor="destination">Destination:</label>
-        <input
-          type="text"
-          id="destination"
-          value={destination}
-          onChange={(e) => setDestination(e.target.value)}
-          placeholder="Enter destination"
-        />
-      </div>
+        {/* Destination Input */}
+        <div>
+          <label htmlFor="destination">Destination:</label>
+          <input
+            type="text"
+            id="destination"
+            value={destination}
+            onChange={(e) => setDestination(e.target.value)}
+            placeholder="Enter destination"
+          />
+        </div>
 
         {/* Transport Mode Selector */}
         <div>
@@ -115,39 +119,40 @@ const WhereToPage: React.FC = () => {
           </select>
         </div>
 
-      {/* Map Theme Selector */}
-      <div>
-        <label htmlFor="map-theme">Map Theme:</label>
-        <select id="map-theme" value={mapTheme} onChange={(e) => setMapTheme(e.target.value)}>
-          <option value="standard">Standard</option>
-          <option value="dark">Dark</option>
-          <option value="satellite">Satellite</option>
-        </select>
-      </div>
+        {/* Map Theme Selector */}
+        <div>
+          <label htmlFor="map-theme">Map Theme:</label>
+          <select id="map-theme" value={mapTheme} onChange={(e) => setMapTheme(e.target.value)}>
+            <option value="standard">Standard</option>
+            <option value="dark">Dark</option>
+            <option value="satellite">Satellite</option>
+          </select>
+        </div>
 
         {/* Search Button */}
         <button onClick={handleSearch} disabled={!originCoords}>
           Search
         </button>
 
-      {/* Error Message */}
-      {error && <p className="error">{error}</p>}
+        {/* Error Message */}
+        {error && <p className="error">{error}</p>}
 
-      {/* Map Display */}
-      {route.length > 0 && (
-        <MapComponent
-          latitude={latitude}
-          longitude={longitude}
-          geolocationError={geoError || null}
-          route={route}
-          summary={summary}
-          instructions={instructions}
-          originCoords={latLng(originCoords!.lat, originCoords!.lon)}
-          destinationCoords={latLng(route[route.length - 1][0], route[route.length - 1][1])}
-          theme={mapTheme}
-        />
-      )}
-    </div>
+        {/* Map Display */}
+        {route.length > 0 && (
+          <MapComponent
+            latitude={latitude}
+            longitude={longitude}
+            geolocationError={geoError || null}
+            route={route}
+            summary={summary}
+            instructions={instructions}
+            originCoords={latLng(originCoords!.lat, originCoords!.lon)}
+            destinationCoords={latLng(route[route.length - 1][0], route[route.length - 1][1])}
+            theme={mapTheme}
+          />
+        )}
+      </div>
+   </>
   );
 };
 

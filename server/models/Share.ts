@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { ShareI } from "../@Types/Share";
+import { ShareI } from "../Types/Share";
 
 const shareSchema = new mongoose.Schema<ShareI>({
   owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },

@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from "axios";
+import { RegisterDataI, LoginDataI } from "../Types/User";
 
 
 
@@ -11,13 +12,6 @@ export const getToken = (): string | null => {
 
 
 // Define the structure of the user data for registration and login
-export interface UserData {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  telephone?: string;
-}
 
 // Define the structure of the API responses
 export interface AuthResponse {
@@ -28,7 +22,7 @@ export interface AuthResponse {
 // Register a new user
 export const register = async (
 
-  userData: UserData
+  userData: RegisterDataI
 ): Promise<AxiosResponse<AuthResponse> | undefined> => {
   try {
 
@@ -49,7 +43,7 @@ export const register = async (
 };
 
 // Log in a user and store the token in localStorage
-export const login = async (userData: UserData): Promise<AuthResponse> => {
+export const login = async (userData: LoginDataI): Promise<AuthResponse> => {
   try {
 
     const response = await axios.post<AuthResponse>(`${BACKEND_URL}/login`, userData, {

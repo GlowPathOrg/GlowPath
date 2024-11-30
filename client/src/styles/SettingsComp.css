@@ -1,17 +1,17 @@
-.settings-page {
+.settings-comp {
     padding: 20px;
     font-family: Arial, sans-serif;
   }
-  
-  .settings-page h1 {
+
+  .settings-comp h1 {
     text-align: center;
     margin-bottom: 20px;
   }
-  
-  .settings-page section {
+
+  .settings-comp section {
     margin-bottom: 30px;
   }
-  
+
   .sos-button {
     display: block;
     margin: 20px auto;
@@ -19,45 +19,45 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s ease;
   }
-  
+
   .sos-button:hover {
     transform: scale(1.05);
   }
 
 
 
-  /* Root variables for themes it changes it only for the settings page for now */
+  /* Root variables for themes it changes it only for the settings comp for now */
 :root {
     --background-color: #ffffff;
     --text-color: #000000;
     --button-background: #e0e0e0;
     --button-color: #000000;
   }
-  
+
   [data-theme='dark'] {
     --background-color: #121212;
     --text-color: #ffffff;
     --button-background: #333333;
     --button-color: #ffffff;
   }
-  
-  /* General page styles */
-  .settings-page {
+
+  /* General comp styles */
+  .settings-comp {
     background-color: var(--background-color);
     color: var(--text-color);
     padding: 20px;
     font-family: Arial, sans-serif;
   }
-  
-  .settings-page h1 {
+
+  .settings-comp h1 {
     text-align: center;
     margin-bottom: 20px;
   }
-  
-  .settings-page section {
+
+  .settings-comp section {
     margin-bottom: 30px;
   }
-  
+
   /* SOS Button styles */
   .sos-button {
     display: block;
@@ -66,11 +66,11 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s ease;
   }
-  
+
   .sos-button:hover {
     transform: scale(1.05);
   }
-  
+
   /* Theme Toggle Button */
   .theme-toggle-button {
     padding: 10px 20px;
@@ -81,7 +81,7 @@
     cursor: pointer;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
-  
+
   .theme-toggle-button:hover {
     opacity: 0.8;
   }
