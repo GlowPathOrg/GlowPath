@@ -12,7 +12,7 @@ interface AlarmI {
   text: string;
 }
 
-export const useSocket = ({ password }: {[key: string]: string}) => {
+export const useSocket = ({ password }: {password?: string}) => {
   const [isConnected, setIsConnected] = useState(false);
   const [position, setPosition] = useState<PositionI | null>();
   const [messages, setMessages] = useState<MessageI[] | []>([]);
@@ -36,11 +36,11 @@ export const useSocket = ({ password }: {[key: string]: string}) => {
     if (!isConnected) socket.connect();
   }
 
-  function hostRoom (id: string) {
+  function hostShare (id: string) {
     if (isConnected) socket.emit("host-share", id);
   }
 
-  function joinRoom (id: string) {
+  function joinShare (id: string) {
     if (isConnected) socket.emit("join-share", id);
   }
 
@@ -87,5 +87,5 @@ export const useSocket = ({ password }: {[key: string]: string}) => {
 
   },[]);
 
-  return { position, messages, alarms, error, sendPosition, sendMessage, sendAlarm, hostRoom, joinRoom, connectSocket };
+  return { position, messages, alarms, error, sendPosition, sendMessage, sendAlarm, hostShare, joinShare, connectSocket };
 }
