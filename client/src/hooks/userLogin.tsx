@@ -5,11 +5,20 @@ export const useLoginStatus = () => {
     const [isAuthorized, setIsAuthorized] = useState(!!localStorage.getItem("token"));
     const [userData, setUserData] = useState<UserI | null>(null);
 
-    const handleLogin = (token: string, userData: UserI) => {
-        localStorage.setItem("token", token);
-        localStorage.setItem("userData", JSON.stringify(userData));
+    const handleLogin = (token: string, userResponse: UserI) => {
         setIsAuthorized(true);
-        setUserData(userData);
+        const thisUser = userResponse;
+
+
+
+        localStorage.setItem("token", token);
+        localStorage.setItem("userData", JSON.stringify(userResponse));
+        console.log(userData)
+
+        setUserData(thisUser);
+
+        console.log('why is this not working', userData)
+
     };
 
     const handleLogout = () => {

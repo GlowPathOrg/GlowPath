@@ -25,7 +25,7 @@ const LoginPage: React.FC<LoginComponentProps> = ({setViewOption}) => {
     try {
    const response = await login(formData, handleLogin);
       if (response.data.token) {
-        setMessage("Login successful!")
+        setMessage("Login successful!");
         setTimeout(()=>1);
         setViewOption('settings')
 

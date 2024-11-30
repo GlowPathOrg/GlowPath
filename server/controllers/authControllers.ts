@@ -4,13 +4,12 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import UserModel from '../models/User';
 import crypto from 'crypto';
-import { UserI } from '../Types/User';
 dotenv.config();
 
 const jwtSecret = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex')
 
 
-export const registerController = async (req: Request, res: Response): Promise<void | void> => {
+export const registerController = async (req: Request, res: Response): Promise<void | void > => {
     try {
         const { email, password, firstName, lastName, telephone } = req.body;
 
@@ -22,18 +21,20 @@ export const registerController = async (req: Request, res: Response): Promise<v
         }
         const existingUser = await UserModel.findOne({ email });
         if (existingUser) {
-            res.status(400).json({ message: 'User already exists' });
+            res.status(400)
+            throw new Error('User already exists');
             ;
         };
 
         const user = new UserModel({ email, password, firstName, lastName, telephone });
         await user.save();
         const token = jwt.sign(
-            { userId: user._id,
+            { _id: user._id,
                 email: user.email,
                 firstName: user.firstName,
                 lastName: user.lastName,
                 telephone: user.telephone,
+                password: '*****',
                 messages: [],
                 places: [],
                 contacts: [],
@@ -44,7 +45,7 @@ export const registerController = async (req: Request, res: Response): Promise<v
         );
         console.log(`user ${user.firstName} ${user.lastName} registered`)
         res.status(201).json({
-            message: `${user.firstName} was successfully registered`,
+            message: `${user.email} was successfully registered`,
             token
         });
 
@@ -60,35 +61,41 @@ export const loginController = async (req: Request, res: Response): Promise<void
     try {
         const { email, password } = req.body;
         if (!email || !password) {
-            res.status(400).json({ error: 'Email and password are required' });
+            res.status(400);
+            throw new Error('Missing email or password')
         }
         const user = await UserModel.findOne({ email });
+        console.log('found: '+ user)
         if (!user) {
-            res.status(401).json({ error: `user ${email} not found` });
+            res.status(401);
+            throw new Error('No user found');
 
-        } else {
+        }
+         if (!process.env.JWT_SECRET) {
+                console.log("No JWT Secret Found!");
+                res.status(500).json({ error: 'JWT_SECRET is not defined in environment variables' });
+                ;
+            }
+        else {
+
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             res.status(401).json({ error: 'Invalid credentials' });
         }
 
-
-        if (!process.env.JWT_SECRET) {
-            console.log("No JWT Secret Found!");
-            res.status(500).json({ error: 'JWT_SECRET is not defined in environment variables' });
-            ;
-        }
             const token = jwt.sign({ id: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName, telephone: user.telephone }, jwtSecret, { expiresIn: '1d' });
             res.status(200).json({
-                userId: user._id,
+                token,
+                user: {_id: user._id,
                 email: user.email,
                 firstName: user.firstName,
                 lastName: user.lastName,
                 telephone: user.telephone,
+                password: '*******',
                 messages: [],
                 places: [],
                 contacts: [],
-                tripHistory: []
+                tripHistory: []}
             });
     }
 }
@@ -97,16 +104,3 @@ export const loginController = async (req: Request, res: Response): Promise<void
         res.status(500).json({ error: 'Server error' });
     }
 }
-
-export const profileController = async (req: Request, res: Response): Promise<void | void> => {
-    try {
-        const thisUser: UserI | undefined = req.user;
-        if (thisUser) {
-            res.status(200).send(thisUser);
-        } else {
-             res.status(404).send({ Error, message:`user ${thisUser} not found` });
-        }
-    } catch (error) {
-        res.status(500).send({ message: 'Internal server error', error });
-    }
-};

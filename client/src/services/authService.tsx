@@ -54,18 +54,11 @@ export const login = async (userData: LoginDataI, handleLogin: (token: string, u
     withCredentials: true,
     headers: {
       'Content-Type': 'application/json',
-
       }
     });
 
-    if (response.data.token) {
-      localStorage.setItem("token", response.data.token);
-    if (response.data.user) {
-        const user: UserI = response.data.user
-    handleLogin(response.data.token, user);
-
-
-      }
+    if (response.data.token && response.data.user) {
+    handleLogin(response.data.token, response.data.user);
     }
     return response
 
@@ -76,7 +69,7 @@ export const login = async (userData: LoginDataI, handleLogin: (token: string, u
   }
 };
 
-export const profile = async () => {
+/* export const profile = async () => {
 
   try {
     const token = getToken();
@@ -93,11 +86,7 @@ export const profile = async () => {
         console.log('error loading profile', error);
       throw error;
   }
-};
+}; */
 
-// Log out the user by removing the token from localStorage
-export const logout = (): void => {
-        localStorage.removeItem("token");
-};
 
 
