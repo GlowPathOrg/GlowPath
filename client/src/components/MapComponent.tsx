@@ -223,3 +223,4 @@ const MapComponent: React.FC<MapComponentProps> = ({ latitude, longitude, geoloc
 };
 
 export default MapComponent;
+

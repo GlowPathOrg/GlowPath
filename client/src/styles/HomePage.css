@@ -1,0 +1,56 @@
+.home-page {
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100vh;
+   
+  }
+  
+  
+  /* Navigation Section */
+  .navigation-section {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+  }
+  
+  .navigation-button {
+    width: auto;
+    padding: 15px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background-color: #6200ea;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+  }
+  
+  .navigation-button:hover {
+    background-color: #3700b3;
+  }
+  
+  /* Footer Section */
+  .footer-bar {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    background-color: #eeeeee;
+    border-top: 1px solid #cccccc;
+  }
+  
+  .footer-icon {
+    font-size: 24px;
+    color: #6200ea;
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  
+  .footer-icon:hover {
+    color: #3700b3;
+  }

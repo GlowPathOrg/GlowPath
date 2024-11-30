@@ -1,0 +1,12 @@
+.live-location-map {
+    height: 80vh;
+    width: 100%;
+    position: relative;
+  }
+  
+  .live-location-map p {
+    text-align: center;
+    font-size: 16px;
+    color: #666;
+    margin-top: 20px;
+  }
