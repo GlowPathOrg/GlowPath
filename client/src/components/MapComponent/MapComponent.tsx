@@ -1,30 +1,36 @@
+
 import { useEffect, useState } from "react";
 import {
   MapContainer,
-  Marker,
-  Popup,
   TileLayer,
   Polyline,
   Circle,
+  Popup,
+  Marker,
 } from "react-leaflet";
+import L from "leaflet"; // for map manipulation
+import "leaflet-rotatedmarker"; // plugin for rotated markers
 import { latLng, LatLng, LatLngTuple } from "leaflet";
-import "leaflet/dist/leaflet.css"; // Default Leaflet styling
-import "../../styles/MapComponent.css"; // Custom styling
-import { Amenity, fetchAmenities } from "../../services/amenitiesService"; // Fetch amenities service
+import "leaflet/dist/leaflet.css"; 
+import "../../styles/MapComponent.css"; 
+import { Amenity, fetchAmenities } from "../../services/amenitiesService"; 
 import mapThemes, { getDefaultTheme, isValidTheme } from "./MapThemes";
-import FitBounds from "./FitBounds";
+import FitBounds from "./FitBounds"; 
 
+// define the interface for MapComponent props
 interface MapComponentProps {
-  latitude: number | undefined;
-  longitude: number | undefined;
-  geolocationError: string | null;
-  route: LatLngTuple[]; // Route polyline
-  summary: { distance: number; duration: number } | null; // Route summary
+  latitude: number | undefined; // User's latitude
+  longitude: number | undefined; // User's longitude
+  geolocationError: string | null; // Geolocation error message
+  route: LatLngTuple[]; // Route polyline coordinates
+  summary: { distance: number; duration: number } | null; // Route summary 
   instructions: any[]; // Turn-by-turn instructions
   originCoords: LatLng | null; // Origin coordinates
   destinationCoords: LatLng | null; // Destination coordinates
   theme: string; // Map theme
+  heading: number; // Heading for the rotated marker
 }
+
 
 const MapComponent: React.FC<MapComponentProps> = ({
   latitude,
@@ -36,30 +42,30 @@ const MapComponent: React.FC<MapComponentProps> = ({
   originCoords,
   destinationCoords,
   theme,
+  heading,
 }) => {
-  const [amenities, setAmenities] = useState<Amenity[]>([]); // Amenities state
-  const [isInsideGeofence, setIsInsideGeofence] = useState<boolean>(false);
+  const [amenities, setAmenities] = useState<Amenity[]>([]); // state for amenities
+  const [isInsideGeofence, setIsInsideGeofence] = useState<boolean>(false); // state for geofence status
 
-  // Validate and set map theme
+  // validate and set the map theme
   const validatedTheme = isValidTheme(theme) ? theme : getDefaultTheme();
 
-  // Define geofence parameters
-  const fenceCenter =
-    latitude && longitude ? latLng(latitude, longitude) : null; // Dynamically set the center
+  // define geofence parameters
+  const fenceCenter = latitude && longitude ? latLng(latitude, longitude) : null; 
   const fenceRadius = 100; // Geofence radius in meters
 
+  // Icons for turn-by-turn instructions
   const actionIcons: Record<string, string> = {
-    depart: "🏁", // Departure flag
-    arrive: "🏁", // Arrival flag
-    left: "⬅️", // Left arrow
-    right: "➡️", // Right arrow
-    straight: "⬆️", // Straight arrow
+    depart: "🏁", 
+    arrive: "🏁", 
+    left: "⬅️", 
+    straight: "⬆️",
   };
 
-  // Monitor user position and determine if inside geofence
+  // Monitor user's position and check if inside the geofence
   useEffect(() => {
     if (originCoords && fenceCenter) {
-      const distance = fenceCenter.distanceTo(originCoords); // Calculate distance from user's location to origin
+      const distance = fenceCenter.distanceTo(originCoords); // Calculate distance from origin
       const isInside = distance <= fenceRadius; // Check if inside geofence
       setIsInsideGeofence(isInside);
 
@@ -72,10 +78,10 @@ const MapComponent: React.FC<MapComponentProps> = ({
     }
   }, [originCoords, fenceCenter, fenceRadius]);
 
-  // Fetch nearby amenities
+  // fetch nearby amenities
   useEffect(() => {
     const fetchData = async () => {
-      if (!originCoords) return; // Ensure origin is defined
+      if (!originCoords) return; 
       try {
         const data = await fetchAmenities(500, {
           lat: originCoords.lat,
@@ -100,9 +106,9 @@ const MapComponent: React.FC<MapComponentProps> = ({
       <MapContainer
         className="map-container"
         center={originCoords || latLng(52.4771, 13.431)}
-        zoom={13}
+        zoom={18}
         scrollWheelZoom={false}
-        style={{ height: '80vh', width: '100%' }}
+        style={{ height: "80vh", width: "100%" }}
       >
         {/* Tile Layer for Map Theme */}
         {mapThemes[validatedTheme] ? (
@@ -119,16 +125,32 @@ const MapComponent: React.FC<MapComponentProps> = ({
           <FitBounds origin={originCoords} destination={destinationCoords} />
         )}
 
-        {/* Origin Marker */}
-        {originCoords && (
-          <Marker position={originCoords}>
-            <Popup>Your Location</Popup>
+        {/* Rotated Marker for User's Current Location */}
+        {latitude && longitude && (
+          <Marker
+            position={[latitude, longitude]}
+            icon={L.icon({
+              iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png", 
+              iconSize: [30, 30],
+              iconAnchor: [15, 15],
+            })}
+            rotationAngle={heading || 0} // Rotate based on heading
+            rotationOrigin="center"
+          >
+            <Popup>Current Position</Popup>
           </Marker>
         )}
 
         {/* Destination Marker */}
         {destinationCoords && (
-          <Marker position={destinationCoords}>
+          <Marker
+            position={[destinationCoords.lat, destinationCoords.lng]}
+            icon={L.icon({
+              iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png", 
+              iconSize: [30, 30],
+              iconAnchor: [15, 15],
+            })}
+          >
             <Popup>
               Destination <br />
               Coordinates: {destinationCoords.lat.toFixed(4)},{" "}
@@ -209,7 +231,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
         <ul>
           {instructions.map((instruction, index) => {
             const { instruction: text, action, length, duration } = instruction;
-            const icon = actionIcons[action] || "➡️"; // Fallback to generic arrow
+            const icon = actionIcons[action] || "➡️"; // generic arrow
 
             return (
               <li key={index}>

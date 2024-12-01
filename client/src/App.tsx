@@ -5,6 +5,8 @@ import JourneyPage from './pages/journeyPage/JourneyPage';
 import WhereToPage from './pages/WhereToPage';
 import HomePage from './pages/HomePage/HomePage';
 import SettingsPage from './pages/SettingsPage'
+import NavigationPage from './pages/NaviagtionPage';
+
 
 
 
@@ -30,6 +32,8 @@ const App: React.FC = () => {
             <Route path="/journey" element={<JourneyPage />} />
             <Route path="/where-to" element={<WhereToPage />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/navigation" element={<NavigationPage />} />
+          
            {/*  <Route path="/history" element={<HistoryPage />} />
             <Route path="/chat" element={<ChatPage />} />
             <Route path="/visualizations" element={<VisualizationsPage />} /> */}
