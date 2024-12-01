@@ -7,7 +7,7 @@
     display: block;
     width: 100%;
     padding: 10px;
-    background-color: #f50852;
+    background-color: #191718;
     color: white;
     border: none;
     text-align: left;
@@ -18,7 +18,7 @@
 }
 
 .dropdown-header:hover {
-    background-color: #d40646;
+    background-color: black;
 }
 
 .dropdown-content {
@@ -47,12 +47,12 @@
 }
 
 .info-table td strong {
-    color: #f50852;
+    color: #191718;
 }
 
 .edit-info-button {
     padding: 10px 15px;
-    background-color: #f50852;
+    background-color: #191718;
     color: white;
     border: none;
     border-radius: 5px;
@@ -61,7 +61,7 @@
 }
 
 .edit-info-button:hover {
-    background-color: #d40646;
+    background-color: black;
 }
 
 .sos-button {
@@ -84,5 +84,5 @@
 }
 
 .theme-toggle-button:hover {
-    background-color: #6200ea;
+    background-color: black;
 }
