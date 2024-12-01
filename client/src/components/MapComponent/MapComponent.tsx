@@ -19,8 +19,8 @@ import FitBounds from "./FitBounds";
 
 // define the interface for MapComponent props
 interface MapComponentProps {
-  latitude: number | undefined; // User's latitude
-  longitude: number | undefined; // User's longitude
+  latitude: number | null; // User's latitude
+  longitude: number |null; // User's longitude
   geolocationError: string | null; // Geolocation error message
   route: LatLngTuple[]; // Route polyline coordinates
   summary: { distance: number; duration: number } | null; // Route summary 
@@ -28,7 +28,7 @@ interface MapComponentProps {
   originCoords: LatLng | null; // Origin coordinates
   destinationCoords: LatLng | null; // Destination coordinates
   theme: string; // Map theme
-  heading: number; // Heading for the rotated marker
+  heading: number |null; // Heading for the rotated marker
 }
 
 

@@ -11,37 +11,37 @@ import { fetchRoute } from "../../services/RoutingService";
 import { latLng } from "leaflet";
 import { decode } from "@here/flexpolyline";
 import { LatLngTuple } from "leaflet";
-import "../../styles/JourneyPage.css"
-
-
+import "../../styles/JourneyPage.css";
+import { useSocket } from "../../hooks/useSocket";
+import { createShare } from "../../services/shareService";
 
 const JourneyPage: React.FC = () => {
-  // react router hooks to access location state and navigate
+  // React router hooks to access location state and navigate
   const location = useLocation();
   const navigate = useNavigate();
 
-  // getting user's current location and heading from the UsePosition hook (heading is related to the movement of the marker)
-  const { latitude, longitude, heading = 0, error: geoError } = usePosition();
+  // Getting user's current location and heading from the usePosition hook
+  const position = usePosition();
+  const { latitude, longitude, heading = 0, error: geoError } = position;
 
-  // destructure initial states passed through the route
+  // Destructure initial states passed through the route
   const {
-    route: initialRoute = [], 
-    summary: initialSummary = { distance: 0, duration: 0 }, 
-    instructions: initialInstructions = [], 
-    theme = "standard", 
-    transportMode = "pedestrian", 
-    destinationCoords = null, 
+    route: initialRoute = [],
+    summary: initialSummary = { distance: 0, duration: 0 },
+    instructions: initialInstructions = [],
+    theme = "standard",
+    transportMode = "pedestrian",
+    destinationCoords = null,
   } = location.state || {};
 
+  // All state variables used
+  const [currentRoute, setCurrentRoute] = useState<LatLngTuple[]>(initialRoute); // Active route
+  const [currentSummary, setCurrentSummary] = useState(initialSummary); // Route summary
+  const [currentInstructions, setCurrentInstructions] = useState(initialInstructions); // Instructions
+  const [userDeviationDetected, setUserDeviationDetected] = useState(false); // Track route deviation
+  const [rerouted, setRerouted] = useState(false); // Track if rerouting occurred
 
-  // all state variables used :
-  const [currentRoute, setCurrentRoute] = useState<LatLngTuple[]>(initialRoute); // active route/current one before any deviations 
-  const [currentSummary, setCurrentSummary] = useState(initialSummary); // route summary
-  const [currentInstructions, setCurrentInstructions] = useState(initialInstructions); // instructions
-  const [userDeviationDetected, setUserDeviationDetected] = useState(false); // track route deviation
-  const [rerouted, setRerouted] = useState(false); // track if rerouting occurred
-
-  // detect if the user deviates from the route
+  // Detect if the user deviates from the route
   useEffect(() => {
     if (latitude && longitude && currentRoute.length > 0) {
       const userLocation = latLng(latitude, longitude);
@@ -49,57 +49,56 @@ const JourneyPage: React.FC = () => {
       // Check if the user is close to any point on the route
       const isOnRoute = currentRoute.some(([lat, lon]: LatLngTuple) => {
         const point = latLng(lat, lon);
-        return userLocation.distanceTo(point) <= 50; // deviation threshold in meters
+        return userLocation.distanceTo(point) <= 50; // Deviation threshold in meters
       });
 
-      setUserDeviationDetected(!isOnRoute); // update deviation state
+      setUserDeviationDetected(!isOnRoute); // Update deviation state
     }
   }, [latitude, longitude, currentRoute]);
 
-  // handle rerouting if the user deviates from the route
+  // Handle rerouting if the user deviates from the route
   const handleReroute = async () => {
     if (!latitude || !longitude || currentRoute.length === 0) return;
 
     try {
-      // get the last point in the route as the destination
+      // Get the last point in the route as the destination
       const destination = currentRoute[currentRoute.length - 1];
       const [destLat, destLon] = destination;
 
-      // fetch new route, summary, and instructions from the routing service
+      // Fetch new route, summary, and instructions from the routing service
       const { polyline, summary, instructions } = await fetchRoute(
         [latitude, longitude],
         [destLat, destLon],
         transportMode
       );
 
-      // decode the polyline into LatLng tuples
+      // Decode the polyline into LatLng tuples
       const decoded = decode(polyline);
       if (decoded && Array.isArray(decoded.polyline)) {
         const newRoute: LatLngTuple[] = decoded.polyline.map(([lat, lon]) => [lat, lon] as LatLngTuple);
-        setCurrentRoute(newRoute); // update the route
-        setCurrentSummary(summary); // update summary
-        setCurrentInstructions(instructions); // update instructions
-        setRerouted(true); // mark rerouting as done
+        setCurrentRoute(newRoute); // Update the route
+        setCurrentSummary(summary); // Update summary
+        setCurrentInstructions(instructions); // Update instructions
+        setRerouted(true); // Mark rerouting as done
       }
     } catch (error) {
       console.error("Error during rerouting:", error); // Log rerouting errors
     }
   };
 
-
-  // trigger rerouting when deviation is detected
+  // Trigger rerouting when deviation is detected
   useEffect(() => {
     if (userDeviationDetected) handleReroute();
   }, [userDeviationDetected]);
 
-  // function to announce turn-by-turn instructions using audio using speechSynthesis
+  // Announce turn-by-turn instructions using audio
   const announceTurn = (instruction: string) => {
     const synth = window.speechSynthesis;
     const utterance = new SpeechSynthesisUtterance(instruction);
     synth.speak(utterance); // Use Web Speech API to speak the instruction
   };
 
-  // announce the next turn instruction when it changes
+  // Announce the next turn instruction when it changes
   useEffect(() => {
     if (currentInstructions.length > 0) {
       const nextInstruction = currentInstructions[0];
@@ -107,28 +106,57 @@ const JourneyPage: React.FC = () => {
     }
   }, [currentInstructions]);
 
-  // rendering
+  // Socket-related hooks and functions
+  const { error: socketError, connectSocket, hostShare, sendPosition } = useSocket({});
+
+  async function handleShare() {
+    try {
+      // Convert LatLng to string
+      const originCoords = `${currentRoute[0][0]},${currentRoute[0][1]}`;
+      const destinationCoordsFormatted =
+        destinationCoords || `${currentRoute[currentRoute.length - 1][0]},${currentRoute[currentRoute.length - 1][1]}`;
+  
+      const result = await createShare({ origin: originCoords, destination: destinationCoordsFormatted });
+  
+      if (result.id) {
+        connectSocket();
+        if (!socketError) hostShare(result.id);
+      }
+    } catch (err) {
+      console.error("Error during sharing:", err);
+    }
+  }
+
+  useEffect(() => {
+    if (socketError) {
+      console.error("Socket error:", socketError);
+    } else {
+      sendPosition(position);
+    }
+  }, [position]);
+
+  // Rendering
   return (
     <div className="journey-page">
       {/* Render the map component if the route is available */}
       {currentRoute.length > 0 ? (
         <MapComponent
-          latitude={latitude} // Current user latitude
-          longitude={longitude} // Current user longitude
-          heading={heading} // User heading for rotated marker
-          geolocationError={geoError || null} // Pass geolocation errors
-          route={currentRoute} // Current route polyline
-          summary={currentSummary} // Route summary
-          instructions={currentInstructions} // Turn-by-turn instructions
-          originCoords={latLng(currentRoute[0][0], currentRoute[0][1])} // Origin coordinates
+          latitude={latitude}
+          longitude={longitude}
+          heading={heading}
+          geolocationError={geoError || null}
+          route={currentRoute}
+          summary={currentSummary}
+          instructions={currentInstructions}
+          originCoords={latLng(currentRoute[0][0], currentRoute[0][1])}
           destinationCoords={
             destinationCoords ||
             latLng(currentRoute[currentRoute.length - 1][0], currentRoute[currentRoute.length - 1][1])
-          } // Destination coordinates
-          theme={theme} // Map theme
+          }
+          theme={theme}
         />
       ) : (
-        <p>Loading route...</p> // Show loading message if route is unavailable
+        <p>Loading route...</p>
       )}
 
       {/* Display the next turn instruction */}
@@ -137,22 +165,19 @@ const JourneyPage: React.FC = () => {
         <p>{currentInstructions[0]?.instruction || "Continue straight"}</p>
       </div>
 
+      {/* Progress Bar Section */}
+      <ProgressBar progress={rerouted ? 75 : 50} />
 
-      {/* Journey info section */}
-      <div className="journey-info">
-        {/* Progress bar */}
-        <ProgressBar progress={rerouted ? 75 : 50} />
-
-        {/* Feature buttons */}
-        <div className="feature-button">
-          <SosButton />
-          <AlarmButton />
-          <button onClick={() => navigate("/")} className="feature-button">
-            Cancel
-          </button>
-        </div>
-        <button className="feature-button">Share</button>
-        <button className="feature-button">Chat</button>
+      {/* Buttons and Features Section */}
+      <div className="features-container">
+        <SosButton />
+        <AlarmButton />
+        <button className="feature-button" onClick={handleShare}>
+          Share
+        </button>
+        <button className="feature-button" onClick={() => navigate("/")}>
+          Cancel
+        </button>
       </div>
 
       {/* Display weather information */}
