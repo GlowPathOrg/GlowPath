@@ -1,5 +1,5 @@
 import express from "express";
-import { loginController, registerController, profileController } from "../controllers/authControllers";
+import { loginController, registerController } from "../controllers/authControllers";
 import { authMiddleware } from "../middleware/authMiddleware";
 
 
