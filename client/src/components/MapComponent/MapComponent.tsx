@@ -13,6 +13,7 @@ import "../../styles/MapComponent.css"; // Custom styling
 import { Amenity, fetchAmenities } from "../../services/amenitiesService"; // Fetch amenities service
 import mapThemes, { getDefaultTheme, isValidTheme } from "./MapThemes";
 import FitBounds from "./FitBounds";
+import { InstructionsI } from "../../Types/Route";
 
 interface MapComponentProps {
   latitude: number | undefined;
@@ -20,7 +21,7 @@ interface MapComponentProps {
   geolocationError: string | null;
   route: LatLngTuple[]; // Route polyline
   summary: { distance: number; duration: number } | null; // Route summary
-  instructions: any[]; // Turn-by-turn instructions
+  instructions: InstructionsI[]; // Turn-by-turn instructions
   originCoords: LatLng | null; // Origin coordinates
   destinationCoords: LatLng | null; // Destination coordinates
   theme: string; // Map theme
