@@ -1,0 +1,17 @@
+.profile-page {
+  display: flex;
+flex-direction: row;
+  height: 100vh;
+}
+.side-panel {
+  width: 25%;
+  height: 100%;
+
+}
+.main-panel {
+  width: 75%;
+  height: 100%;
+}
+.options-list {
+    list-style: none;
+}

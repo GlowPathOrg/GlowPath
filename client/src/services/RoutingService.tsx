@@ -64,3 +64,14 @@ export const fetchRoute = async (
     throw error; 
   }
 };
+
+//added Fri night:
+// Fetch a rerouted path (same logic as fetchRoute, but named explicitly for clarity)
+export const fetchReroute = async (
+  currentPosition: [number, number], // Current position of the user
+  destination: [number, number], // Destination coordinates
+  transportMode: 'pedestrian' | 'publicTransport' | 'bicycle' // Transport mode for rerouting
+) => {
+  console.log('Rerouting from:', currentPosition, 'to:', destination, 'using mode:', transportMode);
+  return await fetchRoute(currentPosition, destination, transportMode);
+};

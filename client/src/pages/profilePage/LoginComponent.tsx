@@ -1,16 +1,17 @@
 import React, { useState } from "react";
-import { login, profile } from "../services/authService";
-import { useNavigate } from "react-router-dom";
-import Navbar from "../components/Navbar";
+import { login } from "../../services/authService";
+import { useLoginStatus } from "../../hooks/userLogin";
+
+interface LoginComponentProps {
+  setViewOption: (view: string) => void;
+}
 
 
-
-
-const LoginPage = () => {
+const LoginPage: React.FC<LoginComponentProps> = ({setViewOption}) => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [message, setMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-const navigate = useNavigate();
+  const { handleLogin } = useLoginStatus();
 
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,18 +23,12 @@ const navigate = useNavigate();
     setMessage(null);
     setErrorMessage(null);
     try {
-   const response = await login(formData);
-      if (response.token) {
-        setMessage("Login successful!")
-        setTimeout(()=>3);
-        try {
-         await profile();
-          navigate('/me');
-        }
-        catch (error) {
-          console.log('error loading profile', error);
-          throw error;
-        }
+   const response = await login(formData, handleLogin);
+      if (response.data.token) {
+        setMessage("Login successful!");
+        setTimeout(()=>1);
+        setViewOption('settings')
+
 
       } else {
         setErrorMessage("Please check your credentials.");
@@ -48,20 +43,23 @@ const navigate = useNavigate();
 
   return (
     <div className="login-page">
-      <Navbar />
+      <button onClick={() => setViewOption('')}>Sign up</button>
       <form onSubmit={handleSubmit} className="login-form">
         <div className="form-group">
           <h1>Login</h1>
+    <label htmlFor="email">Enter email: </label>
           <input
+          id="email"
             type="email"
             name="email"
-            placeholder="Email"
             value={formData.email}
             onChange={handleChange}
           />
         </div>
         <div className="form-group">
+          <label htmlFor="password">Enter password: </label>
           <input
+          id="password"
             type="password"
             name="password"
             placeholder="Password"

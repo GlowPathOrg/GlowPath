@@ -17,3 +17,8 @@
     stroke-linecap: round;
     stroke-linejoin: round;
   }
+  
+  .map-container{
+  height: "80vh";
+  width: "90vw";
+  }

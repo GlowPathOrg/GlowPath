@@ -1,9 +1,10 @@
 .register-page {
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  gap: 2px;
   align-items: center;
   height: 100vh;
-  background-color: #f9f9f9;
 }
 
 .register-form {

@@ -1,19 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { geocodeAddress } from '../services/geocodingService';
-import { usePosition } from '../hooks/usePosition'; // Import the geolocation hook from Jonas's code
-import Navbar from '../components/Navbar';
+import { fetchRoute } from '../services/RoutingService'; // Import fetchRoute service
+import { usePosition } from '../hooks/usePosition';
+import { LatLngTuple, latLng } from 'leaflet'; // Import LatLngTuple and latLng from Leaflet
+import { decode } from '@here/flexpolyline'; // Polyline decoding function from npm
+import MapComponent from '../components/MapComponent/MapComponent';
+import { InstructionsI } from '../Types/Route';
 
 const WhereToPage: React.FC = () => {
   const navigate = useNavigate();
-  const { latitude, longitude, error: geoError } = usePosition(); // Get the user's live location
-  const [originCoords, setOriginCoords] = useState<{ lat: number; lon: number } | null>(null); // Origin coordinates
-  const [destination, setDestination] = useState<string>(''); // Destination address
-  const [transportMode, setTransportMode] = useState<'pedestrian' | 'publicTransport' | 'bicycle'>('pedestrian'); // Default transport mode
-  const [mapTheme, setMapTheme] = useState<string>('standard'); // Default map theme
+  const { latitude, longitude, error: geoError } = usePosition();
+  const [originCoords, setOriginCoords] = useState<{ lat: number; lon: number } | null>(null);
+  const [destination, setDestination] = useState<string>('');
+  const [route, setRoute] = useState<LatLngTuple[]>([]); // Route coordinates
+  const [summary, setSummary] = useState<{ distance: number; duration: number } | null>(null);
+  const [instructions, setInstructions] = useState<InstructionsI[]>([]);
+  const [transportMode, setTransportMode] = useState<'pedestrian' | 'publicTransport' | 'bicycle'>('pedestrian');
+  const [mapTheme, setMapTheme] = useState<string>('standard');
   const [error, setError] = useState<string | null>(null);
 
-  // Update the origin coordinates based on the user's location
+  // Update origin coordinates when geolocation updates
   useEffect(() => {
     if (latitude && longitude) {
       setOriginCoords({ lat: latitude, lon: longitude });
@@ -27,39 +34,64 @@ const WhereToPage: React.FC = () => {
     }
 
     try {
-      // Geocode the destination address
+      // Geocode the destination
       const destinationCoords = await geocodeAddress(destination);
 
-      setError(null);
-
-      // Navigate to the JourneyPage with query parameters
-      navigate(
-        `/journey?originLat=${originCoords.lat}&originLon=${originCoords.lon}&destinationLat=${destinationCoords.lat}&destinationLon=${destinationCoords.lon}&transportMode=${transportMode}&theme=${mapTheme}`
+      // Fetch the route using the same logic as MapComponent
+      const routeResponse = await fetchRoute(
+        [originCoords.lat, originCoords.lon],
+        [destinationCoords.lat, destinationCoords.lon],
+        transportMode
       );
+
+      const { polyline, instructions: routeInstructions, summary: routeSummary } = routeResponse;
+
+      const decoded = decode(polyline);
+      let routeCoordinates: LatLngTuple[] = []; // Initialize routeCoordinates
+
+      if (decoded && Array.isArray(decoded.polyline)) {
+        routeCoordinates = decoded.polyline.map(
+          ([lat, lon]) => [lat, lon] as LatLngTuple
+        );
+        setRoute(routeCoordinates);
+      }
+
+      setSummary({ distance: routeSummary.length, duration: routeSummary.duration });
+      setInstructions(routeInstructions);
+
+
+      // Navigate to the JourneyPage with data passed as state
+      navigate('/journey', {
+        state: {
+          originCoords: latLng(originCoords.lat, originCoords.lon), // Fixed latLng import
+          destinationCoords: latLng(destinationCoords.lat, destinationCoords.lon), // Fixed latLng import
+          route: routeCoordinates,
+          summary: { distance: routeSummary.length, duration: routeSummary.duration },
+          instructions: routeInstructions,
+          theme: mapTheme,
+        },
+      });
     } catch (err) {
-      console.error('Error during geocoding:', err);
-      setError('Failed to find the location. Please try again.');
-      return err
+      console.error('Error during geocoding or fetching route:', err);
+      setError('Failed to find the location or route. Please try again.');
     }
   };
 
   return (
-    <>
-    <Navbar/>
+   <>
       <div className="where-to-page">
         <h1>Where to?</h1>
-        {/* Display live location */}
+
+        {/* Current Location */}
         <div>
           <p>
             <strong>Your Current Location:</strong>{' '}
-            {originCoords
-              ? `${originCoords.lat.toFixed(4)}, ${originCoords.lon.toFixed(4)}`
-              : 'Fetching your location...'}
+            {originCoords ? `${originCoords.lat.toFixed(4)}, ${originCoords.lon.toFixed(4)}` : 'Fetching your location...'}
           </p>
           {geoError && <p style={{ color: 'red' }}>Geolocation Error: {geoError}</p>}
         </div>
 
-        {/* Destination input */}
+        {/* Destination Input */}
         <div>
           <label htmlFor="destination">Destination:</label>
           <input
@@ -88,11 +120,7 @@ const WhereToPage: React.FC = () => {
         {/* Map Theme Selector */}
         <div>
           <label htmlFor="map-theme">Map Theme:</label>
-          <select
-            id="map-theme"
-            value={mapTheme}
-            onChange={(e) => setMapTheme(e.target.value)}
-          >
+          <select id="map-theme" value={mapTheme} onChange={(e) => setMapTheme(e.target.value)}>
             <option value="standard">Standard</option>
             <option value="dark">Dark</option>
             <option value="satellite">Satellite</option>
@@ -106,8 +134,23 @@ const WhereToPage: React.FC = () => {
 
         {/* Error Message */}
         {error && <p className="error">{error}</p>}
+
+        {/* Map Display */}
+        {route.length > 0 && (
+          <MapComponent
+            latitude={latitude}
+            longitude={longitude}
+            geolocationError={geoError || null}
+            route={route}
+            summary={summary}
+            instructions={instructions}
+            originCoords={latLng(originCoords!.lat, originCoords!.lon)}
+            destinationCoords={latLng(route[route.length - 1][0], route[route.length - 1][1])}
+            theme={mapTheme}
+          />
+        )}
       </div>
-    </>
+   </>
   );
 };
 

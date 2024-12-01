@@ -8,7 +8,7 @@ const authRoutes = express.Router();
 
 authRoutes.post('/register', registerController);
 authRoutes.post('/login',  loginController);
-authRoutes.get('/me', authMiddleware, profileController);
+// authRoutes.get('/me', authMiddleware);
 
 
 

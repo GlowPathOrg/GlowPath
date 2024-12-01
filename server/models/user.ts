@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
-import { UserI } from '../Types/user';
+import { UserI } from '../Types/User';
 
-const userSchema = new mongoose.Schema(
+export const userSchema = new mongoose.Schema(
     {
         email: {
             type: String,
@@ -13,12 +13,35 @@ const userSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
-        // ? i don't know if we actually need this but have it for now
-        role: {
+        firstName: {
             type: String,
-            enum: ["traveller", "observer"],
-            default: "traveller",
+            required: true,
         },
+        lastName: {
+            type: String,
+            required: true,
+        },
+        telephone: {
+            type: String,
+            required: false,
+        },
+        messages: {
+            type: Array,
+            required: false,
+        },
+        places: {
+            type: Array,
+            required: false,
+        },
+        contacts: {
+            type: Array,
+            required: false,
+        },
+        tripHistory: {
+            type: Array,
+            required: false,
+        },
+
 
 
 
