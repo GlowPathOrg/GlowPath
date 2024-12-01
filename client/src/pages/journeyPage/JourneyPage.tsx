@@ -6,6 +6,10 @@ import WeatherInfo from './WeatherInfo'; // Import WeatherInfo component for wea
 import MapComponent from '../../components/MapComponent/MapComponent'; // Import MapComponent to render the map
 import '../../styles/JourneyPage.css'; // Import CSS for styling
 import AlarmButton from './AlarmButton'; // Import AlarmButton component for alarms
+import { useSocket } from '../../hooks/useSocket';
+import { usePosition } from '../../hooks/usePosition';
+import { createShare } from '../../services/shareService';
+import { useEffect } from 'react';
 
 
 
@@ -21,7 +25,29 @@ const JourneyPage: React.FC = () => {
     theme,                // Map theme
   } = location.state || {}; // Destructure state and provide fallbacks in case data is undefined
 
-  
+  const position = usePosition();
+  const { error, connectSocket, hostShare, sendPosition } = useSocket({});
+
+  async function handleShare () {
+    try {
+      const result = await createShare({origin: originCoords, destination: destinationCoords}); // TODO: This has to eventually send the full route object
+      if (result.id) {
+        connectSocket();
+        if (!error) hostShare(result.id);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    if (error) {
+      console.log("Socket error: ", error);
+    } else {
+      sendPosition(position);
+    }
+  }, [position]);
+
   return (
     <div className="journey-page">
       {/* Map Section */}
@@ -45,7 +71,7 @@ const JourneyPage: React.FC = () => {
         <SosButton /> {/* Emergency button for sending SOS alerts */}
         <AlarmButton /> {/* Alarm button for safety purposes */}
         <button className="feature-button">Chat</button> {/* Button to access chat functionality */}
-        <button className="feature-button">Share</button> {/* Button to share journey details */}
+        <button className="feature-button" onClick={handleShare}>Share</button> {/* Button to share journey details */}
         <button className="feature-button">Report</button> {/* Button to report issues or incidents */}
       </div>
 
