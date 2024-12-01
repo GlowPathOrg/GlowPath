@@ -178,6 +178,9 @@ const JourneyPage: React.FC = () => {
         <button className="feature-button" onClick={() => navigate("/")}>
           Cancel
         </button>
+        <button className="feature-button">
+          chat
+        </button>
       </div>
 
       {/* Display weather information */}
