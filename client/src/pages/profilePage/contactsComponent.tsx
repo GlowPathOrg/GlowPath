@@ -3,7 +3,7 @@ const ContactsComponent: React.FC = () => {
 
     return (
         <>
-        CONTACTS COMPONENT
+        CONTACTS COMPONENT - TO DO
         </>
     );
 };
