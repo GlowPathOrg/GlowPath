@@ -1,77 +1,70 @@
-import axios from 'axios';
+import axios from "axios";
+import { decode } from "@here/flexpolyline";
+import { fetchInfrastructureData, processInfrastructureData } from "../services/overpassService";
 
-// fetch a route from the HERE API
 export const fetchRoute = async (
-  origin: [number, number], // Origin coordinates as [latitude, longitude]
-  destination: [number, number], // Destination coordinates as [latitude, longitude]
-  transportMode: 'pedestrian' | 'publicTransport' | 'bicycle' | 'car' // Transport mode for the route
+  origin: [number, number],
+  destination: [number, number],
+  transportMode: "pedestrian" | "publicTransport" | "bicycle" | "car"
 ) => {
-  // Destructure origin and destination coordinates for API parameters
+  // Destructure origin and destination coordinates
   const [originLat, originLon] = origin;
   const [destinationLat, destinationLon] = destination;
 
-  // HERE Routing API url
-  const url = 'https://router.hereapi.com/v8/routes';
-
-  // API key loaded from .env
+  // API key and URL for HERE Routing API
   const apiKey = import.meta.env.VITE_HERE_API_KEY;
+  const url = "https://router.hereapi.com/v8/routes";
 
-  // Check if the API key is available (for debugging if needed)
-  if (!apiKey) {
-    console.error('API Key is undefined. Please check your environment configuration.');
-    throw new Error('API Key is missing');
-  }
+  if (!apiKey) throw new Error("API Key is missing");
 
   try {
-    // Log the parameters being sent to the API for debugging purposes
-    /* console.log('Request Parameters:', {
-      apiKey,
-      transportMode,
-      origin: `${originLat},${originLon}`,
-      destination: `${destinationLat},${destinationLon}`,
-      return: 'polyline,summary,instructions,actions',
-    }); */
-
-    // Send a GET request to the HERE API with the specified parameters
+    // Fetch route data from HERE API
     const response = await axios.get(url, {
       params: {
-        apiKey, 
-        transportMode, 
-        origin: `${originLat},${originLon}`, // Origin location as a string
-        destination: `${destinationLat},${destinationLon}`, // Destination location as a string
-        return: 'polyline,summary,instructions,actions', // API response fields requested
+        apiKey,
+        transportMode,
+        origin: `${originLat},${originLon}`,
+        destination: `${destinationLat},${destinationLon}`,
+        return: "polyline,summary,instructions,actions",
       },
     });
 
-    // Check if the API response contains routes
     if (response.data.routes && response.data.routes.length > 0) {
-      const route = response.data.routes[0].sections[0]; // Extract the first route section this might be changed later
-      console.log('Route Summary:', route.summary);
-      // Return the polyline, summary, and instructions for the route
-      console.log('Actions:', route.actions);
+      const route = response.data.routes[0].sections[0]; // First route section
+      const decodedPolyline = decode(route.polyline).polyline;
+
+      // Calculate bounding box for the route
+      const latitudes = decodedPolyline.map(([lat]) => lat);
+      const longitudes = decodedPolyline.map(([, lon]) => lon);
+      const southWest: [number, number] = [Math.min(...latitudes), Math.min(...longitudes)];
+      const northEast: [number, number] = [Math.max(...latitudes), Math.max(...longitudes)];
+
+      // Fetch infrastructure data using Overpass API
+      const rawInfrastructureData = await fetchInfrastructureData(southWest, northEast);
+
+      // Process the raw data to extract lit streets, sidewalks, police stations, and hospitals
+      const {
+        litStreets = [],
+        sidewalks = [],
+        policeStations = [],
+        hospitals = [],
+      } = processInfrastructureData(rawInfrastructureData);
+
+      // Return all relevant data
       return {
-        polyline: route.polyline, // Encoded polyline for the route
-        summary: route.summary, // Summary details like duration and distance
+        polyline: route.polyline, // Encoded polyline
+        summary: route.summary, // Route summary (distance, duration)
         instructions: route.actions || [], // Turn-by-turn instructions
+        litStreets, // Lit streets from Overpass API
+        sidewalks, // Sidewalks from Overpass API
+        policeStations, // Police stations from Overpass API
+        hospitals, // Hospitals from Overpass API
       };
     } else {
-      
-      throw new Error('No route found in the API response');
+      throw new Error("No route found in the API response");
     }
   } catch (error) {
-    
-    console.error('Request failed. Ensure that your API key is valid and the parameters are correct.');
-    throw error; 
+    console.error("Error fetching route:", error);
+    throw error;
   }
-};
-
-//added Fri night:
-// Fetch a rerouted path (same logic as fetchRoute, but named explicitly for clarity)
-export const fetchReroute = async (
-  currentPosition: [number, number], // Current position of the user
-  destination: [number, number], // Destination coordinates
-  transportMode: 'pedestrian' | 'publicTransport' | 'bicycle' // Transport mode for rerouting
-) => {
-  console.log('Rerouting from:', currentPosition, 'to:', destination, 'using mode:', transportMode);
-  return await fetchRoute(currentPosition, destination, transportMode);
 };

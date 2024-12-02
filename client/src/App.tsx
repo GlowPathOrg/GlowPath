@@ -6,8 +6,8 @@ import WhereToPage from './pages/WhereToPage';
 import HomePage from './pages/HomePage/HomePage';
 import SettingsPage from './pages/SettingsPage'
 import NavigationPage from './pages/NaviagtionPage';
-
 import ObserverPage from './pages/observerPage/ObserverPage';
+//import ChatPage from './pages/ChatPage';
 
 
 
@@ -34,10 +34,10 @@ const App: React.FC = () => {
             <Route path="/where-to" element={<WhereToPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/navigation" element={<NavigationPage />} />
-          
+           
             <Route path="/observe/:id" element={<ObserverPage />} />
            {/*  <Route path="/history" element={<HistoryPage />} />
-            <Route path="/chat" element={<ChatPage />} />
+             <Route path="/chat" element={<ChatPage />} />
             <Route path="/visualizations" element={<VisualizationsPage />} /> */}
           </Routes>
         </main>

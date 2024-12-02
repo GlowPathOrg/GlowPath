@@ -14,6 +14,8 @@ import { LatLngTuple } from "leaflet";
 import "../../styles/JourneyPage.css";
 import { useSocket } from "../../hooks/useSocket";
 import { createShare } from "../../services/shareService";
+import { fetchInfrastructureData, processInfrastructureData } from "../../services/overpassService";
+
 
 const JourneyPage: React.FC = () => {
   // React router hooks to access location state and navigate
@@ -40,6 +42,30 @@ const JourneyPage: React.FC = () => {
   const [currentInstructions, setCurrentInstructions] = useState(initialInstructions); // Instructions
   const [userDeviationDetected, setUserDeviationDetected] = useState(false); // Track route deviation
   const [rerouted, setRerouted] = useState(false); // Track if rerouting occurred
+  const [litStreets, setLitStreets] = useState<LatLngTuple[]>([]);
+  const [sidewalks, setSidewalks] = useState<any[]>([]);
+  const [policeStations, setPoliceStations] = useState<LatLngTuple[]>([]);
+  const [hospitals, setHospitals] = useState<LatLngTuple[]>([]);
+  
+// Fetch infrastructure data on component mount
+useEffect(() => {
+  if (latitude && longitude) {
+    const southWest: [number, number] = [latitude - 0.01, longitude - 0.01];
+    const northEast: [number, number] = [latitude + 0.01, longitude + 0.01];
+
+    fetchInfrastructureData(southWest, northEast)
+      .then((data) => {
+        const { litStreets, sidewalks, policeStations, hospitals } = processInfrastructureData(data);
+        setLitStreets(litStreets.map(({ lat, lon }) => [lat, lon] as LatLngTuple));
+        setSidewalks(sidewalks);
+        setPoliceStations(policeStations.map(({ lat, lon }) => [lat, lon] as LatLngTuple));
+        setHospitals(hospitals.map(({ lat, lon }) => [lat, lon] as LatLngTuple));
+      })
+      .catch((err) => console.error("Error fetching infrastructure data:", err));
+  }
+}, [latitude, longitude]);
+
+
 
   // Detect if the user deviates from the route
   useEffect(() => {
@@ -149,11 +175,16 @@ const JourneyPage: React.FC = () => {
           summary={currentSummary}
           instructions={currentInstructions}
           originCoords={latLng(currentRoute[0][0], currentRoute[0][1])}
+          litStreets={litStreets}
+          sidewalks={sidewalks}
+          policeStations={policeStations}
+          hospitals={hospitals}
           destinationCoords={
             destinationCoords ||
             latLng(currentRoute[currentRoute.length - 1][0], currentRoute[currentRoute.length - 1][1])
           }
           theme={theme}
+          
         />
       ) : (
         <p>Loading route...</p>

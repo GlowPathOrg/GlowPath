@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import {
   MapContainer,
@@ -17,10 +16,10 @@ import { Amenity, fetchAmenities } from "../../services/amenitiesService";
 import mapThemes, { getDefaultTheme, isValidTheme } from "./MapThemes";
 import FitBounds from "./FitBounds"; 
 
-// define the interface for MapComponent props
+// Define the interface for MapComponent props
 interface MapComponentProps {
   latitude: number | null; // User's latitude
-  longitude: number |null; // User's longitude
+  longitude: number | null; // User's longitude
   geolocationError: string | null; // Geolocation error message
   route: LatLngTuple[]; // Route polyline coordinates
   summary: { distance: number; duration: number } | null; // Route summary 
@@ -28,9 +27,12 @@ interface MapComponentProps {
   originCoords: LatLng | null; // Origin coordinates
   destinationCoords: LatLng | null; // Destination coordinates
   theme: string; // Map theme
-  heading: number |null; // Heading for the rotated marker
+  heading: number | null; // Heading for the rotated marker
+  litStreets: LatLngTuple[]; // Array of lit street coordinates
+  sidewalks: { geometry: LatLngTuple[] }[]; // Array of sidewalk geometries
+  policeStations: LatLngTuple[]; // Police station locations
+  hospitals: LatLngTuple[]; // Hospital locations
 }
-
 
 const MapComponent: React.FC<MapComponentProps> = ({
   latitude,
@@ -43,14 +45,19 @@ const MapComponent: React.FC<MapComponentProps> = ({
   destinationCoords,
   theme,
   heading,
-}) => {
-  const [amenities, setAmenities] = useState<Amenity[]>([]); // state for amenities
-  const [isInsideGeofence, setIsInsideGeofence] = useState<boolean>(false); // state for geofence status
+  litStreets = [], // Default to an empty array if undefined
+  sidewalks = [], // Default to an empty array if undefined
+  policeStations = [], // Default to an empty array if undefined
+  hospitals = [], // Default to an empty array if undefined
 
-  // validate and set the map theme
+}) => {
+  const [amenities, setAmenities] = useState<Amenity[]>([]); // State for amenities
+  const [isInsideGeofence, setIsInsideGeofence] = useState<boolean>(false); // State for geofence status
+
+  // Validate and set the map theme
   const validatedTheme = isValidTheme(theme) ? theme : getDefaultTheme();
 
-  // define geofence parameters
+  // Define geofence parameters
   const fenceCenter = latitude && longitude ? latLng(latitude, longitude) : null; 
   const fenceRadius = 100; // Geofence radius in meters
 
@@ -78,7 +85,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
     }
   }, [originCoords, fenceCenter, fenceRadius]);
 
-  // fetch nearby amenities
+  // Fetch nearby amenities
   useEffect(() => {
     const fetchData = async () => {
       if (!originCoords) return; 
@@ -119,18 +126,69 @@ const MapComponent: React.FC<MapComponentProps> = ({
         ) : (
           <p style={{ color: "red" }}>Invalid map theme URL</p>
         )}
+  
+        {/* Lit Streets */}
+        {litStreets.map(([lat, lon], index) => (
+          <Circle
+            key={`lit-${index}`}
+            center={latLng(lat, lon)}
+            radius={10}
+            color="yellow"
+          />
+        ))}
+  
+        {/* Sidewalks */}
+        {sidewalks.map((sidewalk, index) => (
+          <Polyline
+            key={`sidewalk-${index}`}
+            positions={sidewalk.geometry.map(([lat, lon]: LatLngTuple) =>
+              latLng(lat, lon)
+            )}
+            color="green"
+          />
+        ))}
+  
+        {/* Police Stations */}
+{policeStations.map(([lat, lon], index) => (
+  <Marker
+    key={`police-${index}`}
+    position={latLng(lat, lon)}
+    icon={L.icon({
+      iconUrl: "https://img.icons8.com/?size=100&id=R8s6gQ1oAQPH&format=png&color=000000", // Police icon
+      iconSize: [25, 25], // Icon size
+      iconAnchor: [12, 12], // Anchor point
+    })}
+  >
+    <Popup>Police Station</Popup>
+  </Marker>
+))}
 
+{/* Hospitals */}
+{hospitals.map(([lat, lon], index) => (
+  <Marker
+    key={`hospital-${index}`}
+    position={latLng(lat, lon)}
+    icon={L.icon({
+      iconUrl: "https://img.icons8.com/?size=100&id=rBh1fuOC6Bjx&format=png&color=000000", // Hospital icon
+      iconSize: [25, 25], // Icon size
+      iconAnchor: [12, 12], // Anchor point
+    })}
+  >
+    <Popup>Hospital</Popup>
+  </Marker>
+))}
+  
         {/* Fit map bounds to origin and destination */}
         {originCoords && destinationCoords && (
           <FitBounds origin={originCoords} destination={destinationCoords} />
         )}
-
+  
         {/* Rotated Marker for User's Current Location */}
         {latitude && longitude && (
           <Marker
             position={[latitude, longitude]}
             icon={L.icon({
-              iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png", 
+              iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
               iconSize: [30, 30],
               iconAnchor: [15, 15],
             })}
@@ -140,13 +198,13 @@ const MapComponent: React.FC<MapComponentProps> = ({
             <Popup>Current Position</Popup>
           </Marker>
         )}
-
+  
         {/* Destination Marker */}
         {destinationCoords && (
           <Marker
             position={[destinationCoords.lat, destinationCoords.lng]}
             icon={L.icon({
-              iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png", 
+              iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
               iconSize: [30, 30],
               iconAnchor: [15, 15],
             })}
@@ -158,7 +216,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
             </Popup>
           </Marker>
         )}
-
+  
         {/* Route Polyline */}
         {route.length > 0 && (
           <Polyline
@@ -166,13 +224,13 @@ const MapComponent: React.FC<MapComponentProps> = ({
             pathOptions={{ className: "glowing-polyline" }}
           />
         )}
-
+  
         {/* Amenities Markers */}
         {amenities.map((amenity: Amenity, index: number) => {
           const { lat, lon, tags } = amenity;
           const name = tags.name || "Unnamed Amenity";
           return (
-            <Marker key={index} position={latLng(lat, lon)}>
+            <Marker key={`amenity-${index}`} position={latLng(lat, lon)}>
               <Popup>
                 {name} <br />
                 {tags.public_transport || ""} <br />
@@ -181,7 +239,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
             </Marker>
           );
         })}
-
+  
         {/* Geofence Circle */}
         {fenceCenter && (
           <Circle
@@ -192,12 +250,12 @@ const MapComponent: React.FC<MapComponentProps> = ({
           />
         )}
       </MapContainer>
-
+  
       {/* Geolocation Error */}
       {geolocationError && (
         <p style={{ color: "red" }}>Geolocation Error: {geolocationError}</p>
       )}
-
+  
       {/* Geofence Status */}
       <div className="geofence-status">
         <p>
@@ -206,7 +264,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
             : "You are outside the geofence."}
         </p>
       </div>
-
+  
       {/* Route Summary */}
       <div className="summary">
         <h3>Route Summary</h3>
@@ -224,7 +282,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
           <p>Loading route summary...</p>
         )}
       </div>
-
+  
       {/* Turn-by-Turn Instructions */}
       <div className="instructions">
         <h3>Turn-by-Turn Instructions</h3>
@@ -232,7 +290,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
           {instructions.map((instruction, index) => {
             const { instruction: text, action, length, duration } = instruction;
             const icon = actionIcons[action] || "➡️"; // generic arrow
-
+  
             return (
               <li key={index}>
                 <strong>
@@ -253,6 +311,5 @@ const MapComponent: React.FC<MapComponentProps> = ({
     </div>
   );
 };
-
 
 export default MapComponent;

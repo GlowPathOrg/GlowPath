@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { geocodeAddress } from "../services/geocodingService";
 import { fetchRoute } from "../services/RoutingService";
@@ -18,6 +18,10 @@ const WhereToPage: React.FC = () => {
   const [transportMode, setTransportMode] = useState<"pedestrian" | "publicTransport" | "bicycle" | "car">("pedestrian");
   const [mapTheme, setMapTheme] = useState<string>("standard");
   const [error, setError] = useState<string | null>(null);
+  const [litStreets, setLitStreets] = useState<LatLngTuple[]>([]);
+  const [sidewalks, setSidewalks] = useState<any[]>([]);
+  const [policeStations, setPoliceStations] = useState<LatLngTuple[]>([]);
+  const [hospitals, setHospitals] = useState<LatLngTuple[]>([]);
 
   // Simulated heading for testing rotated markers
   const heading = 0; // Default heading, you can update this dynamically if available
@@ -34,24 +38,48 @@ const WhereToPage: React.FC = () => {
       setError("Unable to fetch your current location. Please try again.");
       return;
     }
-
+  
     try {
       const destinationCoords = await geocodeAddress(destination);
+  
+      if (!destinationCoords) {
+        setError("Failed to find the destination. Please check your input.");
+        return;
+      }
+  
       const routeResponse = await fetchRoute(
         [originCoords.lat, originCoords.lon],
         [destinationCoords.lat, destinationCoords.lon],
         transportMode
       );
-
-      const { polyline, instructions: routeInstructions, summary: routeSummary } = routeResponse;
-
+  
+      const {
+        polyline,
+        instructions: routeInstructions,
+        summary: routeSummary,
+        litStreets: fetchedLitStreets,
+        sidewalks: fetchedSidewalks,
+        policeStations: fetchedPoliceStations,
+        hospitals: fetchedHospitals,
+      } = routeResponse;
+  
       const decoded = decode(polyline);
       const routeCoordinates: LatLngTuple[] = decoded.polyline.map(([lat, lon]) => [lat, lon]);
-
+  
       setRoute(routeCoordinates);
       setSummary({ distance: routeSummary.length, duration: routeSummary.duration });
       setInstructions(routeInstructions);
-
+  
+      // Transform fetched data into LatLngTuple format
+      setLitStreets(fetchedLitStreets.map(({ lat, lon }: { lat: number; lon: number }) => [lat, lon] as LatLngTuple));
+      setSidewalks(fetchedSidewalks || []);
+      setPoliceStations(
+        fetchedPoliceStations.map(({ lat, lon }: { lat: number; lon: number }) => [lat, lon] as LatLngTuple)
+      );
+      setHospitals(
+        fetchedHospitals.map(({ lat, lon }: { lat: number; lon: number }) => [lat, lon] as LatLngTuple)
+      );
+  
       navigate("/navigation", {
         state: {
           originCoords: latLng(originCoords.lat, originCoords.lon),
@@ -59,6 +87,13 @@ const WhereToPage: React.FC = () => {
           route: routeCoordinates,
           summary: { distance: routeSummary.length, duration: routeSummary.duration },
           instructions: routeInstructions,
+          litStreets: fetchedLitStreets.map(({ lat, lon }: { lat: number; lon: number }) => [lat, lon] as LatLngTuple),
+          sidewalks: fetchedSidewalks,
+          policeStations: fetchedPoliceStations.map(({ lat, lon }: { lat: number; lon: number }) => [
+            lat,
+            lon,
+          ] as LatLngTuple),
+          hospitals: fetchedHospitals.map(({ lat, lon }: { lat: number; lon: number }) => [lat, lon] as LatLngTuple),
           theme: mapTheme,
         },
       });
@@ -104,6 +139,7 @@ const WhereToPage: React.FC = () => {
           <option value="pedestrian">Walking</option>
           <option value="publicTransport">Public Transport</option>
           <option value="bicycle">Bicycle</option>
+          <option value="car">Car</option>
         </select>
       </div>
 
@@ -138,6 +174,10 @@ const WhereToPage: React.FC = () => {
           originCoords={latLng(originCoords!.lat, originCoords!.lon)}
           destinationCoords={latLng(route[route.length - 1][0], route[route.length - 1][1])}
           theme={mapTheme}
+          litStreets={litStreets}
+          sidewalks={sidewalks}
+          policeStations={policeStations}
+          hospitals={hospitals}
         />
       )}
     </div>
