@@ -1,6 +1,16 @@
-export interface InstructionsI {
-    _id: string;
+export interface ActionI {
+
     action: string;
+    duration: number;
+    length: number;
+    instruction: string;
+    offset: number;
+
+}
+
+export interface InstructionsI{
+    _id: string;
+    actions: ActionI[];
     duration: number;
     length: number;
     instruction: string;
@@ -11,16 +21,24 @@ export interface InstructionsI {
 
 
 export interface SummaryI {
-    _id: string;
+    _id?: string;
     duration: number;
     length: number;
-    baseDuration: number;
+    baseDuration?: number;
 }
 
 
 export interface RouteI {
-    _id: string;
-    polyline: string;
+    _id?: string;
+    polyline: [[]];
     instructions: InstructionsI[];
     summary: SummaryI;
+}
+
+
+export interface RouteRequestI {
+    origin: string | number[],
+    destination: string | number[],
+    transportMode?: 'pedestrian' | 'publicTransport' | 'bicycle' | 'car' | null,
+    return?: 'polyline,summary,instructions,actions',
 }

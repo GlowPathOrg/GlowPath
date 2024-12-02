@@ -1,7 +1,6 @@
-import { Document } from "mongoose";
-export interface NavigationI {
+export interface InstructionsI {
     _id: string;
-    action: string;
+    actions: string[];
     duration: number;
     length: number;
     instruction: string;
@@ -12,16 +11,24 @@ export interface NavigationI {
 
 
 export interface SummaryI {
-    _id: string;
-    duration: number;
-    length: number;
-    baseDuration: number;
+    _id?: string;
+    duration?: number;
+    length?: number;
+    baseDuration?: number;
 }
 
 
-export interface RouteI extends Document {
-    _id: string;
-    polyline: string;
-    instructions: NavigationI[];
+export interface RouteI {
+    _id?: string;
+    polyline: [[]];
+    instructions: InstructionsI[];
     summary: SummaryI;
+}
+
+
+export interface RouteRequestI {
+    origin: string | number[]
+    destination: string | number[] | null, // Destination coordinates as [latitude, longitude]
+    transportMode?: 'pedestrian' | 'publicTransport' | 'bicycle' | 'car' | null,
+    return?: 'polyline,summary,instructions,actions',
 }

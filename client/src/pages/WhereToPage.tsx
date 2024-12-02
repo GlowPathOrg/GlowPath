@@ -6,6 +6,7 @@ import { usePosition } from "../hooks/usePosition";
 import { LatLngTuple, latLng } from "leaflet";
 import { decode } from "@here/flexpolyline";
 import MapComponent from "../components/MapComponent/MapComponent";
+import { InstructionsI, RouteRequestI, SummaryI } from "../Types/Route";
 
 const WhereToPage: React.FC = () => {
   const navigate = useNavigate();
@@ -13,8 +14,8 @@ const WhereToPage: React.FC = () => {
   const [originCoords, setOriginCoords] = useState<{ lat: number; lon: number } | null>(null);
   const [destination, setDestination] = useState<string>("");
   const [route, setRoute] = useState<LatLngTuple[]>([]);
-  const [summary, setSummary] = useState<{ distance: number; duration: number } | null>(null);
-  const [instructions, setInstructions] = useState<any[]>([]);
+  const [summary, setSummary] = useState<SummaryI | null>(null);
+  const [instructions, setInstructions] = useState<InstructionsI[]>([]);
   const [transportMode, setTransportMode] = useState<"pedestrian" | "publicTransport" | "bicycle" | "car">("pedestrian");
   const [mapTheme, setMapTheme] = useState<string>("standard");
   const [error, setError] = useState<string | null>(null);
@@ -37,11 +38,15 @@ const WhereToPage: React.FC = () => {
 
     try {
       const destinationCoords = await geocodeAddress(destination);
+      const routeRequest: RouteRequestI = {
+        origin: [originCoords.lat, originCoords.lon],
+        destination: [destinationCoords.lat, destinationCoords.lon],
+        transportMode: transportMode,
+      }
       const routeResponse = await fetchRoute(
-        [originCoords.lat, originCoords.lon],
-        [destinationCoords.lat, destinationCoords.lon],
-        transportMode
+        routeRequest
       );
+
 
       const { polyline, instructions: routeInstructions, summary: routeSummary } = routeResponse;
 
@@ -49,7 +54,7 @@ const WhereToPage: React.FC = () => {
       const routeCoordinates: LatLngTuple[] = decoded.polyline.map(([lat, lon]) => [lat, lon]);
 
       setRoute(routeCoordinates);
-      setSummary({ distance: routeSummary.length, duration: routeSummary.duration });
+      setSummary({ length: routeSummary.length, duration: routeSummary.duration });
       setInstructions(routeInstructions);
 
       navigate("/navigation", {
@@ -57,7 +62,7 @@ const WhereToPage: React.FC = () => {
           originCoords: latLng(originCoords.lat, originCoords.lon),
           destinationCoords: latLng(destinationCoords.lat, destinationCoords.lon),
           route: routeCoordinates,
-          summary: { distance: routeSummary.length, duration: routeSummary.duration },
+          summary: { length: routeSummary.length, duration: routeSummary.duration },
           instructions: routeInstructions,
           theme: mapTheme,
         },
