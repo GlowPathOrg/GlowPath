@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import SettingsComponent from "./SettingsComponent";
+import SettingsComponent from "./SettingsComp";
 import { useLoginStatus } from "../../hooks/userLogin";
 import RegisterComponent from "./RegisterComponent";
 import HelpComponent from "./HelpComponent";

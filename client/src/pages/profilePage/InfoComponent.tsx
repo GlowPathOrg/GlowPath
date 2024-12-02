@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../../styles/InfoComponent.css';
 import { useLoginStatus } from '../../hooks/userLogin';
 import { editProfile } from '../../services/authService';
@@ -7,7 +7,7 @@ const InfoComponent: React.FC = () => {
     const { userData, handleLogin } = useLoginStatus();
     const [editMode, setEditMode] = useState(false);
     const [showModal, setShowModal] = useState(false);
-    const [reenteredPassword, setReenteredPassword] = useState('');
+   const [reenteredPassword, setReenteredPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [fieldBeingEdited, setFieldBeingEdited] = useState<string | null>(null);
     const [formData, setFormData] = useState({
@@ -17,6 +17,18 @@ const InfoComponent: React.FC = () => {
         password: userData?.password || '',
         telephone: userData?.telephone || '',
     });
+
+    useEffect(() => {
+        if (userData) {
+            setFormData({
+                firstName: userData.firstName || '',
+                lastName: userData.lastName || '',
+                email: userData.email || '',
+                password: userData.password || '',
+                telephone: userData.telephone || '',
+            });
+        }
+    }, [userData]);
 
     const toggleEditMode = () => {
         setEditMode(!editMode);
@@ -44,7 +56,6 @@ const InfoComponent: React.FC = () => {
 
 
         try {
-console.log('sending from component', fieldBeingEdited, userData)
             await editProfile({
                 [fieldBeingEdited as keyof typeof formData]: formData[fieldBeingEdited as keyof typeof formData],
                 password: reenteredPassword,
@@ -54,10 +65,12 @@ console.log('sending from component', fieldBeingEdited, userData)
             console.log('Profile updated successfully!');
             setShowModal(false);
             setFieldBeingEdited(null);
+            setEditMode(false);
         } catch (error) {
             console.error('Error updating profile:', error);
             setErrorMessage('Failed to update profile. Please try again.');
         }
+        setReenteredPassword('');
     };
 
     return (
