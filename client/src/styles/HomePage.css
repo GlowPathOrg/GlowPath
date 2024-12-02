@@ -1,3 +1,4 @@
+
 .profile-page {
     font-family: 'Arial', sans-serif;
     display: flex;
@@ -58,3 +59,111 @@
     justify-content: center;
     align-items: flex-start;
 }
+
+
+.home-page {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
+
+
+.Home-map-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 70%; /* Adjust map height to leave space below */
+  z-index: 1; /*  map is behind other elements */
+}
+
+/* Search section below the map */
+.search-section {
+  position: absolute;
+  bottom: 20%;
+  left: 0;
+  width: 100%;
+  padding: 20px;
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  z-index: 2; /* Ensure it is above the map */
+}
+
+
+.search-bar {
+  background: #fff;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  width: 80%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.search-bar input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+}
+
+.microphone-icon {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* Full-page overlay for expanded search */
+.full-page-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #222; /* Background color for the expanded view */
+  z-index: 4; /* to ensure it covers the map and search bar */
+  display: flex;
+  flex-direction: column;
+}
+
+
+.back-button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  margin: 10px;
+  cursor: pointer;
+}
+
+/* Expanded search container */
+.expanded-search {
+  flex: 1;
+  padding: 20px;
+  color: #fff;
+  overflow-y: auto; /* for scrolling if content overflows */
+}
+
+
+.footer-bar {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background: #333;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+  z-index: 2; /* to ensure it appears above the map */
+}
+
+.footer-icon {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+

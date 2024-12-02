@@ -1,49 +1,71 @@
-import React from "react";
+
+
 import HomeMap from "../HomePage/HomeMap";
-import { Link } from "react-router-dom"; // Import Link for navigation
 import "../../styles/HomePage.css"; // Import custom styles if needed
 import '../../styles/Footer.css'
+import { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
+import "../../styles/HomePage.css"; // Import custom styles
+import WhereToPage from "../WhereToPage"; // Import WhereToPage component
 
 
 const HomePage: React.FC = () => {
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false); // State to toggle search drawer
+  const navigate = useNavigate();
+
+  const handleSearchClick = () => {
+    setIsSearchExpanded(true); // Expand the search drawer when clicked
+  };
+
+  const handleCloseSearch = () => {
+    setIsSearchExpanded(false); // Close the search drawer
+  };
+
   return (
-    <>
-      <div className="home-page">
-        <h1>Welcome to the Home Page</h1>
-
-        {/* Map Section */}
-
+    <div className="home-page">
+      {/* Map Section */}
+      <div className="Home-map-container">
         <HomeMap />
-
-        {/* Navigation Section */}
-        <div className="navigation-section">
-          <Link to="/where-to">
-            <button className="navigation-button">Where to</button>
-          </Link>
-          <Link to="/history">
-            <button className="navigation-button">History</button>
-          </Link>
-        </div>
-
-        {/* Footer Section */}
-        <footer className="footer-bar">
-          {/* Home Button */}
-          <Link to="/" className="footer-icon">
-            🏠 {/* Home Icon */}
-          </Link>
-
-          {/* History Button */}
-          <Link to="/analytics" className="footer-icon">
-            🕒 {/* History Icon */}
-          </Link>
-
-          {/* Profile Button */}
-          <Link to="/profile" className="footer-icon">
-            👤 {/* Profile Icon */}
-          </Link>
-        </footer>
       </div>
-    </>
+
+      {/* Search Bar Section (under the map) */}
+      {!isSearchExpanded && (
+        <div className="search-section">
+          <div className="search-bar" onClick={handleSearchClick}>
+            <input type="text" placeholder="Where to?" readOnly />
+            <button className="microphone-icon">🎤</button>
+          </div>
+        </div>
+      )}
+
+      {/* Expandable Search Drawer */}
+      {isSearchExpanded && (
+        <div className="full-page-overlay">
+          {/* WhereToPage Content */}
+          <div className="expanded-search">
+            <button className="back-button" onClick={handleCloseSearch}>
+              ⬅ Back
+            </button>
+            <WhereToPage />
+          </div>
+        </div>
+      )}
+
+      {/* Footer Section */}
+      <footer className="footer-bar">
+        {/* Navigation Icons */}
+        <button className="footer-icon" onClick={() => navigate("/")}>
+          🏠 {/* Home Icon */}
+        </button>
+        <button className="footer-icon" onClick={() => navigate("/analytics")}>
+          📊 {/* Analytics Icon */}
+        </button>
+        <button className="footer-icon" onClick={() => navigate("/profile")}>
+          👤 {/* Profile Icon */}
+        </button>
+      </footer>
+    </div>
+
   );
 };
 

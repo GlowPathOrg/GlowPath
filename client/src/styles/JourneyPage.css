@@ -1,49 +1,203 @@
+
 .journey-page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 1rem;
-  }
-  
-  .progress-bar {
-    width: 100%; 
-    background-color: #ddd; /* Background track */
-    height: 10px; 
-    border-radius: 5px; 
-    overflow: hidden; /* Prevent overflow */
-    margin: 20px 0;
-  }
-  
-  .progress-bar-fill {
-    height: 100%; 
-    background-color: #4caf50; 
-    transition: width 0.5s ease-in-out; /* Smooth transition */
-  }
-  
-  .features-container {
-    display: flex;
-    gap: 1rem;
-  }
-  
-  .feature-button,
-  .sos-button {
-    padding: 0.5rem 1rem;
-    background-color: #ff5757;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  .alarm-button {
-    padding: 0.5rem 1rem;
-    background-color: #ff5757; 
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-  }
-  
-  .weather-info {
-    margin: 1rem 0;
-  } 
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  padding: 20px;
+  color: #333;
+}
+
+
+.journey-page h1 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #2c3e50;
+}
+
+
+.map-component {
+  position: relative;
+  margin-bottom: 20px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+
+.map-container {
+  height: 70vh;
+  width: 100%;
+  border-radius: 8px;
+}
+
+
+.geofence-status {
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  color: #2ecc71;
+}
+
+.geofence-status p {
+  margin: 0;
+}
+
+
+.summary {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #ecf0f1;
+  border-radius: 8px;
+  border: 1px solid #bdc3c7;
+}
+
+.summary h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #34495e;
+}
+
+.summary p {
+  margin: 0;
+  font-size: 14px;
+  color: #555;
+}
+
+
+.instructions {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #fff;
+  border-radius: 8px;
+  border: 1px solid #bdc3c7;
+}
+
+.instructions h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #34495e;
+}
+
+.instructions ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.instructions li {
+  margin-bottom: 8px;
+  font-size: 14px;
+  background-color: #f4f4f4;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+.instructions li strong {
+  color: #2980b9;
+}
+
+.instructions li em {
+  font-style: normal;
+  color: #7f8c8d;
+}
+
+
+.alert-container {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #e74c3c;
+  color: white;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 16px;
+}
+
+
+.feature-button {
+  display: inline-block;
+  padding: 10px 20px;
+  margin: 10px 5px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #fff;
+  background-color: #3498db;
+  border: none;
+  border-radius: 4px;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-align: center;
+}
+
+.feature-button:hover {
+  background-color: #2980b9;
+}
+
+.feature-button:active {
+  background-color: #1c669c;
+}
+
+
+.feature-button:nth-child(2),
+.feature-button:nth-child(3) {
+  background-color: #2ecc71;
+}
+
+.feature-button:nth-child(2):hover,
+.feature-button:nth-child(3):hover {
+  background-color: #27ae60;
+}
+
+.feature-button:nth-child(2):active,
+.feature-button:nth-child(3):active {
+  background-color: #1e8449;
+}
+
+/* Cancel Button */
+.feature-button:nth-child(4) {
+  background-color: #e74c3c;
+}
+
+.feature-button:nth-child(4):hover {
+  background-color: #c0392b;
+}
+
+.feature-button:nth-child(4):active {
+  background-color: #a93226;
+}
+
+/* Progress Bar */
+.progress-bar {
+  margin: 15px 0;
+  height: 10px;
+  background-color: #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar .progress {
+  height: 100%;
+  background-color: #3498db;
+  width: 0;
+  transition: width 0.3s ease;
+}
+
+/* Weather Info */
+.weather-info {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #ecf0f1;
+  border-radius: 8px;
+  border: 1px solid #bdc3c7;
+  text-align: center;
+  font-size: 14px;
+}
+
+.weather-info h4 {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #34495e;
+}
