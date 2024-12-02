@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import SettingsComponent from "./SettingsComp";
 import { useLoginStatus } from "../../hooks/userLogin";
 import RegisterComponent from "./RegisterComponent";
-import HelpComponent from "./HelpComponent";
-import ContactsComponent from "./ContactsComponent";
 import "../../styles/profilePage.css";
 import "../../styles/Footer.css";
 import LoginComponent from "./LoginComponent";
@@ -29,9 +27,9 @@ const ProfilePage = () => {
       <div className="menu-panel">
         <button className="menu-button" onClick={() => setViewOption("settings")}>Settings</button>
         <button className="menu-button" onClick={() => setViewOption("info")}>My Information</button>
-        <button className="menu-button" onClick={() => setViewOption("contacts")}>Contacts</button>
+       {/*  <button className="menu-button" onClick={() => setViewOption("contacts")}>Contacts</button>
         <button className="menu-button" onClick={() => setViewOption("help")}>Help</button>
-        <button className="menu-button" onClick={() => handleLogout()}>Log Out</button>
+        */} <button className="menu-button" onClick={() => handleLogout()}>Log Out</button>
       </div>
 
       <div className="main-content">
@@ -42,8 +40,8 @@ const ProfilePage = () => {
           {viewOption === "info" &&  <InfoComponent />}
           {viewOption === "" && <RegisterComponent setViewOption={setViewOption} />}
           {viewOption === "login" && <LoginComponent setViewOption={setViewOption} />}
-          {viewOption === "contacts" && <ContactsComponent />}
-          {viewOption === "help" && <HelpComponent />}
+          {/* {viewOption === "contacts" && <ContactsComponent />}
+          {viewOption === "help" && <HelpComponent />} */}
         </div>
         <footer className="footer-bar">
           {/* Home Button */}

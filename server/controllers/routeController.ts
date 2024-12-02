@@ -6,18 +6,18 @@ import { Request, Response } from 'express';
 dotenv.config();
 
 // fetch a route from the HERE API
-export const routeController = async(req: Request, res: Response): Promise<void | RouteI> => {
-    if (!req.body) {
-        res.status(400);
+export const routeController = async(req: Request, res: Response): Promise<void> => {
+    if (!req.query) {
+        res.status(401).json({message: 'no parameters sent'});
         throw new Error('something wrong in request')
     }
-    const {origin, destination, transportMode} = req.body;
+    const {origin, destination, transportMode} = req.query;
             /*  origin: [number, number], // Origin coordinates as [latitude, longitude]
     destination: [number, number], // Destination coordinates as [latitude, longitude]
     transportMode: 'pedestrian' | 'publicTransport' | 'bicycle' | 'car' // Transport mode for the route */
     // Destructure origin and destination coordinates for API parameters
-    const [originLat, originLon] = origin;
-    const [destinationLat, destinationLon] = destination;
+    const [originLat, originLon] = (origin as string).split(',');
+    const [destinationLat, destinationLon] = (destination as string).split(',');
 
     // HERE Routing API url
     const url = 'https://router.hereapi.com/v8/routes';
@@ -27,6 +27,7 @@ export const routeController = async(req: Request, res: Response): Promise<void 
 
     // Check if the API key is available (for debugging if needed)
     if (!apiKey) {
+        res.status(505);
         console.error('API Key is undefined. Please check your environment configuration.');
         throw new Error('API Key is missing');
     }
@@ -55,22 +56,21 @@ export const routeController = async(req: Request, res: Response): Promise<void 
         // Check if the API response contains routes
         if (response.data.routes && response.data.routes.length > 0) {
             const route: RouteI = response.data.routes[0].sections[0]; // Extract the first route section this might be changed later
-            console.log('Route Summary:', route.summary);
+            console.log('Route:', route.summary);
             // Return the polyline, summary, and instructions for the route
-            console.log('Actions:', route.instructions);
-            return {
+            res.status(200).json({
                 polyline: route.polyline, // Encoded polyline for the route
                 summary: route.summary, // Summary details like duration and distance
                 instructions: route.instructions || [], // Turn-by-turn instructions
-            };
+            });
         } else {
-
-            throw new Error('No route found in the API response');
+            res.status(400);
+            throw new Error('No route found in the API');
         }
     } catch (error) {
+        res.status(403);
+        throw new Error('Request failed. Ensure that your API key is valid and the parameters are correct.');
 
-        console.error('Request failed. Ensure that your API key is valid and the parameters are correct.');
-        throw error;
     }
 };
 

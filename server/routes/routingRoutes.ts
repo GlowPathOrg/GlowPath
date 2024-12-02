@@ -3,11 +3,12 @@ import { routeController } from "../controllers/routeController";
 import { authMiddleware } from "../middleware/authMiddleware";
 
 
-const routingRoute = express.Router();
+const routingRoutes = express.Router();
 
 
-export default routingRoute.post('/route', routeController);
+routingRoutes.get('/fetch', routeController);
 
 
 
 
+export default routingRoutes;

@@ -11,11 +11,12 @@ import {
 import L from "leaflet"; // for map manipulation
 import "leaflet-rotatedmarker"; // plugin for rotated markers
 import { latLng, LatLng, LatLngTuple } from "leaflet";
-import "leaflet/dist/leaflet.css"; 
-import "../../styles/MapComponent.css"; 
-import { Amenity, fetchAmenities } from "../../services/amenitiesService"; 
+import "leaflet/dist/leaflet.css";
+import "../../styles/MapComponent.css";
+import { Amenity, fetchAmenities } from "../../services/amenitiesService";
 import mapThemes, { getDefaultTheme, isValidTheme } from "./MapThemes";
-import FitBounds from "./FitBounds"; 
+import FitBounds from "./FitBounds";
+import { InstructionsI, SummaryI } from "../../Types/Route";
 
 // define the interface for MapComponent props
 interface MapComponentProps {
@@ -23,8 +24,8 @@ interface MapComponentProps {
   longitude: number |null; // User's longitude
   geolocationError: string | null; // Geolocation error message
   route: LatLngTuple[]; // Route polyline coordinates
-  summary: { distance: number; duration: number } | null; // Route summary 
-  instructions: any[]; // Turn-by-turn instructions
+  summary: SummaryI | null; // Route summary
+  instructions: InstructionsI[]; // Turn-by-turn instructions
   originCoords: LatLng | null; // Origin coordinates
   destinationCoords: LatLng | null; // Destination coordinates
   theme: string; // Map theme
@@ -51,14 +52,14 @@ const MapComponent: React.FC<MapComponentProps> = ({
   const validatedTheme = isValidTheme(theme) ? theme : getDefaultTheme();
 
   // define geofence parameters
-  const fenceCenter = latitude && longitude ? latLng(latitude, longitude) : null; 
+  const fenceCenter = latitude && longitude ? latLng(latitude, longitude) : null;
   const fenceRadius = 100; // Geofence radius in meters
 
   // Icons for turn-by-turn instructions
   const actionIcons: Record<string, string> = {
-    depart: "🏁", 
-    arrive: "🏁", 
-    left: "⬅️", 
+    depart: "🏁",
+    arrive: "🏁",
+    left: "⬅️",
     straight: "⬆️",
   };
 
@@ -81,7 +82,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
   // fetch nearby amenities
   useEffect(() => {
     const fetchData = async () => {
-      if (!originCoords) return; 
+      if (!originCoords) return;
       try {
         const data = await fetchAmenities(500, {
           lat: originCoords.lat,
@@ -130,7 +131,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
           <Marker
             position={[latitude, longitude]}
             icon={L.icon({
-              iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png", 
+              iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
               iconSize: [30, 30],
               iconAnchor: [15, 15],
             })}
@@ -146,7 +147,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
           <Marker
             position={[destinationCoords.lat, destinationCoords.lng]}
             icon={L.icon({
-              iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png", 
+              iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
               iconSize: [30, 30],
               iconAnchor: [15, 15],
             })}
@@ -213,7 +214,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
         {summary ? (
           <div>
             <p>
-              <strong>Distance:</strong> {summary.distance / 1000} km
+              <strong>Distance:</strong> {summary.length / 1000} km
             </p>
             <p>
               <strong>Duration:</strong> {Math.ceil(summary.duration / 60)}{" "}
@@ -230,13 +231,14 @@ const MapComponent: React.FC<MapComponentProps> = ({
         <h3>Turn-by-Turn Instructions</h3>
         <ul>
           {instructions.map((instruction, index) => {
-            const { instruction: text, action, length, duration } = instruction;
-            const icon = actionIcons[action] || "➡️"; // generic arrow
+            const { instruction: text, actions, length, duration } = instruction;
+            const actionIconssString = actions
+              .map((action) => actionIcons[action.instruction] || "➡️");
 
             return (
               <li key={index}>
                 <strong>
-                  {icon} {action}:
+                  {actionIconssString} {text}:
                 </strong>{" "}
                 {text} <br />
                 <em>Distance: {length || "Unknown"} m</em>

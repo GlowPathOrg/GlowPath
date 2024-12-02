@@ -11,24 +11,24 @@ export interface InstructionsI {
 
 
 export interface SummaryI {
-    _id: string;
-    duration: number;
-    length: number;
-    baseDuration: number;
+    _id?: string;
+    duration?: number;
+    length?: number;
+    baseDuration?: number;
 }
 
 
 export interface RouteI {
     _id?: string;
-    polyline: string;
+    polyline: [[]];
     instructions: InstructionsI[];
     summary: SummaryI;
 }
 
 
 export interface RouteRequestI {
-    origin: string | null;
-    destination: string | null, // Destination coordinates as [latitude, longitude]
-    transportMode: 'pedestrian' | 'publicTransport' | 'bicycle' | 'car' | null,
-    return: 'polyline,summary,instructions,actions',
+    origin: string | number[]
+    destination: string | number[] | null, // Destination coordinates as [latitude, longitude]
+    transportMode?: 'pedestrian' | 'publicTransport' | 'bicycle' | 'car' | null,
+    return?: 'polyline,summary,instructions,actions',
 }

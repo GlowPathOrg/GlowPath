@@ -2,22 +2,18 @@ import axios from 'axios';
 import { RouteRequestI } from '../Types/Route';
 
 
+
 // fetch a route from the HERE API
 export const fetchRoute = async (
-  origin: [number, number], // Origin coordinates as [latitude, longitude]
-  destination: [number, number], // Destination coordinates as [latitude, longitude]
-  transportMode: 'pedestrian' | 'publicTransport' | 'bicycle' | 'car' // Transport mode for the route
+  RouteReqItem: RouteRequestI
 ) => {
-
+  const { transportMode, destination, origin } = RouteReqItem;
   // Destructure origin and destination coordinates for API parameters
   const [originLat, originLon] = origin;
   const [destinationLat, destinationLon] = destination;
 
   // Changed from api url to backend url
-  const url = import.meta.env.BACKEND_URL;
-
-
-
+  const url = import.meta.env.BACKEND_URL ||'http://localhost:3002';
   try {
     // Log the parameters being sent to the API for debugging purposes
     /* console.log('Request Parameters:', {
@@ -29,31 +25,21 @@ export const fetchRoute = async (
     }); */
 
     // Send a GET request to the HERE API with the specified parameters
-    const requestBody: RouteRequestI = {
+    const params: RouteRequestI = {
       transportMode,
       origin: `${originLat},${originLon}`, // Origin location as a string
       destination: `${destinationLat},${destinationLon}`, // Destination location as a string
-      return: 'polyline,summary,instructions,actions', // API response fields requested
+      return: 'polyline,summary,instructions,actions',
     }
 
-    const response = await axios.post(`${url}/route`, requestBody);
-
+    const response = await axios.get(`${url}/route/fetch`, { params });
+    const data = response.data;
+    console.log('here is daata', data)
     // Check if the API response contains routes
-    if (response.data.routes && response.data.routes.length > 0) {
-      const route = response.data.routes[0].sections[0]; // Extract the first route section this might be changed later
-      console.log('Route Summary:', route.summary);
-      // Return the polyline, summary, and instructions for the route
-      console.log('Actions:', route.actions);
+    if (data) {
+      return data
+    } else throw new Error('error in awaiting controller from route service')
 
-      return {
-        polyline: route.polyline, // Encoded polyline for the route
-        summary: route.summary, // Summary details like duration and distance
-        instructions: route.instructions || [], // Turn-by-turn instructions
-      };
-    } else {
-
-      throw new Error('No route found in the API response');
-    }
   } catch (error) {
 
     console.error('Request failed:' + error);
@@ -63,11 +49,14 @@ export const fetchRoute = async (
 
 //added Fri night:
 // Fetch a rerouted path (same logic as fetchRoute, but named explicitly for clarity)
-export const fetchReroute = async (
-  currentPosition: [number, number], // Current position of the user
-  destination: [number, number], // Destination coordinates
-  transportMode: 'pedestrian' | 'publicTransport' | 'bicycle' // Transport mode for rerouting
-) => {
+export const fetchReroute = async (ReRouteReqItem: RouteRequestI, currentPosition: number[]) => {
+
+  const { transportMode, destination } = ReRouteReqItem;
+  const newRequest = {
+    origin: currentPosition,
+    destination: destination,
+    transportMode: transportMode
+  }
   console.log('Rerouting from:', currentPosition, 'to:', destination, 'using mode:', transportMode);
-  return await fetchRoute(currentPosition, destination, transportMode);
+  return await fetchRoute(newRequest);
 };

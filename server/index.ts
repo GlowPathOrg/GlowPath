@@ -5,6 +5,7 @@ import cors, { CorsOptions } from "cors";
 import authRoutes from "./routes/authRoutes";
 import shareRoutes from "./routes/shareRoutes";
 import DBConnect from "./models";
+import routeApiRouter from "./routes/routingRoutes";
 import routingRoutes from "./routes/routingRoutes";
 configDotenv();
 const app = express();
