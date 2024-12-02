@@ -5,11 +5,62 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <script src="/socket.io/socket.io.js"></script>
-   <script>
-      const socket = io();
-   </script>
 </head>
 <body>
-  <h1>Socket.io client</h1>
+  <h1>Socket.io client sender</h1>
+  <button id="host">Host</button>
+  <button id="join">Join</button>
+  <script>
+    const hostButton = document.querySelector("#host");
+    hostButton.addEventListener("click", async () => {
+      const headers = new Headers()
+      headers.append('Content-type', 'application/json')
+      const res = await fetch("http://localhost:3002/auth/login", {
+        method: "POST",
+        body: JSON.stringify({email: "test@test.test", password: "test1234"}),
+        headers
+      });
+      const { token } = await res.json();
+      console.log("Token: ", token)
+
+      headers.append('Authorization', 'Bearer ' + token)
+      const result = await fetch("http://localhost:3002/share", {
+        method: "POST",
+        body: JSON.stringify({route: "This is a testroute"}),
+        headers
+      });
+      const share = await result.json();
+      console.log("Sender received share info: ", share);
+
+      const socket = io({ auth: { token } });
+
+      socket.on("connect", () => {
+        console.log("Sender connected to server");
+      })
+      socket.emit("host-share", share.id);
+    })
+
+    const joinButton = document.querySelector("#join");
+    joinButton.addEventListener("click", async () => {
+      const id = "6748c95d939a4cb23045102b";
+      const password = "0a698988-53e5-408d-a6aa-61b157c18c5b";
+      const headers = new Headers()
+      headers.append('Content-type', 'application/json')
+      const result = await fetch("http://localhost:3002/share/" + id, {
+        method: "POST",
+        body: JSON.stringify({ password }),
+        headers
+      });
+      const share = await result.json();
+      console.log("Receiver received share info: ", share);
+
+      const socket = io({ auth: { password } });
+
+      socket.on("connect", () => {
+        console.log("Receiver connected to server");
+      })
+      socket.emit("join-share", share.id);
+    })
+ </script>
 </body>
 </html>

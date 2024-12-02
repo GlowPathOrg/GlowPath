@@ -65,6 +65,7 @@ const JourneyPage: React.FC = () => {
       const destination = currentRoute[currentRoute.length - 1];
       const [destLat, destLon] = destination;
 
+
       // Fetch new route, summary, and instructions from the routing service
       const { polyline, summary, instructions } = await fetchRoute(
         [latitude, longitude],

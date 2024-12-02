@@ -32,7 +32,7 @@ const NavigationPage: React.FC = () => {
     // Center the map on the route
     useEffect(() => {
       if (route.length > 0) {
-        map.fitBounds(route); 
+        map.fitBounds(route);
       }
     }, [map, route]);
 
@@ -41,9 +41,9 @@ const NavigationPage: React.FC = () => {
 
   // Define tile layer URLs for different themes
   const tileLayerThemes: Record<string, string> = {
-    standard: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", 
-    dark: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", 
-    satellite: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", 
+    standard: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    dark: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+    satellite: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
   };
 
 
@@ -79,7 +79,7 @@ const NavigationPage: React.FC = () => {
           <AutoFollowMap />
         </MapContainer>
       ) : (
-        <p>Loading map...</p> 
+        <p>Loading map...</p>
       )}
       <div className="navigation-info">
         {/* Display the current instruction */}
@@ -88,13 +88,13 @@ const NavigationPage: React.FC = () => {
         <p>Towards: {instructions?.[1]?.instruction || "Destination"}</p>
         {/* Display route distance and duration */}
         <p>
-          {summary.distance / 1000} km • {Math.ceil(summary.duration / 60)} min
+          {summary.length / 1000} km • {Math.ceil(summary.duration / 60)} min
         </p>
-       
+
         <button className="start-button" onClick={handleStartJourney}>
           Start Journey
         </button>
-       
+
         <button className="exit-button" onClick={() => navigate("/")}>
           Exit
         </button>
