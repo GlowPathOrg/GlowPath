@@ -34,7 +34,7 @@ export const fetchRoute = async (
 
     const response = await axios.get(`${url}/route/fetch`, { params });
     const data = response.data;
-    console.log('here is daata', data)
+    console.log('here is data', data)
     // Check if the API response contains routes
     if (data) {
       return data
