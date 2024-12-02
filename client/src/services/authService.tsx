@@ -16,7 +16,7 @@ export interface AuthResponse {
   user?: UserI;
 }
 
-// Register a new user
+
 export const register = async (userData: RegisterDataI, handleLogin: (token: string, userData: UserI) => void
 ): Promise<AxiosResponse<AuthResponse> | undefined> => {
   try {
@@ -46,7 +46,6 @@ export const register = async (userData: RegisterDataI, handleLogin: (token: str
 }
 
 
-// Log in a user and store the token in localStorage
 export const login = async (userData: LoginDataI, handleLogin: (token: string, userData: UserI) => void
 ): Promise<AxiosResponse<AuthResponse>> => {
   try {
@@ -69,24 +68,28 @@ export const login = async (userData: LoginDataI, handleLogin: (token: string, u
   }
 };
 
-/* export const profile = async () => {
+export const editProfile = async (userEdit: { [x: string]: string; password: string; _id: string }, handleLogin: (token: string, userData: UserI)=>void): Promise<AxiosResponse<AuthResponse> | undefined> => {
 
   try {
     const token = getToken();
-    const response = await axios.get<AuthResponse>(`${BACKEND_URL}/me`, {
+
+    console.log('sending to edit: ', userEdit)
+    const response = await axios.post<AuthResponse>(`${BACKEND_URL}/edit`, userEdit, {
       withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`,
       }
     });
-      return response;
-  }
+    if (response.data.token && response.data.user) {
+      handleLogin(response.data.token, response.data.user);
+    }
+    return response;}
       catch (error) {
         console.log('error loading profile', error);
       throw error;
   }
-}; */
+};
 
 
 

@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import '../../styles/SettingsComponent.css';
-import { useLoginStatus } from '../../hooks/userLogin';
+// import { useLoginStatus } from '../../hooks/userLogin';
 
 const SettingsComponent: React.FC = () => {
-    const { userData } = useLoginStatus();
+    // const { userData } = useLoginStatus();
 
-    // State for managing the visibility of each section
     const [isExpanded, setIsExpanded] = useState({
         personalInfo: true,
         sosOptions: true,
@@ -57,43 +56,6 @@ const SettingsComponent: React.FC = () => {
     return (
         <div className="settings-comp">
             <h3>Settings</h3>
-
-            {/* Personal Information Section */}
-            <section>
-                <button className="dropdown-header" onClick={() => toggleSection('personalInfo')}>
-                    My Information {isExpanded.personalInfo ? '▲' : '▼'}
-                </button>
-                {isExpanded.personalInfo && (
-                    <div className="dropdown-content">
-                        <table className="info-table">
-                            <tbody>
-                                <tr>
-                                    <td><strong>First Name:</strong></td>
-                                    <td>{userData && userData.firstName}</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Last Name:</strong></td>
-                                    <td>{userData && userData.lastName}</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Email:</strong></td>
-                                    <td>{userData && userData.email}</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Password:</strong></td>
-                                    <td>{userData && userData.password}</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Phone:</strong></td>
-                                    <td>{userData && userData.telephone}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <button className="edit-info-button">Edit Information</button>
-                    </div>
-                )}
-            </section>
-
             {/* SOS Options Section */}
             <section>
                 <button className="dropdown-header" onClick={() => toggleSection('sosOptions')}>
