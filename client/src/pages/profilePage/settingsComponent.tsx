@@ -4,7 +4,7 @@ import { useLoginStatus } from '../../hooks/userLogin';
 
 const SettingsComponent: React.FC = () => {
     const { userData } = useLoginStatus();
-    // changed.
+    // changed again
 
     // State for managing the visibility of each section
     const [isExpanded, setIsExpanded] = useState({
