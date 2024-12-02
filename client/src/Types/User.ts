@@ -21,5 +21,12 @@ export interface UserI extends RegisterDataI{
     tripHistory?: SummaryI[]
 }
 
+export interface ContactI {
+    email: string;
+    trusted: boolean;
+    emergency: boolean;
+    favorite: boolean;
+    telephone?: string;
+}
 
 
