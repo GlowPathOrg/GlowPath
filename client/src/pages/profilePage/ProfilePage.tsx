@@ -40,8 +40,6 @@ const ProfilePage = () => {
           {viewOption === "info" &&  <InfoComponent />}
           {viewOption === "" && <RegisterComponent setViewOption={setViewOption} />}
           {viewOption === "login" && <LoginComponent setViewOption={setViewOption} />}
-          {/* {viewOption === "contacts" && <ContactsComponent />}
-          {viewOption === "help" && <HelpComponent />} */}
         </div>
         <footer className="footer-bar">
           {/* Home Button */}
