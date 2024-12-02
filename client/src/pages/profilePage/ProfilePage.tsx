@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import SettingsComponent from "./SettingsComp";
 import { useLoginStatus } from "../../hooks/userLogin";
 import RegisterComponent from "./RegisterComponent";
-import HelpComponent from "./HelpComponent";
-import ContactsComponent from "./ContactsComponent";
 import "../../styles/profilePage.css";
 import "../../styles/Footer.css";
 import LoginComponent from "./LoginComponent";
@@ -42,8 +40,6 @@ const ProfilePage = () => {
           {viewOption === "info" &&  <InfoComponent />}
           {viewOption === "" && <RegisterComponent setViewOption={setViewOption} />}
           {viewOption === "login" && <LoginComponent setViewOption={setViewOption} />}
-          {viewOption === "contacts" && <ContactsComponent />}
-          {viewOption === "help" && <HelpComponent />}
         </div>
         <footer className="footer-bar">
           {/* Home Button */}
