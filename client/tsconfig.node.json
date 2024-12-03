@@ -20,9 +20,7 @@
     "incremental": true,   // Enable incremental builds to track changes and optimize builds
     "composite": true,     // Enable composite projects if needed
 
-    /* Removed unsupported options */
-    "allowImportingTsExtensions": false,  // Removed invalid option
-    "noUncheckedSideEffectImports": false // Removed invalid option
+
   },
   "include": ["vite.config.ts"]  // Include your Vite configuration
 }
