@@ -4,11 +4,13 @@ import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import JourneyPage from './pages/journeyPage/JourneyPage';
 import WhereToPage from './pages/WhereToPage';
 import HomePage from './pages/HomePage/HomePage';
-
 import ProfilePage from './pages/profilePage/ProfilePage';
 import NavigationPage from './pages/NaviagtionPage';
 import ObserverPage from './pages/observerPage/ObserverPage';
 import VisualisationsPage from './pages/VisualisationsPage';
+import SettingsPage from './pages/SettingsPage'
+import ContactManagerPage from './pages/ContactManagerPage';
+
 //import ChatPage from './pages/ChatPage';
 
 
@@ -36,9 +38,9 @@ const App: React.FC = () => {
             <Route path="/where-to" element={<WhereToPage />} />
 
               <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/settings" element={<SettingsPage />} />
 
-
-
+              <Route path="/contact-manager" element={<ContactManagerPage />} />
             <Route path="/navigation" element={<NavigationPage />} />
             <Route path="/visualisations" element={<VisualisationsPage />} />
             <Route path="/observe/:id" element={<ObserverPage />} />

@@ -7,6 +7,7 @@ import shareRoutes from "./routes/shareRoutes";
 import DBConnect from "./models";
 import routeApiRouter from "./routes/routingRoutes";
 import routingRoutes from "./routes/routingRoutes";
+import notifyRoutes from "./routes/notifyRoutes";
 configDotenv();
 const app = express();
 const SERVER_PORT = process.env.SERVER_PORT || 3002;
@@ -48,6 +49,7 @@ app.use(express.json());
 app.use('/auth', authRoutes);
 app.use(shareRoutes);
 app.use('/route', routingRoutes);
+app.use("/notify-contacts", notifyRoutes);
 
 server.listen(SERVER_PORT, () => {
   console.log(`GlowPath CORS-enabled server listening on port ${SERVER_PORT}`);
