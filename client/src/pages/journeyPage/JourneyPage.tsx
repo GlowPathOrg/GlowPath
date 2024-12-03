@@ -42,16 +42,11 @@ const JourneyPage: React.FC = () => {
   const [sidewalks, setSidewalks] = useState<any[]>([]);
   const [policeStations, setPoliceStations] = useState<LatLngTuple[]>([]);
   const [hospitals, setHospitals] = useState<LatLngTuple[]>([]);
-  const [safetyData, setSafetyData] = useState<any[]>(initialSafetyData);
-
-  const [showSafetyLayer, setShowSafetyLayer] = useState<boolean>(false);
-  const [showBerlinCrimeLayer, setShowBerlinCrimeLayer] = useState(false);
+ 
   const [mapTheme, setMapTheme] = useState<string>(initialTheme);
 
   const { error: socketError, connectSocket, hostShare, sendPosition } = useSocket({});
 
-  const handleToggleSafetyLayer = () => setShowSafetyLayer((prev) => !prev);
-  const handleToggleBerlinLayer = () => setShowBerlinCrimeLayer((prev) => !prev);
   const handleThemeChange = (newTheme: string) => setMapTheme(newTheme);
 
   useEffect(() => {
@@ -103,7 +98,7 @@ const JourneyPage: React.FC = () => {
         setCurrentRoute(newRoute);
         setCurrentSummary(summary);
         setCurrentInstructions(instructions);
-        setSafetyData(reroutedSafetyData);
+       
         setRerouted(true);
       }
     } catch (error) {
@@ -162,9 +157,6 @@ const JourneyPage: React.FC = () => {
           sidewalks={sidewalks}
           policeStations={policeStations}
           hospitals={hospitals}
-          safetyData={safetyData}
-          showSafetyLayer={showSafetyLayer}
-          showBerlinCrimeLayer={showBerlinCrimeLayer}
           destinationCoords={
             destinationCoords ||
             latLng(currentRoute[currentRoute.length - 1][0], currentRoute[currentRoute.length - 1][1])
@@ -190,12 +182,6 @@ const JourneyPage: React.FC = () => {
         </button>
         <button className="feature-button" onClick={() => navigate("/")}>
           Cancel
-        </button>
-        <button className="feature-button" onClick={handleToggleSafetyLayer}>
-          {showSafetyLayer ? "Hide Safety Layer" : "Show Safety Layer"}
-        </button>
-        <button className="feature-button" onClick={handleToggleBerlinLayer}>
-          {showBerlinCrimeLayer ? "Hide Berlin Crime" : "Show Berlin Crime"}
         </button>
         <div className="theme-selector">
           <label htmlFor="map-theme">Map Theme:</label>

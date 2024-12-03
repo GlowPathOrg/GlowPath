@@ -59,7 +59,6 @@ const WhereToPage: React.FC = () => {
         sidewalks,
         policeStations,
         hospitals,
-        safetyData,
       } = routeResponse;
 
       const decoded = decode(polyline);
@@ -85,7 +84,6 @@ const WhereToPage: React.FC = () => {
           sidewalks,
           policeStations: policeStations.map(({ lat, lon }: { lat: number; lon: number }) => [lat, lon] as LatLngTuple),
           hospitals: hospitals.map(({ lat, lon }: { lat: number; lon: number }) => [lat, lon] as LatLngTuple),
-          safetyData,
           theme: "standard", // Default theme passed; can be changed in JourneyPage
         },
       });
@@ -140,7 +138,6 @@ const WhereToPage: React.FC = () => {
           <option value="pedestrian">Walking</option>
           <option value="publicTransport">Public Transport</option>
           <option value="bicycle">Bicycle</option>
-          <option value="car">Car</option>
         </select>
       </div>
 
@@ -184,9 +181,7 @@ const WhereToPage: React.FC = () => {
           sidewalks={[]}
           policeStations={[]}
           hospitals={[]}
-          safetyData={[]} // Placeholder; detailed data handled in JourneyPage
-          showSafetyLayer={false}
-          showBerlinCrimeLayer={false} // Not applicable here
+         
         />
       )}
     </div>

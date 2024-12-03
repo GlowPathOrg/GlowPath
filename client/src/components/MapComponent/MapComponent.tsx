@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import {
   MapContainer,
   TileLayer,
-  WMSTileLayer,
   Polyline,
   Circle,
   Popup,
@@ -32,9 +31,7 @@ interface MapComponentProps {
   sidewalks: { geometry: LatLngTuple[] }[]; // Array of sidewalk geometries
   policeStations: LatLngTuple[]; // Police station locations
   hospitals: LatLngTuple[]; // Hospital locations
-  safetyData?: { lat: number; lon: number; level: number }[]; // Optional safety data
-  showSafetyLayer: boolean; // Toggle for showing safety layer
-  showBerlinCrimeLayer?: boolean; // Optional Berlin crime layer toggle
+ 
 }
 
 const MapComponent: React.FC<MapComponentProps> = ({
@@ -52,13 +49,11 @@ const MapComponent: React.FC<MapComponentProps> = ({
   sidewalks = [],
   policeStations = [],
   hospitals = [],
-  safetyData = [],
-  showSafetyLayer,
-  showBerlinCrimeLayer = false,
+ 
 }) => {
   const [amenities, setAmenities] = useState<Amenity[]>([]);
   const [isInsideGeofence, setIsInsideGeofence] = useState<boolean>(false);
-  const [showBerlinLayer, setShowBerlinLayer] = useState(false);
+  
 
   const validatedTheme = isValidTheme(theme) ? theme : getDefaultTheme();
   const fenceCenter = latitude && longitude ? latLng(latitude, longitude) : null;
@@ -107,17 +102,10 @@ const MapComponent: React.FC<MapComponentProps> = ({
     fetchData();
   }, [originCoords]);
 
-  const toggleBerlinLayer = () => {
-    setShowBerlinLayer((prev) => !prev);
-  };
-
+  
   return (
     <div className="map-component">
-      {/* Button to toggle Berlin Crime Layer */}
-      <button onClick={toggleBerlinLayer}>
-        {showBerlinLayer ? "Hide Berlin Crime Layer" : "Show Berlin Crime Layer"}
-      </button>
-  
+      
       {/* Map Container */}
       <MapContainer
         className="map-container"
@@ -136,31 +124,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
           <p style={{ color: "red" }}>Invalid map theme URL</p>
         )}
   
-        {/* Berlin Crime Layer */}
-        {showBerlinCrimeLayer && validatedTheme === "berlinCrime" && (
-          <WMSTileLayer
-            url={mapThemes.berlinCrime}
-            layers="1"
-            format="image/png"
-            transparent
-            attribution="&copy; Berlin Crime Data"
-          />
-        )}
-  
-  {/* Safety Data Layer */}
-  {showSafetyLayer &&
-          safetyData.map((point, index) => (
-            <Circle
-              key={index}
-              center={latLng(point.lat, point.lon)}
-              radius={50}
-              color={`hsl(${120 - point.level * 12}, 100%, 50%)`}
-            >
-              <Popup>
-                <strong>Safety Level:</strong> {point.level.toFixed(1)}
-              </Popup>
-            </Circle>
-          ))}
+        
         {/* Lit Streets */}
         {litStreets.map(([lat, lon], index) => (
           <Circle key={`lit-${index}`} center={latLng(lat, lon)} radius={10} color="yellow" />
