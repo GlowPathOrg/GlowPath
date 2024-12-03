@@ -1,13 +1,13 @@
 import express from "express";
 import { setupSocket } from "./socket" // This is needed to setup socket.io
-import { configDotenv } from "dotenv"; // to access .env
+import dotenv from "dotenv"; // to access .env
 import cors, { CorsOptions } from "cors";
 import authRoutes from "./routes/authRoutes";
 import shareRoutes from "./routes/shareRoutes";
 import { mongooseConnect, DBConnect } from "./models";
 import routeApiRouter from "./routes/routingRoutes";
 import routingRoutes from "./routes/routingRoutes";
-configDotenv();
+dotenv.config()
 const app = express();
 const SERVER_PORT = process.env.SERVER_PORT || 3002;
 
