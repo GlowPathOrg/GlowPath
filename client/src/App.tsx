@@ -7,9 +7,9 @@ import HomePage from './pages/HomePage/HomePage';
 
 import ProfilePage from './pages/profilePage/ProfilePage';
 import NavigationPage from './pages/NaviagtionPage';
-
 import ObserverPage from './pages/observerPage/ObserverPage';
-
+import VisualisationsPage from './pages/VisualisationsPage';
+//import ChatPage from './pages/ChatPage';
 
 
 
@@ -40,12 +40,12 @@ const App: React.FC = () => {
 
 
             <Route path="/navigation" element={<NavigationPage />} />
-
+            <Route path="/visualisations" element={<VisualisationsPage />} />
             <Route path="/observe/:id" element={<ObserverPage />} />
 
            {/*  <Route path="/history" element={<HistoryPage />} />
-            <Route path="/chat" element={<ChatPage />} />
-            <Route path="/visualizations" element={<VisualizationsPage />} /> */}
+             <Route path="/chat" element={<ChatPage />} />
+            */}
           </Routes>
         </main>
 

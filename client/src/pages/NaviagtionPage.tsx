@@ -25,11 +25,10 @@ const NavigationPage: React.FC = () => {
     }
   }, [instructions]);
 
-  // component to automatically follow and fit the map bounds to the route (needs testing)
+  // Component to automatically follow and fit the map bounds to the route
   const AutoFollowMap = () => {
     const map = useMap();
 
-    // Center the map on the route
     useEffect(() => {
       if (route.length > 0) {
         map.fitBounds(route);
@@ -45,7 +44,6 @@ const NavigationPage: React.FC = () => {
     dark: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
     satellite: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
   };
-
 
   // Handle the "Start Journey" button click
   const handleStartJourney = () => {
@@ -63,7 +61,11 @@ const NavigationPage: React.FC = () => {
   return (
     <div className="navigation-page">
       {route.length > 0 ? (
-        <MapContainer center={route[0]} zoom={15} style={{ height: "60vh" }}>
+        <MapContainer
+          center={route[0]} // Center the map on the start of the route
+          zoom={15}
+          style={{ height: "60vh" }}
+        >
           {/* Add the selected tile layer theme */}
           <TileLayer
             url={tileLayerThemes[theme] || tileLayerThemes["standard"]}
@@ -79,8 +81,9 @@ const NavigationPage: React.FC = () => {
           <AutoFollowMap />
         </MapContainer>
       ) : (
-        <p>Loading map...</p>
+        <p>Loading map...</p> // Display a fallback message while the map is loading
       )}
+
       <div className="navigation-info">
         {/* Display the current instruction */}
         <h3>{currentInstruction}</h3>

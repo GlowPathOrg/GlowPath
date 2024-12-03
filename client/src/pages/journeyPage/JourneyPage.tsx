@@ -1,4 +1,3 @@
-// Import necessary modules and components
 import { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import MapComponent from "../../components/MapComponent/MapComponent";
@@ -17,23 +16,54 @@ import { createShare } from "../../services/shareService";
 import { RouteI, RouteRequestI } from "../../Types/Route";
 
 const JourneyPage: React.FC = () => {
-  // React router hooks to access location state and navigate
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Getting user's current location and heading from the usePosition hook
   const position = usePosition();
   const { latitude, longitude, heading = 0, error: geoError } = position;
 
-  // Destructure initial states passed through the route
   const {
     route: initialRoute = [],
     summary: initialSummary = { distance: 0, duration: 0 },
     instructions: initialInstructions = [],
-    theme = "standard",
+    theme: initialTheme = "standard",
     transportMode = "pedestrian",
     destinationCoords = null,
+    safetyData: initialSafetyData = [],
   } = location.state || {};
+
+  const [currentRoute, setCurrentRoute] = useState<LatLngTuple[]>(initialRoute);
+  const [currentSummary, setCurrentSummary] = useState(initialSummary);
+  const [currentInstructions, setCurrentInstructions] = useState(initialInstructions);
+  const [userDeviationDetected, setUserDeviationDetected] = useState(false);
+  const [rerouted, setRerouted] = useState(false);
+  const [litStreets, setLitStreets] = useState<LatLngTuple[]>([]);
+  const [sidewalks, setSidewalks] = useState<any[]>([]);
+  const [policeStations, setPoliceStations] = useState<LatLngTuple[]>([]);
+  const [hospitals, setHospitals] = useState<LatLngTuple[]>([]);
+
+  const [mapTheme, setMapTheme] = useState<string>(initialTheme);
+
+  const { error: socketError, connectSocket, hostShare, sendPosition } = useSocket({});
+
+  const handleThemeChange = (newTheme: string) => setMapTheme(newTheme);
+
+  useEffect(() => {
+    if (latitude && longitude) {
+      const southWest: [number, number] = [latitude - 0.01, longitude - 0.01];
+      const northEast: [number, number] = [latitude + 0.01, longitude + 0.01];
+
+      fetchInfrastructureData(southWest, northEast)
+        .then((data) => {
+          const { litStreets, sidewalks, policeStations, hospitals } = processInfrastructureData(data);
+          setLitStreets(litStreets.map(({ lat, lon }) => [lat, lon] as LatLngTuple));
+          setSidewalks(sidewalks);
+          setPoliceStations(policeStations.map(({ lat, lon }) => [lat, lon] as LatLngTuple));
+          setHospitals(hospitals.map(({ lat, lon }) => [lat, lon] as LatLngTuple));
+        })
+        .catch((err) => console.error("Error fetching infrastructure data:", err));
+    }
+  }, [latitude, longitude]);
 
   // All state variables used
   const [currentRoute, setCurrentRoute] = useState<LatLngTuple[]>(initialRoute); // Active route
@@ -48,24 +78,21 @@ const JourneyPage: React.FC = () => {
     if (latitude && longitude && currentRoute.length > 0) {
       const userLocation = latLng(latitude, longitude);
 
-      // Check if the user is close to any point on the route
       const isOnRoute = currentRoute.some(([lat, lon]: LatLngTuple) => {
         const point = latLng(lat, lon);
-        return userLocation.distanceTo(point) <= 50; // Deviation threshold in meters
+        return userLocation.distanceTo(point) <= 50;
       });
 
-      setUserDeviationDetected(!isOnRoute); // Update deviation state
+      setUserDeviationDetected(!isOnRoute);
     }
   }, [latitude, longitude, currentRoute]);
 
-  // Handle rerouting if the user deviates from the route
  const handleReroute = useCallback(async () => {
 
      if (!latitude || !longitude || currentRoute.length === 0) return;
 
      try {
-       // Get the last point in the route as the destination
-       const destination = currentRoute[currentRoute.length - 1];
+        const destination = currentRoute[currentRoute.length - 1];
        const [destLat, destLon] = destination;
 
        const request: RouteRequestI = {
@@ -161,7 +188,6 @@ const JourneyPage: React.FC = () => {
   // Rendering
   return (
     <div className="journey-page">
-      {/* Render the map component if the route is available */}
       {currentRoute.length > 0 ? (
         <MapComponent
           latitude={latitude}
@@ -172,28 +198,29 @@ const JourneyPage: React.FC = () => {
           summary={currentSummary}
           instructions={currentInstructions}
           originCoords={latLng(currentRoute[0][0], currentRoute[0][1])}
+          litStreets={litStreets}
+          sidewalks={sidewalks}
+          policeStations={policeStations}
+          hospitals={hospitals}
           destinationCoords={
             destinationCoords ||
             latLng(currentRoute[currentRoute.length - 1][0], currentRoute[currentRoute.length - 1][1])
           }
-          theme={theme}
+          theme={mapTheme}
         />
       ) : (
         <p>Loading route...</p>
       )}
 
-      {/* Display the next turn instruction */}
       <div className="alert-container">
         <h3>Next Turn:</h3>
         <p>{currentInstructions[0]?.instruction || "Continue straight"}</p>
       </div>
 
-      {/* Progress Bar Section */}
       <ProgressBar progress={rerouted ? 75 : 50} />
 
-      {/* Buttons and Features Section */}
       <div className="features-container">
-        <SosButton />
+      <SosButton onSOSActivated={handleSOSActivated} />
         <AlarmButton />
         <button className="feature-button" onClick={handleShare}>
           Share
@@ -201,12 +228,22 @@ const JourneyPage: React.FC = () => {
         <button className="feature-button" onClick={() => navigate("/")}>
           Cancel
         </button>
-        <button className="feature-button">
-          chat
-        </button>
+        <div className="theme-selector">
+          <label htmlFor="map-theme">Map Theme:</label>
+          <select
+            id="map-theme"
+            value={mapTheme}
+            onChange={(e) => handleThemeChange(e.target.value)}
+          >
+            {Object.keys(mapThemes).map((themeKey) => (
+              <option key={themeKey} value={themeKey}>
+                {themeKey.charAt(0).toUpperCase() + themeKey.slice(1)}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
-      {/* Display weather information */}
       <WeatherInfo />
     </div>
   );

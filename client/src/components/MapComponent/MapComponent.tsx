@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import {
   MapContainer,
@@ -17,10 +16,9 @@ import mapThemes, { getDefaultTheme, isValidTheme } from "./MapThemes";
 import FitBounds from "./FitBounds";
 import { InstructionsI, SummaryI } from "../../Types/Route";
 
-// define the interface for MapComponent props
 interface MapComponentProps {
   latitude: number | null; // User's latitude
-  longitude: number |null; // User's longitude
+  longitude: number | null; // User's longitude
   geolocationError: string | null; // Geolocation error message
   route: LatLngTuple[]; // Route polyline coordinates
   summary: SummaryI | null; // Route summary
@@ -28,9 +26,13 @@ interface MapComponentProps {
   originCoords: LatLng | null; // Origin coordinates
   destinationCoords: LatLng | null; // Destination coordinates
   theme: string; // Map theme
-  heading: number |null; // Heading for the rotated marker
-}
+  heading: number | null; // Heading for the rotated marker
+  litStreets: LatLngTuple[]; // Array of lit street coordinates
+  sidewalks: { geometry: LatLngTuple[] }[]; // Array of sidewalk geometries
+  policeStations: LatLngTuple[]; // Police station locations
+  hospitals: LatLngTuple[]; // Hospital locations
 
+}
 
 const MapComponent: React.FC<MapComponentProps> = ({
   latitude,
@@ -43,6 +45,11 @@ const MapComponent: React.FC<MapComponentProps> = ({
   destinationCoords,
   theme,
   heading,
+  litStreets = [],
+  sidewalks = [],
+  policeStations = [],
+  hospitals = [],
+
 }) => {
   const [isInsideGeofence, setIsInsideGeofence] = useState<boolean>(false); // state for geofence status
 
@@ -52,8 +59,9 @@ const MapComponent: React.FC<MapComponentProps> = ({
   // define geofence parameters
   const fenceCenter = latitude && longitude ? latLng(latitude, longitude) : null;
   const fenceRadius = 100; // Geofence radius in meters
+  const fenceCenter = latitude && longitude ? latLng(latitude, longitude) : null;
+  const fenceRadius = 100;
 
-  // Icons for turn-by-turn instructions
   const actionIcons: Record<string, string> = {
     depart: "🏁",
     arrive: "🏁",
@@ -61,11 +69,10 @@ const MapComponent: React.FC<MapComponentProps> = ({
     straight: "⬆️",
   };
 
-  // Monitor user's position and check if inside the geofence
   useEffect(() => {
     if (originCoords && fenceCenter) {
-      const distance = fenceCenter.distanceTo(originCoords); // Calculate distance from origin
-      const isInside = distance <= fenceRadius; // Check if inside geofence
+      const distance = fenceCenter.distanceTo(originCoords);
+      const isInside = distance <= fenceRadius;
       setIsInsideGeofence(isInside);
 
       console.log(
@@ -81,6 +88,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
 
   return (
     <div className="map-component">
+
       {/* Map Container */}
       <MapContainer
         className="map-container"
@@ -99,6 +107,51 @@ const MapComponent: React.FC<MapComponentProps> = ({
           <p style={{ color: "red" }}>Invalid map theme URL</p>
         )}
 
+
+        {/* Lit Streets */}
+        {litStreets.map(([lat, lon], index) => (
+          <Circle key={`lit-${index}`} center={latLng(lat, lon)} radius={10} color="yellow" />
+        ))}
+
+        {/* Sidewalks */}
+        {sidewalks.map((sidewalk, index) => (
+          <Polyline
+            key={`sidewalk-${index}`}
+            positions={sidewalk.geometry.map(([lat, lon]: LatLngTuple) => latLng(lat, lon))}
+            color="green"
+          />
+        ))}
+
+        {/* Police Stations */}
+        {policeStations.map(([lat, lon], index) => (
+          <Marker
+            key={`police-${index}`}
+            position={latLng(lat, lon)}
+            icon={L.icon({
+              iconUrl: "https://img.icons8.com/?size=100&id=R8s6gQ1oAQPH&format=png&color=000000",
+              iconSize: [25, 25],
+              iconAnchor: [12, 12],
+            })}
+          >
+            <Popup>Police Station</Popup>
+          </Marker>
+        ))}
+
+        {/* Hospitals */}
+        {hospitals.map(([lat, lon], index) => (
+          <Marker
+            key={`hospital-${index}`}
+            position={latLng(lat, lon)}
+            icon={L.icon({
+              iconUrl: "https://img.icons8.com/?size=100&id=rBh1fuOC6Bjx&format=png&color=000000",
+              iconSize: [25, 25],
+              iconAnchor: [12, 12],
+            })}
+          >
+            <Popup>Hospital</Popup>
+          </Marker>
+        ))}
+
         {/* Fit map bounds to origin and destination */}
         {originCoords && destinationCoords && (
           <FitBounds origin={originCoords} destination={destinationCoords} />
@@ -113,7 +166,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
               iconSize: [30, 30],
               iconAnchor: [15, 15],
             })}
-            rotationAngle={heading || 0} // Rotate based on heading
+            rotationAngle={heading || 0}
             rotationOrigin="center"
           >
             <Popup>Current Position</Popup>
@@ -132,18 +185,14 @@ const MapComponent: React.FC<MapComponentProps> = ({
           >
             <Popup>
               Destination <br />
-              Coordinates: {destinationCoords.lat.toFixed(4)},{" "}
-              {destinationCoords.lng.toFixed(4)}
+              Coordinates: {destinationCoords.lat.toFixed(4)}, {destinationCoords.lng.toFixed(4)}
             </Popup>
           </Marker>
         )}
 
         {/* Route Polyline */}
         {route.length > 0 && (
-          <Polyline
-            positions={route}
-            pathOptions={{ className: "glowing-polyline" }}
-          />
+          <Polyline positions={route} pathOptions={{ className: "glowing-polyline" }} />
         )}
 
 
@@ -181,8 +230,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
               <strong>Distance:</strong> {summary.length / 1000} km
             </p>
             <p>
-              <strong>Duration:</strong> {Math.ceil(summary.duration / 60)}{" "}
-              minutes
+              <strong>Duration:</strong> {Math.ceil(summary.duration / 60)} minutes
             </p>
           </div>
         ) : (
@@ -208,8 +256,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
                 <em>Distance: {length || "Unknown"} m</em>
                 <br />
                 <em>
-                  Duration:{" "}
-                  {duration ? `${Math.ceil(duration / 60)} min` : "Unknown"}
+                  Duration: {duration ? `${Math.ceil(duration / 60)} min` : "Unknown"}
                 </em>
               </li>
             );
@@ -219,6 +266,5 @@ const MapComponent: React.FC<MapComponentProps> = ({
     </div>
   );
 };
-
 
 export default MapComponent;
