@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2020",  // Change to es2020 or es2021 if you want to target an earlier version
-    "lib": ["es2020"],   // Adjust lib as needed: "es2020" or "es2021"
+    "lib": ["es2020", "DOM"],   // Adjust lib as needed: "es2020" or "es2021"
     "moduleResolution": "node",  // Keep this as "node"
     "outDir": "./dist",  // Ensure the build output directory is correct
     "strict": true,
@@ -9,6 +9,9 @@
     "forceConsistentCasingInFileNames": false,
     "skipLibCheck": true,
     "incremental": true,  // Enable incremental builds for better performance if needed
-    "composite": true     // Enable composite for projects that require project references
+    "composite": true,
+    "jsx": "react-jsx",
+     "noImplicitAny": true,
+     "allowSyntheticDefaultImports": true,   // Enable composite for projects that require project references
   }
 }

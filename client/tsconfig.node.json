@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2020",  // Adjust to ES2020 or ES2021 (ES2023 may not be supported)
-    "lib": ["ES2020"],   // Adjust to ES2020 or ES2021 based on your needs
+    "lib": ["ES2020", "DOM"],   // Adjust to ES2020 or ES2021 based on your needs
     "module": "ESNext",  // Keep as "ESNext" unless you need compatibility with older module systems
     "skipLibCheck": true,
 
@@ -19,6 +19,7 @@
     /* For incremental builds (if you want this feature) */
     "incremental": true,   // Enable incremental builds to track changes and optimize builds
     "composite": true,     // Enable composite projects if needed
+    "allowSyntheticDefaultImports": true,
 
 
   },
