@@ -1,3 +1,5 @@
+import { LatLngTuple } from "leaflet";
+
 export interface ActionI {
 
     action: string;
@@ -30,7 +32,7 @@ export interface SummaryI {
 
 export interface RouteI {
     _id?: string;
-    polyline: [[]];
+    polyline: LatLngTuple[];
     instructions: InstructionsI[];
     summary: SummaryI;
 }

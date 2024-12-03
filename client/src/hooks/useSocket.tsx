@@ -95,7 +95,7 @@ export const useSocket = ({ password }: {password?: string}) => {
       socket.disconnect();
     }
 
-  },[]);
+  },[socket]);
 
   return { isConnected, position, messages, alarms, error, sendPosition, sendMessage, sendAlarm, hostShare, joinShare, connectSocket };
 }

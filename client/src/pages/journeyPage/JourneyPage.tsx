@@ -14,7 +14,7 @@ import { LatLngTuple } from "leaflet";
 import "../../styles/JourneyPage.css";
 import { useSocket } from "../../hooks/useSocket";
 import { createShare } from "../../services/shareService";
-import { RouteRequestI } from "../../Types/Route";
+import { RouteI, RouteRequestI } from "../../Types/Route";
 
 const JourneyPage: React.FC = () => {
   // React router hooks to access location state and navigate
@@ -127,9 +127,11 @@ const JourneyPage: React.FC = () => {
 
   async function handleShare() {
     try {
-      const route = {polyline: currentRoute, instructions: currentInstructions, summary: currentSummary};
+      console.log('trying to share')
+      const route: RouteI = {polyline: currentRoute, instructions: currentInstructions, summary: currentSummary};
+      console.log('here is the route', route)
       const result = await createShare(route);
-      console.log(result);
+      console.log('the returned result', result);
 
       if (result.data.id) {
         console.log("Trying to connect to socket");
@@ -147,14 +149,14 @@ const JourneyPage: React.FC = () => {
       console.log("isConnected: ", isConnected);
       hostShare(shareId);
     }
-  },[isConnected, shareId]);
+  },[isConnected, shareId, hostShare]);
 
   useEffect(() => {
     if (isConnected) {
       console.log("Trying to send position to share");
       sendPosition(position);
     }
-  }, [isConnected, position]);
+  }, [isConnected, position, sendPosition]);
 
   // Rendering
   return (

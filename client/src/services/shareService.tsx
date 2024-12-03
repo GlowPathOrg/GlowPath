@@ -1,14 +1,7 @@
 import { AxiosResponse } from 'axios';
 import api from './apiService';
-
-// TODO: Replace with actual types
-export interface RouteI {
-  [key: string]: any;
-}
-
-export interface UserI {
-  // This will probably come from the auth service?
-}
+import { RouteI } from '../Types/Route';
+import { UserI } from '../Types/User';
 
 export interface ShareI {
   id: string;
