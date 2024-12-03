@@ -10,16 +10,17 @@
     "dev": "npm --prefix server run dev && npm --prefix client run dev"
   },
   "dependencies": {
-    "typescript": "^5.7.2",
-    "mongoose": "^6.0.0",
-    "express": "^4.17.1",
-    "dotenv": "^10.0.0",
-    "bcrypt": "^5.0.1",
-    "jsonwebtoken": "^8.5.1",
+    "@types/cors": "^2.8.17",
+    "axios": "^1.7.8",
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
-    "axios": "^0.27.2",
-    "uuid": "^8.3.2",
-    "socket.io": "^4.5.0"
+    "dotenv": "^16.4.6",
+    "express": "^4.21.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.11.0",
+    "mongoose": "^8.8.3",
+    "socket.io": "^4.8.1",
+    "uuid": "^11.0.3"
   },
   "devDependencies": {"typescript": "^4.5.0",
     "@types/mongoose": "^5.11.97",
