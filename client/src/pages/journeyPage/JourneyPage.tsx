@@ -6,16 +6,18 @@ import ProgressBar from "./ProgressBar";
 import SosButton from "./SosButton";
 import AlarmButton from "./AlarmButton";
 import WeatherInfo from "./WeatherInfo";
-import { usePosition } from "../../hooks/usePosition";
+import { PositionI, usePosition } from "../../hooks/usePosition";
 import { fetchRoute } from "../../services/RoutingService";
 import { latLng, LatLngTuple } from "leaflet";
 import { decode } from "@here/flexpolyline";
 import "../../styles/JourneyPage.css";
-import { useSocket } from "../../hooks/useSocket";
 import { createShare } from "../../services/shareService";
 import { RouteI, RouteRequestI } from "../../Types/Route";
 import { fetchInfrastructureData, processInfrastructureData } from "../../services/overpassService";
 import mapThemes from "../../components/MapComponent/MapThemes";
+import { io } from "socket.io-client";
+import { getToken } from "../../utilities/token";
+const socketServer = import.meta.env.VITE_BACKEND_URL || "http://localhost:3002";
 
 const JourneyPage: React.FC = () => {
   // React router hooks to access location state and navigate
@@ -48,8 +50,7 @@ const JourneyPage: React.FC = () => {
   const [policeStations, setPoliceStations] = useState<LatLngTuple[]>([]);
   const [hospitals, setHospitals] = useState<LatLngTuple[]>([]);
   const [mapTheme, setMapTheme] = useState<string>(initialTheme);
-
-
+  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
     if (latitude && longitude) {
@@ -154,40 +155,66 @@ const JourneyPage: React.FC = () => {
   }, [currentInstructions]);
 
   // Socket-related hooks and functions
-  const { isConnected, connectSocket, hostShare, sendPosition } = useSocket({});
+  const socket = io(socketServer, {
+    auth: { token: getToken() }
+  });
 
   async function handleShare () {
     try {
-      console.log('trying to share')
-      const route: RouteI = { polyline: currentRoute, instructions: currentInstructions, summary: currentSummary };
-      console.log('here is the route', route)
+      console.log('Trying to share')
+      const route: RouteI = {polyline: currentRoute, instructions: currentInstructions, summary: currentSummary};
       const result = await createShare(route);
-      console.log('the returned result', result);
-
-      if (result.data.id) {
-        console.log("Trying to connect to socket");
-        setShareId(result.data.id);
-        connectSocket();
-      }
+      console.log('Share returned from server: ', result);
+      setShareId(result.data.id);
     } catch (err) {
-      console.error("Error during sharing:", err);
+      console.error("Error during sharing: ", err);
     }
   }
+
+  function hostShare (id: string) {
+    if (isConnected) socket.emit("host-share", id);
+  }
+
+  function sendPosition (position: PositionI) {
+    if (isConnected) socket.emit("position", position);
+  }
+
+  useEffect(() => {
+    socket.on("connect", () => {
+      console.log("Socket connected");
+      setIsConnected(true);
+    });
+
+    socket.on("connect_error", (error) => {
+      console.log(error.message);
+      setIsConnected(false);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("Socket about to get disconnected");
+    })
+
+    return () => {
+      socket.off("connect");
+      socket.off("connect_error");
+      socket.off("disconnect");
+      console.log("Removed all event listeners because component is about to dismount");
+    }
+  },[])
 
   useEffect(() => {
     if (isConnected) {
       console.log("Trying to connect to share " + shareId);
-      console.log("isConnected: ", isConnected);
       hostShare(shareId);
     }
-  }, [hostShare, isConnected, shareId]);
+  },[shareId]);
 
   useEffect(() => {
     if (isConnected) {
       console.log("Trying to send position to share");
       sendPosition(position);
     }
-  }, [isConnected, position, sendPosition]);
+  }, [position]);
 
   // Rendering
   return (
