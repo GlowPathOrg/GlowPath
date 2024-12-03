@@ -12,6 +12,7 @@ export interface UserI extends Document {
     messages?: [];
     places?: [];
     contacts?: [];
-    tripHistory?: []
+    tripHistory?: [];
+    settings: [];
     comparePassword: (candidatePassword: string) => Promise<boolean>;
 }

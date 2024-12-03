@@ -4,7 +4,7 @@ import {
   fetchInfrastructureData,
   processInfrastructureData,
 } from "../services/overpassService";
-
+import { RouteRequestI } from '../Types/Route';
 export const fetchRoute = async (
   RouteReqItem: RouteRequestI
 ) => {
@@ -33,9 +33,12 @@ export const fetchRoute = async (
       return: 'polyline,summary,instructions,actions',
     }
 
-    if (response.data.routes && response.data.routes.length > 0) {
-      const route = response.data.routes[0].sections[0];
-      const decodedPolyline = decode(route.polyline).polyline;
+    const response = await axios.get(`${url}/route/fetch`, { params });
+    const route = response.data;
+    console.log('here is data', route)
+    // Check if the API response contains routes
+    if (route) {
+           const decodedPolyline = decode(route.polyline).polyline;
 
       const latitudes = decodedPolyline.map(([lat]) => lat);
       const longitudes = decodedPolyline.map(([, lon]) => lon);
@@ -65,7 +68,7 @@ export const fetchRoute = async (
         lat,
         lon,
         level: Math.random() * 10, // Random safety level between 0 and 10
-      }));
+    }));
 
       return {
         polyline: route.polyline,

@@ -28,7 +28,7 @@ interface MapComponentProps {
   theme: string; // Map theme
   heading: number | null; // Heading for the rotated marker
   litStreets: LatLngTuple[]; // Array of lit street coordinates
-  sidewalks: { geometry: LatLngTuple[] }[]; // Array of sidewalk geometries
+  sidewalks: { geometry: { lat: number; lon: number }[] }[]; // Array of sidewalk geometries
   policeStations: LatLngTuple[]; // Police station locations
   hospitals: LatLngTuple[]; // Hospital locations
 
