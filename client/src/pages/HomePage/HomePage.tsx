@@ -1,8 +1,13 @@
-import React, { useState } from "react";
-import HomeMap from "../HomePage/HomeMap"; // Import HomeMap for map display
+
+
+import HomeMap from "../HomePage/HomeMap";
+import "../../styles/HomePage.css"; // Import custom styles if needed
+import '../../styles/Footer.css'
+import { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import "../../styles/HomePage.css"; // Import custom styles
 import WhereToPage from "../WhereToPage"; // Import WhereToPage component
+
 
 const HomePage: React.FC = () => {
   const [isSearchExpanded, setIsSearchExpanded] = useState(false); // State to toggle search drawer
@@ -60,6 +65,7 @@ const HomePage: React.FC = () => {
         </button>
       </footer>
     </div>
+
   );
 };
 
