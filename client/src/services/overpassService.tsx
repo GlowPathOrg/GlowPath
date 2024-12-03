@@ -1,5 +1,19 @@
 import axios from "axios";
 
+export interface InfrastructureDataI {
+  type: "node" | "way";
+  lat?: number;  // Only present if type is 'node'
+  lon?: number;  // Only present if type is 'node'
+  geometry?: { lat: number; lon: number }[];  // Only present if type is 'way'
+  tags: DataTagsI;
+}
+
+export interface DataTagsI {
+  amenity?: "police" | "hospital";  // Only interested in 'police' and 'hospital'
+  lit?: "yes";  // Only interested if lit is 'yes'
+  sidewalk?: { geometry?: { lat: number; lon: number }[] };  // Corrected type for sidewalks
+}
+
 /**
  * Fetch data from Overpass API.
  * @param query The Overpass query string.
@@ -52,22 +66,22 @@ export const fetchInfrastructureData = async (
  * @param data Raw Overpass API data.
  * @returns An object containing segregated data.
  */
-export const processInfrastructureData = (data: any) => {
+export const processInfrastructureData = (data: { elements: InfrastructureDataI[] }) => {
   const litStreets: { lat: number; lon: number }[] = [];
   const sidewalks: { geometry: { lat: number; lon: number }[] }[] = [];
   const policeStations: { lat: number; lon: number }[] = [];
   const hospitals: { lat: number; lon: number }[] = [];
 
-  data.elements.forEach((element: any) => {
+  data.elements.forEach((element) => {
     if (element.tags) {
       if (element.tags.lit === "yes") {
-        if (element.type === "node") {
+        if (element.type === "node" && element.lat !== undefined && element.lon !== undefined) {
           litStreets.push({ lat: element.lat, lon: element.lon });
         } else if (element.type === "way" && element.geometry) {
           sidewalks.push({
             geometry: element.geometry
-              .filter((node: any) => node.lat !== undefined && node.lon !== undefined)
-              .map((node: any) => ({
+              .filter((node) => node.lat !== undefined && node.lon !== undefined)
+              .map((node) => ({
                 lat: node.lat,
                 lon: node.lon,
               })),

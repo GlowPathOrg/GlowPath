@@ -59,8 +59,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
   // define geofence parameters
   const fenceCenter = latitude && longitude ? latLng(latitude, longitude) : null;
   const fenceRadius = 100; // Geofence radius in meters
-  const fenceCenter = latitude && longitude ? latLng(latitude, longitude) : null;
-  const fenceRadius = 100;
+
 
   const actionIcons: Record<string, string> = {
     depart: "🏁",
@@ -117,7 +116,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
         {sidewalks.map((sidewalk, index) => (
           <Polyline
             key={`sidewalk-${index}`}
-            positions={sidewalk.geometry.map(([lat, lon]: LatLngTuple) => latLng(lat, lon))}
+            positions={sidewalk.geometry.map(({ lat, lon }) => latLng(lat, lon))}
             color="green"
           />
         ))}
