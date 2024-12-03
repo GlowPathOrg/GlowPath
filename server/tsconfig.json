@@ -1,12 +1,14 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
-    "lib": ["es2022"],  // or "es2021" if you're targeting an earlier version
-    "moduleResolution": "node",  // Valid options: "node", "classic", "node16", "nodenext"
-    "outDir": "./dist",  // Ensure this points to your correct build output directory
+    "target": "ES2020",  // Change to es2020 or es2021 if you want to target an earlier version
+    "lib": ["es2020"],   // Adjust lib as needed: "es2020" or "es2021"
+    "moduleResolution": "node",  // Keep this as "node"
+    "outDir": "./dist",  // Ensure the build output directory is correct
     "strict": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": false,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "incremental": true,  // Enable incremental builds for better performance if needed
+    "composite": true     // Enable composite for projects that require project references
   }
 }
