@@ -1,0 +1,63 @@
+.contacts-comp {
+  padding: 20px;
+}
+
+.add-contact {
+  margin-bottom: 20px;
+}
+
+.add-contact input {
+  padding: 10px;
+  width: 200px;
+}
+
+.add-contact button {
+  padding: 10px;
+  margin-left: 10px;
+  background-color: #191718;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.add-contact button:hover {
+  background-color: black;
+}
+
+.contacts-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.contact-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.contact-info {
+  display: flex;
+  align-items: center;
+}
+
+.contact-info p {
+  margin: 0;
+}
+
+.favorite-badge {
+  color: red;
+  margin-left: 10px;
+}
+
+.contact-status {
+  font-size: 14px;
+}
+
+.pending-invitation {
+  color: orange;
+}
+
+.trusted {
+  color: green;
+}

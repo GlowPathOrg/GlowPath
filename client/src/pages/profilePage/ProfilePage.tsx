@@ -7,6 +7,7 @@ import "../../styles/Footer.css";
 import LoginComponent from "./LoginComponent";
 import { Link } from "react-router-dom";
 import InfoComponent from "./InfoComponent";
+import ContactsComponent from "./ContactsComp";
 
 const ProfilePage = () => {
   const [viewOption, setViewOption] = useState("");
@@ -27,6 +28,7 @@ const ProfilePage = () => {
       <div className="menu-panel">
         <button className="menu-button" onClick={() => setViewOption("settings")}>Settings</button>
         <button className="menu-button" onClick={() => setViewOption("info")}>My Information</button>
+        <button className="menu-button" onClick={() => setViewOption("contacts")}>My Contacts</button>
         <button className="menu-button" onClick={() => handleLogout()}>Log Out</button>
       </div>
 
@@ -36,24 +38,24 @@ const ProfilePage = () => {
         <div className="container">
           {viewOption === "settings" &&  <SettingsComponent />}
           {viewOption === "info" &&  <InfoComponent />}
+          {viewOption === "contacts" &&  <ContactsComponent />}
           {viewOption === "" && <RegisterComponent setViewOption={setViewOption} />}
           {viewOption === "login" && <LoginComponent setViewOption={setViewOption} />}
 
         </div>
         <footer className="footer-bar">
-          {/* Home Button */}
           <Link to="/" className="footer-icon">
-            🏠 {/* Home Icon */}
+            🏠
           </Link>
 
-          {/* History Button */}
+
           <Link to="/analytics" className="footer-icon">
-            🕒 {/* History Icon */}
+            🕒
           </Link>
 
-          {/* Profile Button */}
+
           <Link to="/profile" className="footer-icon">
-            👤 {/* Profile Icon */}
+            👤
           </Link>
         </footer>
       </div>
