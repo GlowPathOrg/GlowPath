@@ -1,12 +1,35 @@
 .live-location-map {
-    height: 80vh;
-    width: 100%;
-    position: relative;
+  height: 80vh;
+  width: 100%;
+  position: relative;
+}
+
+.live-location-map p {
+  text-align: center;
+  font-size: 16px;
+  color: #666;
+  margin-top: 20px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .live-location-map {
+    height: 70vh; /* Reduce map height for tablets */
   }
-  
+
   .live-location-map p {
-    text-align: center;
-    font-size: 16px;
-    color: #666;
-    margin-top: 20px;
+    font-size: 14px; /* Adjust font size for better readability on tablets */
+    margin-top: 15px; /* Adjust spacing */
   }
+}
+
+@media (max-width: 480px) {
+  .live-location-map {
+    height: 60vh; /* Smaller map height for phones */
+  }
+
+  .live-location-map p {
+    font-size: 12px; /* Smaller font size for phones */
+    margin-top: 10px; /* Less margin for smaller screens */
+  }
+}

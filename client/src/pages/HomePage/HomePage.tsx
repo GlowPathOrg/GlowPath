@@ -52,7 +52,7 @@ const HomePage: React.FC = () => {
         <button className="footer-icon" onClick={() => navigate("/")}>
           🏠 {/* Home Icon */}
         </button>
-        <button className="footer-icon" onClick={() => navigate("/analytics")}>
+        <button className="footer-icon" onClick={() => navigate("/visualisations")}>
           📊 {/* Analytics Icon */}
         </button>
         <button className="footer-icon" onClick={() => navigate("/profile")}>

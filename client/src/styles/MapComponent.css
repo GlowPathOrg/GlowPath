@@ -1,24 +1,57 @@
 .glowing-polyline {
-    stroke: #00ff00; /* Green color for the line */
-    stroke-width: 4px; /* Thickness of the line */
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    fill: none;
-    filter: url(#glow);
+  stroke: #00ff00; /* Green color for the line */
+  stroke-width: 4px; /* Default thickness */
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+  filter: url(#glow);
+}
+
+svg {
+  filter: url('#glow');
+}
+
+.glow {
+  stroke: rgba(0, 255, 0, 0.5);
+  stroke-width: 10px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.map-container {
+  height: 80vh;
+  width: 90vw;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .glowing-polyline {
+    stroke-width: 3px; /* Slightly thinner for tablets */
   }
-  
-  svg {
-    filter: url('#glow');
-  }
-  
+
   .glow {
-    stroke: rgba(0, 255, 0, 0.5);
-    stroke-width: 10px;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+    stroke-width: 8px; /* Adjusted glow width */
   }
-  
-  .map-container{
-  height: "80vh";
-  width: "90vw";
+
+  .map-container {
+    height: 60vh; /* Smaller height for tablets */
+    width: 95vw; /* Slightly larger width for better use of space */
   }
+}
+
+@media (max-width: 480px) {
+  .glowing-polyline {
+    stroke-width: 2px; /* Thinner for small screens */
+  }
+
+  .glow {
+    stroke-width: 6px; /* Reduced glow width */
+  }
+
+  .map-container {
+    height: 50vh; /* Smaller height for phones */
+    width: 100vw; /* Full width for small screens */
+  }
+}

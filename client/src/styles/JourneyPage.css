@@ -1,11 +1,9 @@
-
 .journey-page {
   font-family: Arial, sans-serif;
   background-color: #f9f9f9;
   padding: 20px;
   color: #333;
 }
-
 
 .journey-page h1 {
   font-size: 24px;
@@ -15,7 +13,6 @@
   color: #2c3e50;
 }
 
-
 .map-component {
   position: relative;
   margin-bottom: 20px;
@@ -24,13 +21,11 @@
   overflow: hidden;
 }
 
-
 .map-container {
   height: 70vh;
   width: 100%;
   border-radius: 8px;
 }
-
 
 .geofence-status {
   margin-top: 10px;
@@ -43,7 +38,6 @@
 .geofence-status p {
   margin: 0;
 }
-
 
 .summary {
   margin-top: 20px;
@@ -64,7 +58,6 @@
   font-size: 14px;
   color: #555;
 }
-
 
 .instructions {
   margin-top: 20px;
@@ -104,7 +97,6 @@
   color: #7f8c8d;
 }
 
-
 .alert-container {
   margin-top: 20px;
   padding: 15px;
@@ -114,7 +106,6 @@
   text-align: center;
   font-size: 16px;
 }
-
 
 .feature-button {
   display: inline-block;
@@ -138,7 +129,6 @@
 .feature-button:active {
   background-color: #1c669c;
 }
-
 
 .feature-button:nth-child(2),
 .feature-button:nth-child(3) {
@@ -200,4 +190,80 @@
   font-size: 16px;
   margin-bottom: 10px;
   color: #34495e;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .journey-page {
+    padding: 10px;
+  }
+
+  .journey-page h1 {
+    font-size: 20px;
+  }
+
+  .map-container {
+    height: 50vh;
+  }
+
+  .summary, .instructions, .alert-container, .weather-info {
+    padding: 10px;
+    font-size: 12px;
+  }
+
+  .summary h3, .instructions h3, .weather-info h4 {
+    font-size: 16px;
+  }
+
+  .instructions li {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .feature-button {
+    font-size: 12px;
+    padding: 8px 15px;
+    margin: 5px 3px;
+  }
+
+  .progress-bar {
+    height: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .journey-page {
+    padding: 5px;
+  }
+
+  .journey-page h1 {
+    font-size: 18px;
+  }
+
+  .map-container {
+    height: 40vh;
+  }
+
+  .summary, .instructions, .alert-container, .weather-info {
+    font-size: 10px;
+  }
+
+  .summary h3, .instructions h3, .weather-info h4 {
+    font-size: 14px;
+  }
+
+  .instructions li {
+    font-size: 10px;
+    padding: 5px;
+  }
+
+  .feature-button {
+    font-size: 10px;
+    padding: 5px 10px;
+    margin: 3px 2px;
+  }
+
+  .progress-bar {
+    height: 6px;
+  }
 }

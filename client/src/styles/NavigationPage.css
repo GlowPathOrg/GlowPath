@@ -1,67 +1,128 @@
 .navigation-page {
-    position: relative;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .navigation-map-container {
-    z-index: 1;
-    height: 70%; /* Map takes up the top portion */
-  }
-  
-  .navigation-header {
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #28a745;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 16px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
-  }
-  
-  .navigation-footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    background-color: black;
-    color: white;
-    padding: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    z-index: 10;
-  }
-  
-  .exit-button {
-    position: absolute; /* Ensure it appear on top of the map */
-    background-color: red;
-    z-index: 10; /* Higher z-index to appear above the map */
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    bottom: 10px; /* Position it near the bottom */
+  position: relative;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.navigation-map-container {
+  z-index: 1;
+  height: 70%; /* Map takes up the top portion */
+}
+
+.navigation-header {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #28a745;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.navigation-footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background-color: black;
+  color: white;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+}
+
+.exit-button {
+  position: absolute; /* Ensure it appears on top of the map */
+  background-color: red;
+  z-index: 10; /* Higher z-index to appear above the map */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  bottom: 10px; /* Position it near the bottom */
   right: 10px; /* Align to the right */
-  }
-  
-  .instructions-container {
-    position: absolute; /* Ensure they appear on top of the map */
+}
+
+.instructions-container {
+  position: absolute; /* Ensure it appears on top of the map */
   z-index: 10; /* Higher z-index to appear above the map */
   background: white; /* Optional: Add a background for visibility */
   padding: 10px; /* Add padding for a better look */
   border-radius: 5px; /* Optional: Rounded corners */
-    top: 10px;
-    left: 10px;
-    width: calc(100% - 20px);
-   } /* Adjust to fit the screen */
-  
-  
-   .footer-info {
-    font-size: 16px;
+  top: 10px;
+  left: 10px;
+  width: calc(100% - 20px); /* Adjust to fit the screen */
+}
+
+.footer-info {
+  font-size: 16px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .navigation-map-container {
+    height: 60%; /* Reduce map height for tablets */
   }
+
+  .navigation-header {
+    font-size: 14px; /* Slightly smaller font */
+    padding: 8px 15px; /* Adjust padding */
+  }
+
+  .exit-button {
+    font-size: 14px; /* Smaller font */
+    padding: 8px 15px; /* Adjust padding */
+  }
+
+  .instructions-container {
+    top: 5px; /* Adjust spacing */
+    left: 5px; /* Adjust spacing */
+    width: calc(100% - 10px); /* Fit smaller screens */
+    font-size: 14px; /* Adjust font size */
+  }
+
+  .footer-info {
+    font-size: 14px; /* Adjust font size */
+  }
+}
+
+@media (max-width: 480px) {
+  .navigation-map-container {
+    height: 50%; /* Reduce map height for phones */
+  }
+
+  .navigation-header {
+    font-size: 12px; /* Smaller font for phones */
+    padding: 6px 10px; /* Adjust padding */
+  }
+
+  .exit-button {
+    font-size: 12px; /* Smaller font for phones */
+    padding: 6px 10px; /* Adjust padding */
+  }
+
+  .instructions-container {
+    top: 5px; /* Adjust spacing */
+    left: 5px; /* Adjust spacing */
+    width: calc(100% - 10px); /* Fit smaller screens */
+    font-size: 12px; /* Smaller font for phones */
+    padding: 8px; /* Adjust padding */
+  }
+
+  .navigation-footer {
+    flex-direction: column; /* Stack footer items vertically */
+    align-items: center;
+    padding: 8px; /* Adjust padding */
+  }
+
+  .footer-info {
+    font-size: 12px; /* Smaller font for phones */
+  }
+}

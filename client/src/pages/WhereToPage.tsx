@@ -12,25 +12,23 @@ const WhereToPage: React.FC = () => {
   const { latitude, longitude, error: geoError } = usePosition();
   const [originCoords, setOriginCoords] = useState<{ lat: number; lon: number } | null>(null);
   const [destination, setDestination] = useState<string>("");
+  const [searchHistory, setSearchHistory] = useState<string[]>([]); // Added state for search history
   const [route, setRoute] = useState<LatLngTuple[]>([]);
   const [summary, setSummary] = useState<{ distance: number; duration: number } | null>(null);
   const [instructions, setInstructions] = useState<any[]>([]);
   const [transportMode, setTransportMode] = useState<"pedestrian" | "publicTransport" | "bicycle" | "car">("pedestrian");
-  const [mapTheme, setMapTheme] = useState<string>("standard");
   const [error, setError] = useState<string | null>(null);
-  const [litStreets, setLitStreets] = useState<LatLngTuple[]>([]);
-  const [sidewalks, setSidewalks] = useState<any[]>([]);
-  const [policeStations, setPoliceStations] = useState<LatLngTuple[]>([]);
-  const [hospitals, setHospitals] = useState<LatLngTuple[]>([]);
 
-  // Simulated heading for testing rotated markers
-  const heading = 0; // Default heading, you can update this dynamically if available
+  const heading = 0; // Default heading
 
-  // Update origin coordinates when geolocation updates
   useEffect(() => {
     if (latitude && longitude) {
       setOriginCoords({ lat: latitude, lon: longitude });
     }
+
+    // Load search history from localStorage
+    const savedHistory = JSON.parse(localStorage.getItem("searchHistory") || "[]");
+    setSearchHistory(savedHistory);
   }, [latitude, longitude]);
 
   const handleSearch = async () => {
@@ -38,48 +36,44 @@ const WhereToPage: React.FC = () => {
       setError("Unable to fetch your current location. Please try again.");
       return;
     }
-  
+
     try {
       const destinationCoords = await geocodeAddress(destination);
-  
+
       if (!destinationCoords) {
         setError("Failed to find the destination. Please check your input.");
         return;
       }
-  
+
       const routeResponse = await fetchRoute(
         [originCoords.lat, originCoords.lon],
         [destinationCoords.lat, destinationCoords.lon],
         transportMode
       );
-  
+
       const {
         polyline,
         instructions: routeInstructions,
         summary: routeSummary,
-        litStreets: fetchedLitStreets,
-        sidewalks: fetchedSidewalks,
-        policeStations: fetchedPoliceStations,
-        hospitals: fetchedHospitals,
+        litStreets,
+        sidewalks,
+        policeStations,
+        hospitals,
+        safetyData,
       } = routeResponse;
-  
+
       const decoded = decode(polyline);
       const routeCoordinates: LatLngTuple[] = decoded.polyline.map(([lat, lon]) => [lat, lon]);
-  
+
       setRoute(routeCoordinates);
       setSummary({ distance: routeSummary.length, duration: routeSummary.duration });
       setInstructions(routeInstructions);
-  
-      // Transform fetched data into LatLngTuple format
-      setLitStreets(fetchedLitStreets.map(({ lat, lon }: { lat: number; lon: number }) => [lat, lon] as LatLngTuple));
-      setSidewalks(fetchedSidewalks || []);
-      setPoliceStations(
-        fetchedPoliceStations.map(({ lat, lon }: { lat: number; lon: number }) => [lat, lon] as LatLngTuple)
-      );
-      setHospitals(
-        fetchedHospitals.map(({ lat, lon }: { lat: number; lon: number }) => [lat, lon] as LatLngTuple)
-      );
-  
+
+      // Update search history
+      const updatedHistory = [destination, ...searchHistory.filter((item) => item !== destination)].slice(0, 10); // Limit to 10 items
+      setSearchHistory(updatedHistory);
+      localStorage.setItem("searchHistory", JSON.stringify(updatedHistory));
+
       navigate("/navigation", {
         state: {
           originCoords: latLng(originCoords.lat, originCoords.lon),
@@ -87,20 +81,27 @@ const WhereToPage: React.FC = () => {
           route: routeCoordinates,
           summary: { distance: routeSummary.length, duration: routeSummary.duration },
           instructions: routeInstructions,
-          litStreets: fetchedLitStreets.map(({ lat, lon }: { lat: number; lon: number }) => [lat, lon] as LatLngTuple),
-          sidewalks: fetchedSidewalks,
-          policeStations: fetchedPoliceStations.map(({ lat, lon }: { lat: number; lon: number }) => [
-            lat,
-            lon,
-          ] as LatLngTuple),
-          hospitals: fetchedHospitals.map(({ lat, lon }: { lat: number; lon: number }) => [lat, lon] as LatLngTuple),
-          theme: mapTheme,
+          litStreets: litStreets.map(({ lat, lon }: { lat: number; lon: number }) => [lat, lon] as LatLngTuple),
+          sidewalks,
+          policeStations: policeStations.map(({ lat, lon }: { lat: number; lon: number }) => [lat, lon] as LatLngTuple),
+          hospitals: hospitals.map(({ lat, lon }: { lat: number; lon: number }) => [lat, lon] as LatLngTuple),
+          safetyData,
+          theme: "standard", // Default theme passed; can be changed in JourneyPage
         },
       });
     } catch (err) {
       console.error("Error during geocoding or fetching route:", err);
       setError("Failed to find the location or route. Please try again.");
     }
+  };
+
+  const clearHistory = () => {
+    setSearchHistory([]);
+    localStorage.removeItem("searchHistory");
+  };
+
+  const handleHistoryClick = (item: string) => {
+    setDestination(item);
   };
 
   return (
@@ -143,16 +144,6 @@ const WhereToPage: React.FC = () => {
         </select>
       </div>
 
-      {/* Map Theme Selector */}
-      <div>
-        <label htmlFor="map-theme">Map Theme:</label>
-        <select id="map-theme" value={mapTheme} onChange={(e) => setMapTheme(e.target.value)}>
-          <option value="standard">Standard</option>
-          <option value="dark">Dark</option>
-          <option value="satellite">Satellite</option>
-        </select>
-      </div>
-
       {/* Search Button */}
       <button onClick={handleSearch} disabled={!originCoords}>
         Search
@@ -161,23 +152,41 @@ const WhereToPage: React.FC = () => {
       {/* Error Message */}
       {error && <p className="error">{error}</p>}
 
+      {/* Search History */}
+      {searchHistory.length > 0 && (
+        <div className="search-history">
+          <h2>Search History</h2>
+          <ul>
+            {searchHistory.map((item, index) => (
+              <li key={index}>
+                <button onClick={() => handleHistoryClick(item)}>{item}</button>
+              </li>
+            ))}
+          </ul>
+          <button onClick={clearHistory}>Clear History</button>
+        </div>
+      )}
+
       {/* Map Display */}
       {route.length > 0 && (
         <MapComponent
           latitude={latitude}
           longitude={longitude}
-          heading={heading} // Include heading for rotated marker
+          heading={heading}
           geolocationError={geoError || null}
           route={route}
           summary={summary}
           instructions={instructions}
           originCoords={latLng(originCoords!.lat, originCoords!.lon)}
           destinationCoords={latLng(route[route.length - 1][0], route[route.length - 1][1])}
-          theme={mapTheme}
-          litStreets={litStreets}
-          sidewalks={sidewalks}
-          policeStations={policeStations}
-          hospitals={hospitals}
+          theme="standard" // Default theme
+          litStreets={[]} // Placeholder; detailed data handled in JourneyPage
+          sidewalks={[]}
+          policeStations={[]}
+          hospitals={[]}
+          safetyData={[]} // Placeholder; detailed data handled in JourneyPage
+          showSafetyLayer={false}
+          showBerlinCrimeLayer={false} // Not applicable here
         />
       )}
     </div>

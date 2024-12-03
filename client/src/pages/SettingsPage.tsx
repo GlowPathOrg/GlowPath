@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/SettingsPage.css';
 
 const SettingsPage: React.FC = () => {
@@ -7,24 +7,43 @@ const SettingsPage: React.FC = () => {
     notifyContacts: true,
     notifyNearbyUsers: true,
     callAuthorities: true,
-    shareMedia: false, // Default to off
+    emergencyContacts: [] as string[], // List of emergency contacts
   });
 
   // State for theme (light or dark)
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
+  // Load saved settings on mount
+  useEffect(() => {
+    const savedSettings = JSON.parse(localStorage.getItem('settings') || '{}');
+    if (savedSettings) {
+      setSosSettings((prev) => ({ ...prev, ...savedSettings }));
+      setTheme(savedSettings.theme || 'light');
+      document.documentElement.setAttribute('data-theme', savedSettings.theme || 'light');
+    }
+  }, []);
+
+  // Save settings to localStorage
+  const saveSettings = () => {
+    const settingsToSave = { ...sosSettings, theme };
+    localStorage.setItem('settings', JSON.stringify(settingsToSave));
+    alert('Settings saved successfully!');
+  };
+
   // Apply theme dynamically by toggling a CSS class
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
-    document.documentElement.setAttribute('data-theme', newTheme); // Update the theme attribute in the <html>
+    document.documentElement.setAttribute('data-theme', newTheme); // Update the theme attribute in <html>
   };
 
   // Handle SOS button click
   const handleSosClick = () => {
-    if (sosSettings.notifyContacts) {
-      alert('Sending SOS to emergency contacts...');
+    if (sosSettings.notifyContacts && sosSettings.emergencyContacts.length > 0) {
+      alert(`Sending SOS to: ${sosSettings.emergencyContacts.join(', ')}`);
       // Implement API or SMS logic here
+    } else if (sosSettings.notifyContacts) {
+      alert('No emergency contacts found!');
     }
     if (sosSettings.notifyNearbyUsers) {
       alert('Notifying nearby SafeWalk users...');
@@ -34,15 +53,28 @@ const SettingsPage: React.FC = () => {
       alert('Calling local authorities...');
       window.open('tel:112'); // Example emergency number
     }
-    if (sosSettings.shareMedia) {
-      alert('Sharing real-time audio or video...');
-      // Implement media sharing logic here
-    }
+    
   };
 
   // Handle toggling of SOS options
   const handleToggle = (option: keyof typeof sosSettings) => {
     setSosSettings((prev) => ({ ...prev, [option]: !prev[option] }));
+  };
+
+  // Add new emergency contact
+  const addEmergencyContact = (contact: string) => {
+    setSosSettings((prev) => ({
+      ...prev,
+      emergencyContacts: [...prev.emergencyContacts, contact],
+    }));
+  };
+
+  // Remove emergency contact
+  const removeEmergencyContact = (index: number) => {
+    setSosSettings((prev) => ({
+      ...prev,
+      emergencyContacts: prev.emergencyContacts.filter((_, i) => i !== index),
+    }));
   };
 
   return (
@@ -82,16 +114,30 @@ const SettingsPage: React.FC = () => {
             Call Local Authorities
           </label>
         </div>
-        <div>
-          <label>
-            <input
-              type="checkbox"
-              checked={sosSettings.shareMedia}
-              onChange={() => handleToggle('shareMedia')}
-            />
-            Share Real-Time Media
-          </label>
-        </div>
+       
+      </section>
+
+      {/* Emergency Contacts */}
+      <section>
+        <h2>Emergency Contacts</h2>
+        <input
+          type="text"
+          placeholder="Add contact (email or phone)"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && e.currentTarget.value) {
+              addEmergencyContact(e.currentTarget.value);
+              e.currentTarget.value = '';
+            }
+          }}
+        />
+        <ul>
+          {sosSettings.emergencyContacts.map((contact, idx) => (
+            <li key={idx}>
+              {contact}{' '}
+              <button onClick={() => removeEmergencyContact(idx)}>Remove</button>
+            </li>
+          ))}
+        </ul>
       </section>
 
       {/* Appearance Section */}
@@ -102,31 +148,23 @@ const SettingsPage: React.FC = () => {
         </button>
       </section>
 
+      {/* Alerts Section */}
       <section>
         <h2>Alerts</h2>
-        <p className="alerts">
-          mange the app alerts 
-        </p>
+        <p className="alerts">Manage the app alerts.</p>
       </section>
 
       {/* Test SOS Button */}
       <section>
         <h2>Test SOS Button</h2>
-        <button
-          className="sos-button"
-          onClick={handleSosClick}
-          style={{
-            backgroundColor: 'red',
-            color: 'white',
-            padding: '15px 30px',
-            fontSize: '20px',
-            borderRadius: '50%',
-            cursor: 'pointer',
-          }}
-        >
+        <button className="sos-button" onClick={handleSosClick}>
           SOS
         </button>
       </section>
+
+      <button className="save-button" onClick={saveSettings}>
+        Save Settings
+      </button>
     </div>
   );
 };

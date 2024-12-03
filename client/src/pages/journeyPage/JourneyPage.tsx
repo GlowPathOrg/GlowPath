@@ -1,4 +1,3 @@
-// Import necessary modules and components
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import MapComponent from "../../components/MapComponent/MapComponent";
@@ -15,135 +14,115 @@ import "../../styles/JourneyPage.css";
 import { useSocket } from "../../hooks/useSocket";
 import { createShare } from "../../services/shareService";
 import { fetchInfrastructureData, processInfrastructureData } from "../../services/overpassService";
-
+import mapThemes from "../../components/MapComponent/MapThemes";
 
 const JourneyPage: React.FC = () => {
-  // React router hooks to access location state and navigate
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Getting user's current location and heading from the usePosition hook
   const position = usePosition();
   const { latitude, longitude, heading = 0, error: geoError } = position;
 
-  // Destructure initial states passed through the route
   const {
     route: initialRoute = [],
     summary: initialSummary = { distance: 0, duration: 0 },
     instructions: initialInstructions = [],
-    theme = "standard",
+    theme: initialTheme = "standard",
     transportMode = "pedestrian",
     destinationCoords = null,
+    safetyData: initialSafetyData = [],
   } = location.state || {};
 
-  // All state variables used
-  const [currentRoute, setCurrentRoute] = useState<LatLngTuple[]>(initialRoute); // Active route
-  const [currentSummary, setCurrentSummary] = useState(initialSummary); // Route summary
-  const [currentInstructions, setCurrentInstructions] = useState(initialInstructions); // Instructions
-  const [userDeviationDetected, setUserDeviationDetected] = useState(false); // Track route deviation
-  const [rerouted, setRerouted] = useState(false); // Track if rerouting occurred
+  const [currentRoute, setCurrentRoute] = useState<LatLngTuple[]>(initialRoute);
+  const [currentSummary, setCurrentSummary] = useState(initialSummary);
+  const [currentInstructions, setCurrentInstructions] = useState(initialInstructions);
+  const [userDeviationDetected, setUserDeviationDetected] = useState(false);
+  const [rerouted, setRerouted] = useState(false);
   const [litStreets, setLitStreets] = useState<LatLngTuple[]>([]);
   const [sidewalks, setSidewalks] = useState<any[]>([]);
   const [policeStations, setPoliceStations] = useState<LatLngTuple[]>([]);
   const [hospitals, setHospitals] = useState<LatLngTuple[]>([]);
-  
-// Fetch infrastructure data on component mount
-useEffect(() => {
-  if (latitude && longitude) {
-    const southWest: [number, number] = [latitude - 0.01, longitude - 0.01];
-    const northEast: [number, number] = [latitude + 0.01, longitude + 0.01];
+  const [safetyData, setSafetyData] = useState<any[]>(initialSafetyData);
 
-    fetchInfrastructureData(southWest, northEast)
-      .then((data) => {
-        const { litStreets, sidewalks, policeStations, hospitals } = processInfrastructureData(data);
-        setLitStreets(litStreets.map(({ lat, lon }) => [lat, lon] as LatLngTuple));
-        setSidewalks(sidewalks);
-        setPoliceStations(policeStations.map(({ lat, lon }) => [lat, lon] as LatLngTuple));
-        setHospitals(hospitals.map(({ lat, lon }) => [lat, lon] as LatLngTuple));
-      })
-      .catch((err) => console.error("Error fetching infrastructure data:", err));
-  }
-}, [latitude, longitude]);
+  const [showSafetyLayer, setShowSafetyLayer] = useState<boolean>(false);
+  const [showBerlinCrimeLayer, setShowBerlinCrimeLayer] = useState(false);
+  const [mapTheme, setMapTheme] = useState<string>(initialTheme);
 
+  const { error: socketError, connectSocket, hostShare, sendPosition } = useSocket({});
 
+  const handleToggleSafetyLayer = () => setShowSafetyLayer((prev) => !prev);
+  const handleToggleBerlinLayer = () => setShowBerlinCrimeLayer((prev) => !prev);
+  const handleThemeChange = (newTheme: string) => setMapTheme(newTheme);
 
-  // Detect if the user deviates from the route
+  useEffect(() => {
+    if (latitude && longitude) {
+      const southWest: [number, number] = [latitude - 0.01, longitude - 0.01];
+      const northEast: [number, number] = [latitude + 0.01, longitude + 0.01];
+
+      fetchInfrastructureData(southWest, northEast)
+        .then((data) => {
+          const { litStreets, sidewalks, policeStations, hospitals } = processInfrastructureData(data);
+          setLitStreets(litStreets.map(({ lat, lon }) => [lat, lon] as LatLngTuple));
+          setSidewalks(sidewalks);
+          setPoliceStations(policeStations.map(({ lat, lon }) => [lat, lon] as LatLngTuple));
+          setHospitals(hospitals.map(({ lat, lon }) => [lat, lon] as LatLngTuple));
+        })
+        .catch((err) => console.error("Error fetching infrastructure data:", err));
+    }
+  }, [latitude, longitude]);
+
   useEffect(() => {
     if (latitude && longitude && currentRoute.length > 0) {
       const userLocation = latLng(latitude, longitude);
 
-      // Check if the user is close to any point on the route
       const isOnRoute = currentRoute.some(([lat, lon]: LatLngTuple) => {
         const point = latLng(lat, lon);
-        return userLocation.distanceTo(point) <= 50; // Deviation threshold in meters
+        return userLocation.distanceTo(point) <= 50;
       });
 
-      setUserDeviationDetected(!isOnRoute); // Update deviation state
+      setUserDeviationDetected(!isOnRoute);
     }
   }, [latitude, longitude, currentRoute]);
 
-  // Handle rerouting if the user deviates from the route
   const handleReroute = async () => {
     if (!latitude || !longitude || currentRoute.length === 0) return;
 
     try {
-      // Get the last point in the route as the destination
       const destination = currentRoute[currentRoute.length - 1];
       const [destLat, destLon] = destination;
 
-      // Fetch new route, summary, and instructions from the routing service
-      const { polyline, summary, instructions } = await fetchRoute(
+      const { polyline, summary, instructions, safetyData: reroutedSafetyData } = await fetchRoute(
         [latitude, longitude],
         [destLat, destLon],
         transportMode
       );
 
-      // Decode the polyline into LatLng tuples
       const decoded = decode(polyline);
       if (decoded && Array.isArray(decoded.polyline)) {
         const newRoute: LatLngTuple[] = decoded.polyline.map(([lat, lon]) => [lat, lon] as LatLngTuple);
-        setCurrentRoute(newRoute); // Update the route
-        setCurrentSummary(summary); // Update summary
-        setCurrentInstructions(instructions); // Update instructions
-        setRerouted(true); // Mark rerouting as done
+        setCurrentRoute(newRoute);
+        setCurrentSummary(summary);
+        setCurrentInstructions(instructions);
+        setSafetyData(reroutedSafetyData);
+        setRerouted(true);
       }
     } catch (error) {
-      console.error("Error during rerouting:", error); // Log rerouting errors
+      console.error("Error during rerouting:", error);
     }
   };
 
-  // Trigger rerouting when deviation is detected
   useEffect(() => {
     if (userDeviationDetected) handleReroute();
   }, [userDeviationDetected]);
 
-  // Announce turn-by-turn instructions using audio
-  const announceTurn = (instruction: string) => {
-    const synth = window.speechSynthesis;
-    const utterance = new SpeechSynthesisUtterance(instruction);
-    synth.speak(utterance); // Use Web Speech API to speak the instruction
-  };
-
-  // Announce the next turn instruction when it changes
-  useEffect(() => {
-    if (currentInstructions.length > 0) {
-      const nextInstruction = currentInstructions[0];
-      announceTurn(nextInstruction.instruction);
-    }
-  }, [currentInstructions]);
-
-  // Socket-related hooks and functions
-  const { error: socketError, connectSocket, hostShare, sendPosition } = useSocket({});
-
-  async function handleShare() {
+  const handleShare = async () => {
     try {
-      // Convert LatLng to string
       const originCoords = `${currentRoute[0][0]},${currentRoute[0][1]}`;
       const destinationCoordsFormatted =
         destinationCoords || `${currentRoute[currentRoute.length - 1][0]},${currentRoute[currentRoute.length - 1][1]}`;
-  
+
       const result = await createShare({ origin: originCoords, destination: destinationCoordsFormatted });
-  
+
       if (result.id) {
         connectSocket();
         if (!socketError) hostShare(result.id);
@@ -151,7 +130,7 @@ useEffect(() => {
     } catch (err) {
       console.error("Error during sharing:", err);
     }
-  }
+  };
 
   useEffect(() => {
     if (socketError) {
@@ -161,10 +140,14 @@ useEffect(() => {
     }
   }, [position]);
 
-  // Rendering
+
+  const handleSOSActivated = () => {
+    console.log('SOS button activated on Journey Page!');
+    
+  };
+
   return (
     <div className="journey-page">
-      {/* Render the map component if the route is available */}
       {currentRoute.length > 0 ? (
         <MapComponent
           latitude={latitude}
@@ -179,29 +162,28 @@ useEffect(() => {
           sidewalks={sidewalks}
           policeStations={policeStations}
           hospitals={hospitals}
+          safetyData={safetyData}
+          showSafetyLayer={showSafetyLayer}
+          showBerlinCrimeLayer={showBerlinCrimeLayer}
           destinationCoords={
             destinationCoords ||
             latLng(currentRoute[currentRoute.length - 1][0], currentRoute[currentRoute.length - 1][1])
           }
-          theme={theme}
-          
+          theme={mapTheme}
         />
       ) : (
         <p>Loading route...</p>
       )}
 
-      {/* Display the next turn instruction */}
       <div className="alert-container">
         <h3>Next Turn:</h3>
         <p>{currentInstructions[0]?.instruction || "Continue straight"}</p>
       </div>
 
-      {/* Progress Bar Section */}
       <ProgressBar progress={rerouted ? 75 : 50} />
 
-      {/* Buttons and Features Section */}
       <div className="features-container">
-        <SosButton />
+      <SosButton onSOSActivated={handleSOSActivated} />
         <AlarmButton />
         <button className="feature-button" onClick={handleShare}>
           Share
@@ -209,12 +191,28 @@ useEffect(() => {
         <button className="feature-button" onClick={() => navigate("/")}>
           Cancel
         </button>
-        <button className="feature-button">
-          chat
+        <button className="feature-button" onClick={handleToggleSafetyLayer}>
+          {showSafetyLayer ? "Hide Safety Layer" : "Show Safety Layer"}
         </button>
+        <button className="feature-button" onClick={handleToggleBerlinLayer}>
+          {showBerlinCrimeLayer ? "Hide Berlin Crime" : "Show Berlin Crime"}
+        </button>
+        <div className="theme-selector">
+          <label htmlFor="map-theme">Map Theme:</label>
+          <select
+            id="map-theme"
+            value={mapTheme}
+            onChange={(e) => handleThemeChange(e.target.value)}
+          >
+            {Object.keys(mapThemes).map((themeKey) => (
+              <option key={themeKey} value={themeKey}>
+                {themeKey.charAt(0).toUpperCase() + themeKey.slice(1)}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
-      {/* Display weather information */}
       <WeatherInfo />
     </div>
   );
