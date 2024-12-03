@@ -13,13 +13,12 @@ const SERVER_PORT = process.env.SERVER_PORT || 3002;
 
 
 const CLIENT_PORT = process.env.CLIENT_PORT;
-
 // connection to database
 DBConnect();
 
 
 // cors
-var whitelist = [`https://glowpathorg.github.io`, `http://localhost:${CLIENT_PORT}` ] // cors whitelist
+var whitelist = [`https://glowpathorg.github.io`, `http://localhost:${CLIENT_PORT}`, `http://localhost:${SERVER_PORT}`] // cors whitelist
  var corsOptions: CorsOptions = {
   origin: function (origin, callback) {
 
@@ -44,8 +43,8 @@ app.get("/", cors(corsOptions), (req, res) => {
 });
 
 //server routes
-app.use(express.json());
 app.use(cors(corsOptions));
+app.use(express.json());
 app.use('/auth', authRoutes);
 app.use(shareRoutes);
 app.use('/route', routingRoutes);

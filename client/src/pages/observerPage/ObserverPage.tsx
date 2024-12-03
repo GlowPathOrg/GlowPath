@@ -9,16 +9,21 @@ const ObserverPage = () => {
   const [searchParams] = useSearchParams();
   const { id } = useParams();
   const password = searchParams.get("password") || "";
-  const { position, connectSocket, joinShare } = useSocket({password});
+  const { isConnected, position, connectSocket, joinShare } = useSocket({password});
 
   useEffect(() => {
     if (id) {
+      console.log("Trying to connect to socket");
       connectSocket();
-      console.log("Connected to socket");
-      joinShare(id);
-      console.log("Joined share " + id);
     }
   }, []);
+
+  useEffect(() => {
+    if (id && isConnected) {
+      console.log("Trying to join share " + id);
+      joinShare(id);
+    }
+  },[isConnected]);
 
 return (
   <>

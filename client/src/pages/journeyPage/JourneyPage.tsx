@@ -41,6 +41,7 @@ const JourneyPage: React.FC = () => {
   const [currentInstructions, setCurrentInstructions] = useState(initialInstructions); // Instructions
   const [userDeviationDetected, setUserDeviationDetected] = useState(false); // Track route deviation
   const [rerouted, setRerouted] = useState(false); // Track if rerouting occurred
+  const [shareId, setShareId] = useState("");
 
   // Detect if the user deviates from the route
   useEffect(() => {
@@ -122,20 +123,18 @@ const JourneyPage: React.FC = () => {
   }, [currentInstructions]);
 
   // Socket-related hooks and functions
-  const { error: socketError, connectSocket, hostShare, sendPosition } = useSocket({});
+  const { isConnected, connectSocket, hostShare, sendPosition } = useSocket({});
 
   async function handleShare() {
     try {
-      // Convert LatLng to string
-      const originCoords = `${currentRoute[0][0]},${currentRoute[0][1]}`;
-      const destinationCoordsFormatted =
-        destinationCoords || `${currentRoute[currentRoute.length - 1][0]},${currentRoute[currentRoute.length - 1][1]}`;
+      const route = {polyline: currentRoute, instructions: currentInstructions, summary: currentSummary};
+      const result = await createShare(route);
+      console.log(result);
 
-      const result = await createShare({ origin: originCoords, destination: destinationCoordsFormatted });
-
-      if (result.id) {
+      if (result.data.id) {
+        console.log("Trying to connect to socket");
+        setShareId(result.data.id);
         connectSocket();
-        if (!socketError) hostShare(result.id);
       }
     } catch (err) {
       console.error("Error during sharing:", err);
@@ -143,12 +142,19 @@ const JourneyPage: React.FC = () => {
   }
 
   useEffect(() => {
-    if (socketError) {
-      console.error("Socket error:", socketError);
-    } else {
+    if (isConnected) {
+      console.log("Trying to connect to share " + shareId);
+      console.log("isConnected: ", isConnected);
+      hostShare(shareId);
+    }
+  },[isConnected, shareId]);
+
+  useEffect(() => {
+    if (isConnected) {
+      console.log("Trying to send position to share");
       sendPosition(position);
     }
-  }, [sendPosition, socketError, position]);
+  }, [isConnected, position]);
 
   // Rendering
   return (

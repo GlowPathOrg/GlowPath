@@ -41,7 +41,7 @@ export const SummarySchema = new Schema({
 // Main schema for Route
 export const RouteSchema = new Schema({
     polyline: {
-        type: String,
+        type: Array,
         required: true },
     instructions: [NavigationSchema],
     summary: SummarySchema,
