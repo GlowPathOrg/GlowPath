@@ -1,31 +1,60 @@
-
-const { MongoClient, ServerApiVersion } = require('mongodb');
+import { MongoClient, ServerApiVersion } from 'mongodb';
 import dotenv from 'dotenv';
-dotenv.config();
-const backup = "mongodb+srv://glowpathuser:1f0gCnPMKhYfn5OL@gpcluster.xot4d.mongodb.net/?retryWrites=true&w=majority&appName=GPCluster"
-const uri = process.env.MONGODB_URI || backup
-console.log('uri is ', backup)
-console.log('backup uri is ', )
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(backup, {
-    serverApi: {
-        version: ServerApiVersion.v1,
-        strict: true,
-        deprecationErrors: true,
-    }
-});
+import mongoose from 'mongoose';
 
-const DBConnect = async () => {
-    try {
-        // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
-        // Send a ping to confirm a successful connection
-        await client.db("admin").command({ ping: 1 });
-        console.log("Pinged your deployment. You successfully connected to MongoDB!");
-    } finally {
-        // Ensures that the client will close when you finish/error
-        await client.close();
-    }
+dotenv.config();
+
+const uri = process.env.MONGODB_URI;
+if (!uri) {
+    throw new Error("MongoDB URI is not defined in .env");
 }
-//run().catch(console.dir);
-export default DBConnect
+
+let client: MongoClient;
+
+export const DBConnect = async () => {
+    if (!client) {
+        client = new MongoClient(uri, {
+            serverApi: {
+                version: ServerApiVersion.v1,
+                strict: true,
+                deprecationErrors: true,
+            }
+        });
+
+        try {
+            await client.connect();
+            console.log("Connected to MongoDB CLOUD!!");
+        } catch (error) {
+            console.error("Error connecting to MongoDB", error);
+            throw error;
+        }
+    }
+    return client;
+};
+
+// for collections
+export const getCollection = (dbName: string, collectionName: string) => {
+    if (!client) {
+        throw new Error("MongoClient is not initialized. Call connectToDB first.");
+    }
+    return client.db('Glowpath').collection(collectionName);
+};
+
+// Connect to MongoDB using Mongoose
+export const mongooseConnect = async () => {
+    try {
+        await mongoose.connect(uri, {
+            dbName: 'Glowpath',  // Set the specific database name here
+        });
+        console.log('Mongoose connected to MongoDB - Glowpath DB');
+    } catch (error) {
+        console.error('Mongoose connection error:', error);
+        throw error;
+    }
+};
+
+
+
+
+
+

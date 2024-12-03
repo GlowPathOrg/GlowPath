@@ -9,54 +9,49 @@ dotenv.config();
 const jwtSecret = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex')
 
 
-export const registerController = async (req: Request, res: Response): Promise<void | void> => {
+export const registerController = async (req: Request, res: Response): Promise<void> => {
     try {
         const { email, password, firstName, lastName, telephone } = req.body;
 
         if (!email || !password || !firstName || !lastName) {
-            throw new Error(`Name, email, password are all required`)
+            res.status(400).json({ error: "Name, email, password are all required" });
+            return;
         }
-        if (password.length < 8 /* || !/[A-Z]/.test(password) || !/[0-9]/.test(password) */) {
-            throw new Error(`Password doesn't meet strength requirements`)
+
+        if (password.length < 8) {
+            res.status(400).json({ error: "Password doesn't meet strength requirements" });
+            return;
         }
+
         const existingUser = await UserModel.findOne({ email });
         if (existingUser) {
-            res.status(400)
-            throw new Error('User already exists');
-            ;
-        };
+            res.status(400).json({ error: "User already exists" });
+            return;
+        }
 
-        const user = new UserModel({ email, password, firstName, lastName, telephone });
-        await user.save();
+        const newUser = new UserModel({ email, password, firstName, lastName, telephone });
+        await newUser.save();
+
         const token = jwt.sign(
             {
-                _id: user._id,
-                email: user.email,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                telephone: user.telephone,
-                password: '*****',
-                messages: [],
-                places: [],
-                contacts: [],
-                tripHistory: []
+                _id: newUser._id,
+                email: newUser.email,
+                firstName: newUser.firstName,
+                lastName: newUser.lastName,
             },
             jwtSecret,
             { expiresIn: '48h' }
         );
-        console.log(`user ${user.firstName} ${user.lastName} registered`)
+
         res.status(201).json({
-            message: `${user.email} was successfully registered`,
-            token
+            message: `${newUser.email} was successfully registered`,
+            token,
         });
 
+    } catch (error) {
+        res.status(500).json({ error: `Server error in register controller: ${error}` });
     }
-    catch (error) {
-
-        res.status(500).json({ error: `Server error in register controller:` + error })
-
-    }
-}
+};
 export const editController = async (req: Request, res: Response): Promise<void | void> => {
     try {
         const toEdit: { [x: string]: string; password: string; _id: string } = req.body;

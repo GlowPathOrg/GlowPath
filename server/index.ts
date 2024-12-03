@@ -4,7 +4,7 @@ import { configDotenv } from "dotenv"; // to access .env
 import cors, { CorsOptions } from "cors";
 import authRoutes from "./routes/authRoutes";
 import shareRoutes from "./routes/shareRoutes";
-import DBConnect from "./models";
+import { mongooseConnect, DBConnect } from "./models";
 import routeApiRouter from "./routes/routingRoutes";
 import routingRoutes from "./routes/routingRoutes";
 configDotenv();
@@ -14,7 +14,7 @@ const SERVER_PORT = process.env.SERVER_PORT || 3002;
 
 const CLIENT_PORT = process.env.CLIENT_PORT;
 // connection to database
-DBConnect();
+
 
 
 // cors
@@ -42,6 +42,10 @@ app.get("/", cors(corsOptions), (req, res) => {
   res.sendFile(__dirname + "/index.html");
 });
 
+(async () => {
+  await DBConnect();  // For native MongoDB driver
+  await mongooseConnect();  // For Mongoose ORM
+})();
 //server routes
 app.use(cors(corsOptions));
 app.use(express.json());

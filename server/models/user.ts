@@ -1,68 +1,42 @@
-import mongoose from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose';
 import bcrypt from 'bcrypt';
-import { UserI } from '../Types/User';
 
-export const userSchema = new mongoose.Schema(
-    {
-        email: {
-            type: String,
-            required: true,
-            unique: true,
-        },
-        password: {
-            type: String,
-            required: true,
-        },
-        firstName: {
-            type: String,
-            required: true,
-        },
-        lastName: {
-            type: String,
-            required: true,
-        },
-        telephone: {
-            type: String,
-            required: false,
-        },
-        messages: {
-            type: Array,
-            required: false,
-        },
-        places: {
-            type: Array,
-            required: false,
-        },
-        contacts: {
-            type: Array,
-            required: false,
-        },
-        tripHistory: {
-            type: Array,
-            required: false,
-        },
+// User interface
+export interface UserI extends Document {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    telephone?: string;
+    comparePassword: (candidatePassword: string) => Promise<boolean>;
+}
 
-
-
-
-    },
-    {
-        timestamps: true,
-    }
-);
-
-// Hash the password before saving the user
-userSchema.pre("save", async function (next) {
-    if (!this.isModified("password")) return next();
-    this.password = await bcrypt.hash(this.password, 10);
-    next();
+// Schema definition
+const userSchema = new Schema<UserI>({
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
+    telephone: { type: String },
 });
 
-// Method to compare password for login
-userSchema.methods.comparePassword = function (candidatePassword: string) {
+// Hash password before saving user
+userSchema.pre('save', async function (next) {
+    if (!this.isModified('password')) return next();
+
+    try {
+        const salt = await bcrypt.genSalt(10);
+        this.password = await bcrypt.hash(this.password, salt);
+        next();
+    } catch (error) {
+        next();
+    }
+});
+
+// Method to compare passwords
+userSchema.methods.comparePassword = async function (candidatePassword: string) {
     return bcrypt.compare(candidatePassword, this.password);
 };
 
 const UserModel = mongoose.model<UserI>('User', userSchema);
-
 export default UserModel;
