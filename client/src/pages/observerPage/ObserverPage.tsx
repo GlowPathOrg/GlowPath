@@ -8,15 +8,12 @@ const ObserverPage = () => {
   const { id } = useParams();
   const password = searchParams.get("password") || "";
   const [isConnected, setIsConnected] = useState(false);
-  const [error, setError] = useState("");
 
   const socket = io(socketServer, {
     auth: { password }
   });
 
   function joinShare (id: string) {
-    console.log("joinShare is called with id " + id);
-    console.log("isConnected: ", isConnected);
     if (isConnected) {
       socket.emit("join-share", id, (response: string) => {
         console.log(response);
@@ -33,7 +30,6 @@ const ObserverPage = () => {
 
     socket.on("connect_error", (error) => {
       console.log(error.message);
-      setError(error.message);
       setIsConnected(false);
     });
 
@@ -52,7 +48,7 @@ const ObserverPage = () => {
 
   useEffect(() => {
     if (id && isConnected) {
-      console.log("Trying to join share " + id);
+      console.log("Socket connecting to room " + id);
       joinShare(id);
     }
   },[id, isConnected]);
