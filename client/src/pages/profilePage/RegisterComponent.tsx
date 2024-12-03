@@ -1,7 +1,7 @@
 import React, { FormEvent, useState } from "react";
 import { register } from "../../services/authService";
-import '../../styles/RegisterComponent.css';
-import 'react-phone-number-input/style.css';
+import "../../styles/RegisterComponent.css";
+import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input/input";
 import { useLoginStatus } from "../../hooks/userLogin";
 
@@ -40,14 +40,14 @@ const RegisterComponent: React.FC<RegisterComponentProps>
     event.preventDefault();
       const password = formData.password;
   if (password.length < 8) {
-    alert('Password must be at least 8 characters long');
+    alert("Password must be at least 8 characters long");
     return;
   }
     try {
       await register(formData, handleLogin);
       setMessage("Registration successful!");
       setTimeout(() => 1);
-      setViewOption('settings')
+      setViewOption("settings")
     } catch (error) {
       setMessage("Error registering. Please try again. " + error);
     }
@@ -57,7 +57,7 @@ const RegisterComponent: React.FC<RegisterComponentProps>
    <>
 
       <div className="register-page">
-        <button onClick={() => setViewOption('login')}>Go to log in</button>
+        <button onClick={() => setViewOption("login")}>Go to log in</button>
         <form onSubmit={handleSubmit} className="register-form">
           <h1>Register for GlowPath:</h1>
           <div className="form-group">

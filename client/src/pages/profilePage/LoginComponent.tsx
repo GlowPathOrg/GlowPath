@@ -27,7 +27,7 @@ const LoginPage: React.FC<LoginComponentProps> = ({setViewOption}) => {
       if (response.data.token) {
         setMessage("Login successful!");
         setTimeout(()=>1);
-        setViewOption('settings')
+        setViewOption("settings")
 
 
       } else {
@@ -43,7 +43,7 @@ const LoginPage: React.FC<LoginComponentProps> = ({setViewOption}) => {
 
   return (
     <div className="login-page">
-      <button onClick={() => setViewOption('')}>Sign up</button>
+      <button onClick={() => setViewOption("")}>Sign up</button>
       <form onSubmit={handleSubmit} className="login-form">
         <div className="form-group">
           <h1>Login</h1>

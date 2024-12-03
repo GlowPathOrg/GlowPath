@@ -1,31 +1,31 @@
-import React, { useEffect, useState } from 'react';
-import '../../styles/InfoComponent.css';
-import { useLoginStatus } from '../../hooks/userLogin';
-import { editProfile } from '../../services/authService';
+import React, { useEffect, useState } from "react";
+import "../../styles/InfoComponent.css";
+import { useLoginStatus } from "../../hooks/userLogin";
+import { editProfile } from "../../services/authService";
 
 const InfoComponent: React.FC = () => {
     const { userData, handleLogin } = useLoginStatus();
     const [editMode, setEditMode] = useState(false);
     const [showModal, setShowModal] = useState(false);
-   const [reenteredPassword, setReenteredPassword] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
+   const [reenteredPassword, setReenteredPassword] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
     const [fieldBeingEdited, setFieldBeingEdited] = useState<string | null>(null);
     const [formData, setFormData] = useState({
-        firstName: userData?.firstName || '',
-        lastName: userData?.lastName || '',
-        email: userData?.email || '',
-        password: userData?.password || '',
-        telephone: userData?.telephone || '',
+        firstName: userData?.firstName || "",
+        lastName: userData?.lastName || "",
+        email: userData?.email || "",
+        password: userData?.password || "",
+        telephone: userData?.telephone || "",
     });
 
     useEffect(() => {
         if (userData) {
             setFormData({
-                firstName: userData.firstName || '',
-                lastName: userData.lastName || '',
-                email: userData.email || '',
-                password: userData.password || '',
-                telephone: userData.telephone || '',
+                firstName: userData.firstName || "",
+                lastName: userData.lastName || "",
+                email: userData.email || "",
+                password: userData.password || "",
+                telephone: userData.telephone || "",
             });
         }
     }, [userData]);
@@ -44,33 +44,49 @@ const InfoComponent: React.FC = () => {
 
     const handleSaveField = (fieldName: string) => {
         setFieldBeingEdited(fieldName);
-        setShowModal(true);
+
+        if (fieldName === "password") {
+            // Show the modal only for password changes
+            setShowModal(true);
+        } else {
+            // Directly submit data for other fields
+            submitData(fieldName);
+        }
     };
 
     const handleReenteredPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setReenteredPassword(e.target.value);
     };
 
-    const submitData = async () => {
-        if (!fieldBeingEdited || !userData) return;
-
+    const submitData = async (fieldName: string) => {
+        if (!userData) return;
 
         try {
-            await editProfile({
-                [fieldBeingEdited as keyof typeof formData]: formData[fieldBeingEdited as keyof typeof formData],
-                password: reenteredPassword,
-                _id: userData?._id
-            }, handleLogin);
+            const payload: {
+                [key in keyof typeof formData]?: string;
+            } & { _id: string } = {
+                [fieldName]: formData[fieldName as keyof typeof formData],
+                _id: userData._id,
 
-            console.log('Profile updated successfully!');
+            };
+
+            if (fieldName === "password") {
+                payload.password = reenteredPassword;
+            }
+
+            await editProfile(payload, handleLogin);
+
+            console.log("Profile updated successfully!");
             setShowModal(false);
             setFieldBeingEdited(null);
             setEditMode(false);
+            setErrorMessage('')
         } catch (error) {
-            console.error('Error updating profile:', error);
-            setErrorMessage('Failed to update profile. Please try again.');
+            console.error("Error updating profile:", error);
+            setErrorMessage("Failed to update profile. Please try again.");
         }
-        setReenteredPassword('');
+
+        setReenteredPassword("");
     };
 
     return (
@@ -120,7 +136,7 @@ const InfoComponent: React.FC = () => {
                         <button
                             className="save-info-button"
                             type="button"
-                            onClick={() => handleSaveField('firstName')}
+                            onClick={() => handleSaveField("firstName")}
                         >
                             Save First Name
                         </button>
@@ -139,7 +155,7 @@ const InfoComponent: React.FC = () => {
                         <button
                             className="save-info-button"
                             type="button"
-                            onClick={() => handleSaveField('lastName')}
+                            onClick={() => handleSaveField("lastName")}
                         >
                             Save Last Name
                         </button>
@@ -158,7 +174,7 @@ const InfoComponent: React.FC = () => {
                         <button
                             className="save-info-button"
                             type="button"
-                            onClick={() => handleSaveField('email')}
+                            onClick={() => handleSaveField("email")}
                         >
                             Save Email
                         </button>
@@ -177,7 +193,7 @@ const InfoComponent: React.FC = () => {
                         <button
                             className="save-info-button"
                             type="button"
-                            onClick={() => handleSaveField('password')}
+                            onClick={() => handleSaveField("password")}
                         >
                             Save Password
                         </button>
@@ -196,15 +212,16 @@ const InfoComponent: React.FC = () => {
                         <button
                             className="save-info-button"
                             type="button"
-                            onClick={() => handleSaveField('telephone')}
+                            onClick={() => handleSaveField("telephone")}
                         >
                             Save Phone
                         </button>
                     </div>
+                        <button onClick={() => setEditMode(false)}>
+                            Cancel
+                        </button>
                 </div>
             )}
-
-            {/* Modal for password confirmation */}
             {showModal && (
                 <div className="modal-backdrop">
                     <div className="modal">
@@ -217,7 +234,7 @@ const InfoComponent: React.FC = () => {
                             placeholder="Re-enter password"
                         />
                         {errorMessage && <p className="error">{errorMessage}</p>}
-                        <button className="confirm-button" onClick={submitData}>
+                        <button className="confirm-button" onClick={() => submitData(fieldBeingEdited!)}>
                             Confirm
                         </button>
                         <button className="cancel-button" onClick={() => setShowModal(false)}>
@@ -226,7 +243,7 @@ const InfoComponent: React.FC = () => {
                     </div>
                 </div>
             )}
-        </div>
+           </div>
     );
 };
 

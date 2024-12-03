@@ -14,7 +14,7 @@ const ProfilePage = () => {
 
   useEffect(() => {
     if (isAuthorized === true && userData) {
-      setViewOption("settings");
+      setViewOption("info");
     }
   }, [isAuthorized, userData]);
 
@@ -27,9 +27,7 @@ const ProfilePage = () => {
       <div className="menu-panel">
         <button className="menu-button" onClick={() => setViewOption("settings")}>Settings</button>
         <button className="menu-button" onClick={() => setViewOption("info")}>My Information</button>
-       {/*  <button className="menu-button" onClick={() => setViewOption("contacts")}>Contacts</button>
-        <button className="menu-button" onClick={() => setViewOption("help")}>Help</button>
-        */} <button className="menu-button" onClick={() => handleLogout()}>Log Out</button>
+        <button className="menu-button" onClick={() => handleLogout()}>Log Out</button>
       </div>
 
       <div className="main-content">
@@ -40,6 +38,7 @@ const ProfilePage = () => {
           {viewOption === "info" &&  <InfoComponent />}
           {viewOption === "" && <RegisterComponent setViewOption={setViewOption} />}
           {viewOption === "login" && <LoginComponent setViewOption={setViewOption} />}
+
         </div>
         <footer className="footer-bar">
           {/* Home Button */}

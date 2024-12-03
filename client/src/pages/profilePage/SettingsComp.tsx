@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import '../../styles/SettingsComponent.css';
-// import { useLoginStatus } from '../../hooks/userLogin';
+import React, { useState } from "react";
+import "../../styles/SettingsComponent.css";
+// import { useLoginStatus } from "../../hooks/userLogin";
 
 const SettingsComponent: React.FC = () => {
     // const { userData } = useLoginStatus();
@@ -20,12 +20,12 @@ const SettingsComponent: React.FC = () => {
     });
 
     // Theme management
-    const [theme, setTheme] = useState<'light' | 'dark'>('light');
+    const [theme, setTheme] = useState<"light" | "dark">("light");
 
     const toggleTheme = () => {
-        const newTheme = theme === 'light' ? 'dark' : 'light';
+        const newTheme = theme === "light" ? "dark" : "light";
         setTheme(newTheme);
-        document.documentElement.setAttribute('data-theme', newTheme); // Update the theme attribute in the <html>
+        document.documentElement.setAttribute("data-theme", newTheme); // Update the theme attribute in the <html>
     };
 
     // Toggle section visibility
@@ -35,17 +35,17 @@ const SettingsComponent: React.FC = () => {
 
     const handleSosClick = () => {
         if (sosSettings.notifyContacts) {
-            alert('Sending SOS to emergency contacts...');
+            alert("Sending SOS to emergency contacts...");
         }
         if (sosSettings.notifyNearbyUsers) {
-            alert('Notifying nearby SafeWalk users...');
+            alert("Notifying nearby SafeWalk users...");
         }
         if (sosSettings.callAuthorities) {
-            alert('Calling local authorities...');
-            window.open('tel:112'); // Example emergency number
+            alert("Calling local authorities...");
+            window.open("tel:112"); // Example emergency number
         }
         if (sosSettings.shareMedia) {
-            alert('Sharing real-time audio or video...');
+            alert("Sharing real-time audio or video...");
         }
     };
 
@@ -58,8 +58,8 @@ const SettingsComponent: React.FC = () => {
             <h3>Settings</h3>
             {/* SOS Options Section */}
             <section>
-                <button className="dropdown-header" onClick={() => toggleSection('sosOptions')}>
-                    SOS Button Options {isExpanded.sosOptions ? '▲' : '▼'}
+                <button className="dropdown-header" onClick={() => toggleSection("sosOptions")}>
+                    SOS Button Options {isExpanded.sosOptions ? "▲" : "▼"}
                 </button>
                 {isExpanded.sosOptions && (
                     <div className="dropdown-content">
@@ -68,7 +68,7 @@ const SettingsComponent: React.FC = () => {
                                 <input
                                     type="checkbox"
                                     checked={sosSettings.notifyContacts}
-                                    onChange={() => handleToggle('notifyContacts')}
+                                    onChange={() => handleToggle("notifyContacts")}
                                 />
                                 Notify Emergency Contacts
                             </label>
@@ -78,7 +78,7 @@ const SettingsComponent: React.FC = () => {
                                 <input
                                     type="checkbox"
                                     checked={sosSettings.notifyNearbyUsers}
-                                    onChange={() => handleToggle('notifyNearbyUsers')}
+                                    onChange={() => handleToggle("notifyNearbyUsers")}
                                 />
                                 Notify Nearby Users
                             </label>
@@ -88,7 +88,7 @@ const SettingsComponent: React.FC = () => {
                                 <input
                                     type="checkbox"
                                     checked={sosSettings.callAuthorities}
-                                    onChange={() => handleToggle('callAuthorities')}
+                                    onChange={() => handleToggle("callAuthorities")}
                                 />
                                 Call Local Authorities
                             </label>
@@ -98,7 +98,7 @@ const SettingsComponent: React.FC = () => {
                                 <input
                                     type="checkbox"
                                     checked={sosSettings.shareMedia}
-                                    onChange={() => handleToggle('shareMedia')}
+                                    onChange={() => handleToggle("shareMedia")}
                                 />
                                 Share Real-Time Media
                             </label>
@@ -109,13 +109,13 @@ const SettingsComponent: React.FC = () => {
 
             {/* Appearance Section */}
             <section>
-                <button className="dropdown-header" onClick={() => toggleSection('appearance')}>
-                    Appearance {isExpanded.appearance ? '▲' : '▼'}
+                <button className="dropdown-header" onClick={() => toggleSection("appearance")}>
+                    Appearance {isExpanded.appearance ? "▲" : "▼"}
                 </button>
                 {isExpanded.appearance && (
                     <div className="dropdown-content">
                         <button className="theme-toggle-button" onClick={toggleTheme}>
-                            Switch to {theme === 'light' ? 'Dark' : 'Light'} Mode
+                            Switch to {theme === "light" ? "Dark" : "Light"} Mode
                         </button>
                     </div>
                 )}
@@ -123,8 +123,8 @@ const SettingsComponent: React.FC = () => {
 
             {/* Alerts Section */}
             <section>
-                <button className="dropdown-header" onClick={() => toggleSection('alerts')}>
-                    Alerts {isExpanded.alerts ? '▲' : '▼'}
+                <button className="dropdown-header" onClick={() => toggleSection("alerts")}>
+                    Alerts {isExpanded.alerts ? "▲" : "▼"}
                 </button>
                 {isExpanded.alerts && (
                     <div className="dropdown-content">
@@ -140,12 +140,12 @@ const SettingsComponent: React.FC = () => {
                     className="sos-button"
                     onClick={handleSosClick}
                     style={{
-                        backgroundColor: 'red',
-                        color: 'white',
-                        padding: '15px 30px',
-                        fontSize: '20px',
-                        borderRadius: '50%',
-                        cursor: 'pointer',
+                        backgroundColor: "red",
+                        color: "white",
+                        padding: "15px 30px",
+                        fontSize: "20px",
+                        borderRadius: "50%",
+                        cursor: "pointer",
                     }}
                 >
                     SOS

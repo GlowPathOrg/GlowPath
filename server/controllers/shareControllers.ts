@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import Share from "../models/Share";
 import RouteModel from "../models/Route";
 import bcrypt from "bcrypt";
-import { v4 as uuid } from 'uuid';
+import { v4 as uuid } from "uuid";
 
 // User requests to share their journey
 // - saves a new share to the database

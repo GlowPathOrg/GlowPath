@@ -39,6 +39,6 @@ export interface RouteI {
 export interface RouteRequestI {
     origin: string | number[],
     destination: string | number[],
-    transportMode?: 'pedestrian' | 'publicTransport' | 'bicycle' | 'car' | null,
-    return?: 'polyline,summary,instructions,actions',
+    transportMode?: "pedestrian" | "publicTransport" | "bicycle" | "car" | null,
+    return?: "polyline,summary,instructions,actions",
 }
