@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var express_1 = require("express");
+var shareControllers_1 = require("../controllers/shareControllers");
+var authMiddleware_1 = require("../middleware/authMiddleware");
+var shareAuthMiddleware_1 = require("../middleware/shareAuthMiddleware");
+var shareRoutes = express_1.default.Router();
+shareRoutes.post("/share", authMiddleware_1.authMiddleware, shareControllers_1.createShare);
+shareRoutes.post("/share/:id", shareAuthMiddleware_1.shareAuthMiddleware, shareControllers_1.accessShare);
+exports.default = shareRoutes;
