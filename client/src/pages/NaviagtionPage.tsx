@@ -34,7 +34,7 @@ const NavigationPage: React.FC = () => {
       if (route.length > 0) {
         map.fitBounds(route);
       }
-    }, [map, route]);
+    }, [map]);
 
     return null;
   };

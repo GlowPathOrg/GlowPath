@@ -13,7 +13,6 @@ import "leaflet-rotatedmarker"; // plugin for rotated markers
 import { latLng, LatLng, LatLngTuple } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "../../styles/MapComponent.css";
-import { Amenity, fetchAmenities } from "../../services/amenitiesService";
 import mapThemes, { getDefaultTheme, isValidTheme } from "./MapThemes";
 import FitBounds from "./FitBounds";
 import { InstructionsI, SummaryI } from "../../Types/Route";
@@ -45,7 +44,6 @@ const MapComponent: React.FC<MapComponentProps> = ({
   theme,
   heading,
 }) => {
-  const [amenities, setAmenities] = useState<Amenity[]>([]); // state for amenities
   const [isInsideGeofence, setIsInsideGeofence] = useState<boolean>(false); // state for geofence status
 
   // validate and set the map theme
@@ -80,26 +78,6 @@ const MapComponent: React.FC<MapComponentProps> = ({
   }, [originCoords, fenceCenter, fenceRadius]);
 
   // fetch nearby amenities
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!originCoords) return;
-      try {
-        const data = await fetchAmenities(500, {
-          lat: originCoords.lat,
-          lon: originCoords.lng,
-        }); // Pass origin coordinates
-        if (data && Array.isArray(data)) {
-          setAmenities(data); // Update amenities state
-        } else {
-          throw new Error("Invalid response received or no amenities found.");
-        }
-      } catch (error) {
-        console.error("Error fetching amenities:", error);
-      }
-    };
-
-    fetchData();
-  }, [originCoords]);
 
   return (
     <div className="map-component">
@@ -168,20 +146,6 @@ const MapComponent: React.FC<MapComponentProps> = ({
           />
         )}
 
-        {/* Amenities Markers */}
-        {amenities.map((amenity: Amenity, index: number) => {
-          const { lat, lon, tags } = amenity;
-          const name = tags.name || "Unnamed Amenity";
-          return (
-            <Marker key={index} position={latLng(lat, lon)}>
-              <Popup>
-                {name} <br />
-                {tags.public_transport || ""} <br />
-                {tags.lit ? "Lit space" : ""}
-              </Popup>
-            </Marker>
-          );
-        })}
 
         {/* Geofence Circle */}
         {fenceCenter && (
