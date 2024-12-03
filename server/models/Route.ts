@@ -35,7 +35,7 @@ export const SummarySchema = new Schema({
         required: true },
     baseDuration: {
         type: Number,
-        required: true }
+        required: false }
 });
 
 // Main schema for Route

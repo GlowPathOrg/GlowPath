@@ -17,11 +17,11 @@ export const setupSocket = (app: Express) => {
     }
   });
 
-  io.use((socket, next) => {
+ /*  io.use((socket, next) => {
     console.log("Logging socket: ", socket);
     next();
   });
-
+ */
 
   /* io.engine.on("connection_error", (err) => {
     console.log(err.req);      // the request object

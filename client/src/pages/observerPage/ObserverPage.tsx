@@ -16,14 +16,14 @@ const ObserverPage = () => {
       console.log("Trying to connect to socket");
       connectSocket();
     }
-  }, [connectSocket, id]);
+  }, []);
 
   useEffect(() => {
     if (id && isConnected) {
       console.log("Trying to join share " + id);
       joinShare(id);
     }
-  },[id, isConnected, joinShare]);
+  },[id, isConnected]);
 
 return (
   <>

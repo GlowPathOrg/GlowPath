@@ -96,7 +96,7 @@ const JourneyPage: React.FC = () => {
  }, [latitude, longitude, currentRoute, transportMode])
 
   // Trigger rerouting when deviation is detected
- useEffect(() => {
+/*  useEffect(() => {
   const rerouteIfNeeded = async () => {
     if (userDeviationDetected) {
       await handleReroute(); // Ensure this function is awaited if it's asynchronous
@@ -105,7 +105,7 @@ const JourneyPage: React.FC = () => {
 
   rerouteIfNeeded(); // Call the function within the useEffect
 
-}, [userDeviationDetected, handleReroute]);
+}, [userDeviationDetected, handleReroute]); */
 
   // Announce turn-by-turn instructions using audio
   const announceTurn = (instruction: string) => {
@@ -149,14 +149,14 @@ const JourneyPage: React.FC = () => {
       console.log("isConnected: ", isConnected);
       hostShare(shareId);
     }
-  },[isConnected, shareId, hostShare]);
+  },[isConnected, shareId]);
 
   useEffect(() => {
     if (isConnected) {
       console.log("Trying to send position to share");
       sendPosition(position);
     }
-  }, [isConnected, position, sendPosition]);
+  }, [isConnected, position]);
 
   // Rendering
   return (

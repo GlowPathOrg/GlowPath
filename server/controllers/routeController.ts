@@ -56,7 +56,7 @@ export const routeController = async(req: Request, res: Response): Promise<void>
         // Check if the API response contains routes
         if (response.data.routes && response.data.routes.length > 0) {
             const route: RouteI = response.data.routes[0].sections[0]; // Extract the first route section this might be changed later
-            console.log('Route:', route.summary);
+            //console.log('Route:', route.summary);
             // Return the polyline, summary, and instructions for the route
             res.status(200).json({
                 polyline: route.polyline, // Encoded polyline for the route
