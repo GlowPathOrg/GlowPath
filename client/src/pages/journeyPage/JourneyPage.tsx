@@ -163,18 +163,22 @@ const JourneyPage: React.FC = () => {
       console.log('here is the route', route)
       const result = await createShare(route);
       console.log('the returned result', result);
+      console.log(result.data.id);
+      setShareId(result.data.id);
 
-      if (result.data.id) {
+/*       if (result.data.id) {
         console.log("Trying to connect to socket");
         setShareId(result.data.id);
         connectSocket();
-      }
+      } */
     } catch (err) {
       console.error("Error during sharing:", err);
     }
   }
 
   useEffect(() => {
+    console.log("Line 149");
+    //console.log(isConnected);
     if (isConnected) {
       console.log("Trying to connect to share " + shareId);
       console.log("isConnected: ", isConnected);

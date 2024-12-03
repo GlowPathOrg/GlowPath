@@ -20,7 +20,7 @@ export const useSocket = ({ password }: {password?: string}) => {
   const [error, setError] = useState("");
 
   const socket = io(socketServer, {
-    autoConnect: false,
+    //autoConnect: false,
     auth: (cb) => {
       cb(password ? {password} : {token: getToken()}) // pass credential to socket server
     }
