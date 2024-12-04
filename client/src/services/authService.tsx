@@ -4,7 +4,7 @@ import { RegisterDataI, LoginDataI, UserI } from "../Types/User";
 
 
 // Base URL for the backend API
-const BACKEND_URL = "http://localhost:3002/auth";
+const BACKEND_URL = "https://glowpath-a7681fe09c29.herokuapp.com";
 // Get the stored token from localStorage
 export const getToken = (): string | null => {
   return localStorage.getItem("token");
