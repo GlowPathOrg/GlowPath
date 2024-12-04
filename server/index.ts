@@ -18,6 +18,7 @@ const whitelist = [
   'https://glowpathorg.github.io', // prod
   'http://localhost:5173', // dev
 ];
+console.log('server whitelist: ', whitelist)
 const corsOptions: CorsOptions = {
   origin: function (origin, callback) {
     console.log('Incoming request origin:', origin);
@@ -33,23 +34,28 @@ const corsOptions: CorsOptions = {
   credentials: true,
 };
 
+app.use(cors(corsOptions));
 
+// Explicitly handle preflight requests (OPTIONS)
+app.options('*', cors(corsOptions));
 //websockets content
+app.use(express.json());
 const server = setupSocket(app); // This is needed to setup socket.io
 
-// TODO: remove the following block when no longer needed for testing websockets
+/* // TODO: remove the following block when no longer needed for testing websockets
 app.get("/", cors(corsOptions), (req, res) => {
-  // todo might need to change /index.html to "/public"
-  res.sendFile(__dirname + "/index.html");
-});
 
+  res.sendFile(__dirname + "/index.html");
+}); */
+app.get("/", (req, res) => {
+  res.send("GlowPath server is running.");
+});
 (async () => {
   await DBConnect();  // For native MongoDB driver
   await mongooseConnect();  // For Mongoose ORM
 })();
-//server routes
-app.use(cors(corsOptions));
-app.use(express.json());
+
+
 app.use("/auth", authRoutes);
 app.use(shareRoutes);
 app.use("/route", routingRoutes);
