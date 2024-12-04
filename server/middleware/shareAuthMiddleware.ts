@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express"
 import bcrypt from "bcrypt";
-import Share from "../models/Share";
+import Share from "../models/Share.js";
 
 
 export const shareAuthMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void>  => {

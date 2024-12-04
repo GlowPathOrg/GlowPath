@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import Share from "../models/Share";
-import RouteModel from "../models/Route";
+import Share from "../models/Share.js";
+import RouteModel from "../models/Route.js";
 import bcrypt from "bcrypt";
 import { v4 as uuid } from 'uuid';
 

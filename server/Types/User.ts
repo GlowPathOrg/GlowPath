@@ -1,5 +1,5 @@
 import { Document } from "mongoose";
-import { SummaryI } from "./Route";
+import { SummaryI } from "./Route.js";
 
 // User Interface extends Document so that its type has access to mongodb methods.
 //changed

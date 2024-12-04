@@ -1,9 +1,9 @@
 import { Server } from "socket.io";
 import { createServer } from "node:http";
 import { Express } from "express";
-import Share from "../models/Share"
+import Share from "../models/Share.js"
 import jwt, { JwtPayload } from "jsonwebtoken";
-import UserModel from "../models/UserModel";
+import UserModel from "../models/UserModel.js";
 import dotenv from 'dotenv';
 import bcrypt from "bcrypt";
 

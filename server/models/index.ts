@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 
 dotenv.config();
+const backup = "mongodb+srv://glowpathuser:1f0gCnPMKhYfn5OL@gpcluster.xot4d.mongodb.net/?retryWrites=true&w=majority&appName=GPCluster"
 
 const uri = process.env.MONGODB_URI;
 if (!uri) {
@@ -13,12 +14,13 @@ let client: MongoClient;
 
 export const DBConnect = async () => {
     if (!client) {
-        client = new MongoClient(uri, {
+        client = new MongoClient(backup, {
             serverApi: {
                 version: ServerApiVersion.v1,
                 strict: true,
                 deprecationErrors: true,
-            }
+            },
+            tls: true,  // Ensure SSL is enabled for MongoDB Atlas
         });
 
         try {
@@ -44,7 +46,7 @@ export const getCollection = (dbName: string, collectionName: string) => {
 export const mongooseConnect = async () => {
     try {
         await mongoose.connect(uri, {
-            dbName: 'Glowpath',  // Set the specific database name here
+            dbName: 'Glowpath',  // Specify the database name
         });
         console.log('Mongoose connected to MongoDB - Glowpath DB');
     } catch (error) {

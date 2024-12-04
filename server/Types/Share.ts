@@ -1,5 +1,5 @@
-import { UserI } from "./User";
-import { RouteI } from "./Route";
+import { UserI } from "./User.js";
+import { RouteI } from "./Route.js";
 
 export interface ShareI {
     _id?: string;

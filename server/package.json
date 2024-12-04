@@ -1,11 +1,12 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsx -r dotenv/config index.ts",
-   "start": "node -r dotenv/config dist/index.js",
+    "start": "node -r dotenv/config dist/index.js",
     "build": "tsc",
     "heroku-postbuild": "npm run build"
   },
@@ -29,6 +30,7 @@
     "@types/bcrypt": "^5.0.2",
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.7",
+    "@types/mongoose": "^5.11.96",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2"
