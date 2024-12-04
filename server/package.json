@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsx -r dotenv/config index.ts",
-    "start": "node -r dotenv/config dist/index.js",
+    "start": "DEBUG=* node -r dotenv/config dist/index.js",
     "build": "tsc",
     "heroku-postbuild": "npm run build"
   },
