@@ -17,8 +17,8 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
         const token = authHeaders.split(' ')[1];
         try {
             const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
-            const { id } = decoded;
-            const user: UserI | null = await UserModel.findOne({ _id: id });
+            const { _id } = decoded;
+            const user: UserI | null = await UserModel.findOne({ _id: _id });
             if (user) {
                 req.user = user;
                 next();
