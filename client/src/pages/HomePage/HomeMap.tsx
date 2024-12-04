@@ -24,7 +24,7 @@ const HomeMap: React.FC = () => {
           center={currentPosition}
           zoom={15}
           scrollWheelZoom={false}
-          style={{ height: '80vh', width: '100%' }}
+          style={{ height: '85vh', width: '100%' }}
         >
               <SosButton/>
           <TileLayer

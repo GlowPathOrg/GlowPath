@@ -49,7 +49,7 @@ const SettingsPage: React.FC = () => {
   const handleToggle = (option: keyof typeof sosSettings) => {
     setSosSettings((prev) => ({ ...prev, [option]: !prev[option] }));
   };
-
+/*
   // Handle SOS Button functionality
   const handleSosClick = async () => {
     if (sosSettings.notifyContacts && sosSettings.emergencyContacts.length > 0) {
@@ -86,7 +86,7 @@ const SettingsPage: React.FC = () => {
     if (sosSettings.callAuthorities) {
       callAuthorities();
     }
-  };
+  }; *//*
 
   // Notify nearby users (Mock for now)
   const notifyNearbyUsers = async () => {
@@ -100,7 +100,7 @@ const SettingsPage: React.FC = () => {
     console.log("Calling local authorities...");
     alert("Calling emergency services...");
     window.open("tel:112"); // Replace with the appropriate emergency number
-  };
+  }; */
 
   return (
     <div className="settings-page">
@@ -146,14 +146,7 @@ const SettingsPage: React.FC = () => {
         <h2>Emergency Contacts</h2>
         <button
           onClick={() => navigate("/contact-manager")}
-          style={{
-            padding: "10px 20px",
-            backgroundColor: "blue",
-            color: "white",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
+
         >
           Manage Contacts
         </button>

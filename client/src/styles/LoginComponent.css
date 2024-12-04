@@ -62,18 +62,20 @@
   margin-bottom: 8px;
   font-size: 0.9rem;
   color: var(--text-color);
+  padding-bottom: 5px;
+  padding-top: 10px;
 }
 
 .form-group input {
   width: 100%;
   padding: 10px;
-  border: 1px solid var(--input-border);
+  border: none; 
   border-radius: 5px;
   background-color: var(--input-background);
   color: var(--input-text-color);
   font-size: 1rem;
   box-sizing: border-box;
-  transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .form-group input::placeholder {
@@ -137,6 +139,18 @@
 .login-page button:hover {
   background-color: var(--button-hover);
   transform: scale(1.05);
+}
+
+.go-to-register-btn {
+    background-color: var(--button-background);
+    color: var(--text-color);
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 /* Responsive Design */

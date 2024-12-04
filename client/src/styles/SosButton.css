@@ -1,7 +1,7 @@
 .sos-button {
-    position: fixed; /* Ensure it's fixed in the desired position */
-    bottom: 6rem; /* Distance from the bottom */
-    right: 2rem; /* Adjust this value to move it more to the right */
+    position: absolute; /* Ensure it's fixed in the desired position */
+    top: 10px; /* Adjust distance from the top */
+    right: 10px; /* Adjust distance from the right */
     width: 5rem; /* Set the button's width */
     height: 5rem; /* Make it a perfect circle */
     border-radius: 50%; /* Ensure the button is circular */

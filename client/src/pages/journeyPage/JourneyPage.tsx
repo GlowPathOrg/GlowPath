@@ -15,12 +15,12 @@ import { createShare } from "../../services/shareService";
 import { RouteI, RouteRequestI } from "../../Types/Route";
 import { fetchInfrastructureData, processInfrastructureData } from "../../services/overpassService";
 import mapThemes from "../../components/MapComponent/MapThemes";
-import { MdEmergencyShare } from "react-icons/md";
+import { useSocket } from "../../hooks/useSocket";
 import { TbNavigationCancel } from "react-icons/tb";
 import Footer from "../../components/Footer"
-import { io } from "socket.io-client";
-import { getToken } from "../../utilities/token";
-const socketServer = import.meta.env.VITE_BACKEND_URL || "http://localhost:3002";
+import { MdEmergencyShare } from "react-icons/md";
+
+
 
 const JourneyPage: React.FC = () => {
   // React router hooks to access location state and navigate
@@ -36,7 +36,7 @@ const JourneyPage: React.FC = () => {
     route: initialRoute = [],
     summary: initialSummary = { distance: 0, duration: 0 },
     instructions: initialInstructions = [],
-    theme: initialTheme = "standard",
+    theme: initialTheme = "dark",
     transportMode = "pedestrian",
     destinationCoords = null,
   } = location.state || {};
@@ -47,13 +47,23 @@ const JourneyPage: React.FC = () => {
   const [currentInstructions, setCurrentInstructions] = useState(initialInstructions); // Instructions
   const [userDeviationDetected, setUserDeviationDetected] = useState(false); // Track route deviation
   const [rerouted, setRerouted] = useState(false); // Track if rerouting occurred
-  const [shareId, setShareId] = useState("");
+  const [shareId, setShareId] = useState((localStorage.getItem("shareId") || ""));
   const [litStreets, setLitStreets] = useState<LatLngTuple[]>([]);
   const [sidewalks, setSidewalks] = useState<{ geometry: { lat: number; lon: number }[] }[]>([]);
   const [policeStations, setPoliceStations] = useState<LatLngTuple[]>([]);
   const [hospitals, setHospitals] = useState<LatLngTuple[]>([]);
   const [mapTheme, setMapTheme] = useState<string>(initialTheme);
-  const [isConnected, setIsConnected] = useState(false);
+  const {
+    isConnected,
+    sendPosition,
+    connectSocket,
+    hostShare,
+  } = useSocket({});
+
+  useEffect(() => {
+    connectSocket();
+    // don't include in dev dependencies!
+  }, []);
 
   useEffect(() => {
     if (latitude && longitude) {
@@ -89,10 +99,13 @@ const JourneyPage: React.FC = () => {
     }
   }, [latitude, longitude, currentRoute]);
 
+
+
   const handleSOSActivated = () => {
     console.log('SOS button activated on Journey Page!');
 
   };
+
   // Handle rerouting if the user deviates from the route
   const handleReroute = useCallback(async () => {
 
@@ -131,16 +144,12 @@ const JourneyPage: React.FC = () => {
   }, [latitude, longitude, currentRoute, transportMode])
 
   // Trigger rerouting when deviation is detected
-   /* useEffect(() => {
-    const rerouteIfNeeded = async () => {
-      if (userDeviationDetected) {
-        await handleReroute(); // Ensure this function is awaited if it's asynchronous
-      }
-    };
-
-    rerouteIfNeeded(); // Call the function within the useEffect
-
-  }, [userDeviationDetected, handleReroute]); */
+useEffect(() => {
+     const handleDeviation = () => {
+    if (userDeviationDetected) console.log('user deviation detected"')
+  }
+  handleDeviation();
+  }, [userDeviationDetected])
 
   // Announce turn-by-turn instructions using audio
   const announceTurn = (instruction: string) => {
@@ -158,66 +167,49 @@ const JourneyPage: React.FC = () => {
   }, [currentInstructions]);
 
   // Socket-related hooks and functions
-  const socket = io(socketServer, {
-    auth: { token: getToken() }
-  });
 
   async function handleShare () {
     try {
-      console.log('Trying to share')
+
       const route: RouteI = {polyline: currentRoute, instructions: currentInstructions, summary: currentSummary};
+      console.log('sharing' , route)
       const result = await createShare(route);
-      console.log('Share returned from server: ', result);
+      console.log('shared', result, result.data.id)
       setShareId(result.data.id);
+
     } catch (err) {
       console.error("Error during sharing: ", err);
     }
   }
 
-  function hostShare (id: string) {
-    if (isConnected) socket.emit("host-share", id);
-  }
+/*  function handleCancel () {
+    localStorage.removeItem("shareId");
+    navigate("/");
+  } */
 
-  function sendPosition (position: PositionI) {
-    if (isConnected) socket.emit("position", position);
-  }
 
-  useEffect(() => {
-    socket.on("connect", () => {
-      console.log("Socket connected");
-      setIsConnected(true);
-    });
 
-    socket.on("connect_error", (error) => {
-      console.log(error.message);
-      setIsConnected(false);
-    });
 
-    socket.on("disconnect", () => {
-      console.log("Socket about to get disconnected");
-    })
-
-    return () => {
-      socket.off("connect");
-      socket.off("connect_error");
-      socket.off("disconnect");
-      console.log("Removed all event listeners because component is about to dismount");
-    }
-  },[])
 
   useEffect(() => {
-    if (isConnected) {
-      console.log("Trying to connect to share " + shareId);
+    console.log('connected?', isConnected)
+    if (isConnected && shareId) {
       hostShare(shareId);
     }
-  },[shareId]);
+  }, [isConnected, shareId, hostShare]);
+  useEffect(() => {
+    console.log("Updated position:", position);
+  }, [position]);
 
   useEffect(() => {
     if (isConnected) {
       console.log("Trying to send position to share");
-      sendPosition(position);
+      const typedPosition: PositionI = position;
+      console.log('my typed position', typedPosition);
+      sendPosition(typedPosition);
+      console.log('this may have been sent.')
     }
-  }, [position]);
+  }, [isConnected, position, sendPosition, shareId]);
 
   // Rendering
   return (
@@ -269,18 +261,18 @@ const JourneyPage: React.FC = () => {
           title="Share Journey"
         />
         <TbNavigationCancel onClick={() => navigate("/")} style={{
-            fontSize: "40px",
-            color: "#EBEBEB",
-            cursor: "pointer",
-            transition: "transform 0.2s ease",
-          }}  title="Cancel Journey"/>
-       
+          fontSize: "40px",
+          color: "#EBEBEB",
+          cursor: "pointer",
+          transition: "transform 0.2s ease",
+        }} title="Cancel Journey" />
+
         <div className="theme-selector">
-    <img
-      src="https://img.icons8.com/?size=100&id=37073&format=png&color=EBEBEB"
-      alt="Map Theme Icon"
-      className="icon"
-    />
+          <img
+            src="https://img.icons8.com/?size=100&id=37073&format=png&color=EBEBEB"
+            alt="Map Theme Icon"
+            className="icon"
+          />
           < select
             id="map-theme"
             value={mapTheme}
@@ -295,6 +287,7 @@ const JourneyPage: React.FC = () => {
             }
           </select>
         </div>
+        <button onClick={handleReroute}>REROUTE!</button>
       </div>
 
       < WeatherInfo />
