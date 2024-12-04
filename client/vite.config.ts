@@ -41,7 +41,7 @@ const manifest = {
 }
 
 // https://vite.dev/config/
-export default defineConfig(({command}) => {
+export default defineConfig(({ command }) => {
   if (command === "serve") {
     return {
       plugins: [
@@ -73,8 +73,3 @@ export default defineConfig(({command}) => {
     }
   }
 })
-
-
-
-
-

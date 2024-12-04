@@ -1,6 +1,6 @@
-import { UserI } from "./user";
-import { ShareI } from "./Share";
-import { RouteI } from "./Route";
+import { UserI } from "./user.js";
+import { ShareI } from "./Share.js";
+import { RouteI } from "./Route.js";
 
 declare global {
     namespace Express {

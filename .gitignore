@@ -1,11 +1,12 @@
+# Root .gitignore
+
 # dependencies
 /node_modules
 package-lock.json
 
 # production
 /build
-/dist
-dev-dist/
+/dev-dist/
 
 # misc
 .bak

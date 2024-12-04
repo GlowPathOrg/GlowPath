@@ -14,7 +14,7 @@ export const fetchRoute = async (
   const [destinationLat, destinationLon] = destination;
 
   // Changed from api url to backend url
-  const url = import.meta.env.BACKEND_URL ||'http://localhost:3002';
+  const url = import.meta.env.VITE_BACKEND_URL ||'http://localhost:3002';
   try {
     // Log the parameters being sent to the API for debugging purposes
     /* console.log('Request Parameters:', {

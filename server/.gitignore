@@ -1,2 +1,22 @@
+# Server .gitignore
+
+# dependencies
 node_modules/
+
+# production output
 dist/
+
+# logs and temporary files
+*.log
+.bak
+
+# IDE files
+.vscode/
+.idea/
+
+# environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
