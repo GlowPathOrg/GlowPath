@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 
 dotenv.config();
-const backup = "mongodb+srv://glowpathuser:1f0gCnPMKhYfn5OL@gpcluster.xot4d.mongodb.net/?retryWrites=true&w=majority&appName=GPCluster"
+
 
 const uri = process.env.MONGODB_URI;
 if (!uri) {
@@ -14,7 +14,7 @@ let client: MongoClient;
 
 export const DBConnect = async () => {
     if (!client) {
-        client = new MongoClient(backup, {
+        client = new MongoClient(uri, {
             serverApi: {
                 version: ServerApiVersion.v1,
                 strict: true,
