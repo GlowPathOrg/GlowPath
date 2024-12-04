@@ -1,24 +1,26 @@
 {
   "compilerOptions": {
-    "incremental": true,                      // Enable incremental builds for tracking changes
-    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",  // Store build info for incremental builds
-    "target": "ES2020",                       // Adjust the target version to ES2020 (or ES2021/ES2022 if needed)
-    "useDefineForClassFields": true,          // Ensure class fields are handled as per the standard
-    "lib": ["ES2020", "DOM", "DOM.Iterable"], // Include libraries for DOM and ES2020
-    "module": "ESNext",                       // Use "ESNext" for modern module syntax
-    "skipLibCheck": true,                     // Skip type checking for declaration files
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
 
-    /* Module Resolution */
-    "moduleResolution": "node",               // Use "node" module resolution for Node.js-style resolution
-    "isolatedModules": true,                  // Ensure each file can be treated as an isolated module
-    "noEmit": true,                           // Prevent emitting files (useful for bundlers like Vite)
-    "jsx": "react-jsx",                       // Enable React JSX transformation
+    /* Bundler mode */
+    "moduleResolution": "Bundler",
+    "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
 
-    /* Linting and Strict Checks */
-    "strict": true,                           // Enable strict type checking
-    "noUnusedLocals": true,                   // Disallow unused local variables
-    "noUnusedParameters": true,               // Disallow unused function parameters
-    "noFallthroughCasesInSwitch": true        // Prevent fall-through in switch statements
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true
   },
-  "include": ["src"]                          // Include the source files in the "src" directory
+  "include": ["src"]
 }
