@@ -2,9 +2,10 @@ import axios, { AxiosResponse } from "axios";
 import { RegisterDataI, LoginDataI, UserI } from "../Types/User";
 
 
+
 // i could not get env to work - have it here
 // Base URL for the backend API
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL + "/auth" || "https://glowpath-a7681fe09c29.herokuapp.com/auth";
+const AUTH_URL = "https://glowpath-a7681fe09c29.herokuapp.com" + '/auth';
 // Get the stored token from localStorage
 export const getToken = (): string | null => {
   return localStorage.getItem("token");
@@ -20,7 +21,7 @@ export interface AuthResponse {
 export const register = async (userData: RegisterDataI, handleLogin: (token: string, userData: UserI) => void
 ): Promise<AxiosResponse<AuthResponse> | undefined> => {
   try {
-    const response = await axios.post<AuthResponse>(`${BACKEND_URL}/register`, userData, {
+    const response = await axios.post<AuthResponse>(`${AUTH_URL}/register`, userData, {
       withCredentials: true,
       headers: {
         'Content-Type': 'application/json'
@@ -49,7 +50,7 @@ export const register = async (userData: RegisterDataI, handleLogin: (token: str
 export const login = async (userData: LoginDataI, handleLogin: (token: string, userData: UserI) => void
 ): Promise<AxiosResponse<AuthResponse>> => {
   try {
-    const response = await axios.post<AuthResponse>(`${BACKEND_URL}/login`, userData, {
+    const response = await axios.post<AuthResponse>(`${AUTH_URL}/login`, userData, {
     withCredentials: true,
     headers: {
       'Content-Type': 'application/json',
@@ -74,7 +75,7 @@ export const editProfile = async (userEdit: { [x: string]: string; password: str
     const token = getToken();
 
     console.log('sending to edit: ', userEdit)
-    const response = await axios.post<AuthResponse>(`${BACKEND_URL}/edit`, userEdit, {
+    const response = await axios.post<AuthResponse>(`${AUTH_URL}/edit`, userEdit, {
       withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
