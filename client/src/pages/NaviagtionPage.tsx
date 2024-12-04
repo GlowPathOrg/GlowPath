@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Polyline, useMap } from "react-leaflet";
 import "../styles/NavigationPage.css";
+import Footer from "../components/Footer"
 
 const NavigationPage: React.FC = () => {
   const location = useLocation();
@@ -72,9 +73,20 @@ const NavigationPage: React.FC = () => {
             attribution="&copy; OpenStreetMap contributors"
           />
           {/* Draw the route on the map */}
-          <Polyline positions={route} color="blue" weight={6} />
+          <Polyline
+  positions={route}
+  pathOptions={{
+    color: "pink",
+    weight: 6,
+    lineCap: "square", // Sharp ends
+    lineJoin: "miter", // Sharp corners
+  }}
+  weight={6} 
+/> 
           {/* Marker for the start point */}
-          <Marker position={route[0]} />
+          <Marker position={route[0]} 
+          />
+
           {/* Marker for the end point */}
           <Marker position={route[route.length - 1]} />
           {/* Automatically follow the route */}
@@ -84,24 +96,28 @@ const NavigationPage: React.FC = () => {
         <p>Loading map...</p> // Display a fallback message while the map is loading
       )}
 
-      <div className="navigation-info">
-        {/* Display the current instruction */}
-        <h3>{currentInstruction}</h3>
-        {/* Display the next instruction or a default message */}
-        <p>Towards: {instructions?.[1]?.instruction || "Destination"}</p>
-        {/* Display route distance and duration */}
-        <p>
-          {summary.length / 1000} km • {Math.ceil(summary.duration / 60)} min
-        </p>
-
-        <button className="start-button" onClick={handleStartJourney}>
-          Start Journey
-        </button>
-
-        <button className="exit-button" onClick={() => navigate("/")}>
-          Exit
-        </button>
-      </div>
+<div className="navigation-info">
+<div className="route-details">
+    <div className="route-step">
+      <span className="route-step-icon">📍</span>
+      <span>Current Location</span>
+    </div>
+    <div className="route-step">
+      <span className="route-step-icon">🏁</span>
+      <span>{location.state?.destinationName || "Destination"}</span>
+    </div>
+  </div>
+  <p>{summary.length / 1000} km • {Math.ceil(summary.duration / 60)} min</p>
+  <div className="button-group">
+    <button className="start-button" onClick={handleStartJourney}>
+      Start Journey
+    </button>
+    <button className="exit-button" onClick={() => navigate("/")}>
+      Exit
+    </button>
+  </div>
+</div>
+<Footer/>
     </div>
   );
 };

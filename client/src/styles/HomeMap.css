@@ -14,22 +14,22 @@
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .live-location-map {
-    height: 70vh; /* Reduce map height for tablets */
+    height: 70vh; 
   }
 
   .live-location-map p {
-    font-size: 14px; /* Adjust font size for better readability on tablets */
-    margin-top: 15px; /* Adjust spacing */
+    font-size: 14px; 
+    margin-top: 15px; 
   }
 }
 
 @media (max-width: 480px) {
   .live-location-map {
-    height: 60vh; /* Smaller map height for phones */
+    height: 60vh; 
   }
 
   .live-location-map p {
-    font-size: 12px; /* Smaller font size for phones */
-    margin-top: 10px; /* Less margin for smaller screens */
+    font-size: 12px; 
+    margin-top: 10px; 
   }
 }

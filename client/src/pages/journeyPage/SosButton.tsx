@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import "../../styles/SosButton.css"
 
 interface SOSButtonProps {
   onSOSActivated?: () => void; // Optional callback for additional logic when SOS is activated

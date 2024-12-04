@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import "../styles/ContactManagerPage.css"
 
 const ContactManagerPage: React.FC = () => {
   const [contacts, setContacts] = useState<string[]>([]);
@@ -37,80 +38,26 @@ const ContactManagerPage: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
+    <div className="contact-manager-page">
       <h1>Manage Emergency Contacts</h1>
-      <div style={{ marginBottom: "20px" }}>
+      <div className="contact-input-container">
         <input
           type="text"
           placeholder="Enter contact (phone or email)"
           value={newContact}
           onChange={(e) => setNewContact(e.target.value)}
-          style={{
-            padding: "10px",
-            width: "300px",
-            marginRight: "10px",
-            border: "1px solid #ccc",
-            borderRadius: "5px",
-          }}
         />
-        <button
-          onClick={addContact}
-          style={{
-            padding: "10px 20px",
-            backgroundColor: "blue",
-            color: "white",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
-        >
-          Add Contact
-        </button>
+        <button onClick={addContact}>Add Contact</button>
       </div>
-      <ul style={{ listStyleType: "none", padding: 0 }}>
+      <ul className="contact-list">
         {contacts.map((contact, idx) => (
-          <li
-            key={idx}
-            style={{
-              marginBottom: "10px",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              border: "1px solid #ccc",
-              padding: "10px",
-              borderRadius: "5px",
-              maxWidth: "400px",
-            }}
-          >
+          <li className="contact-list-item" key={idx}>
             <span>{contact}</span>
-            <button
-              onClick={() => removeContact(idx)}
-              style={{
-                padding: "5px 10px",
-                backgroundColor: "red",
-                color: "white",
-                border: "none",
-                borderRadius: "5px",
-                cursor: "pointer",
-              }}
-            >
-              Remove
-            </button>
+            <button onClick={() => removeContact(idx)}>Remove</button>
           </li>
         ))}
       </ul>
-      <button
-        onClick={() => window.history.back()}
-        style={{
-          marginTop: "20px",
-          padding: "10px 20px",
-          backgroundColor: "gray",
-          color: "white",
-          border: "none",
-          borderRadius: "5px",
-          cursor: "pointer",
-        }}
-      >
+      <button className="back-button" onClick={() => window.history.back()}>
         Back to Settings
       </button>
     </div>

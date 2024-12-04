@@ -10,6 +10,7 @@ import ObserverPage from './pages/observerPage/ObserverPage';
 import VisualisationsPage from './pages/VisualisationsPage';
 import SettingsPage from './pages/SettingsPage'
 import ContactManagerPage from './pages/ContactManagerPage';
+import "./index.css"
 
 //import ChatPage from './pages/ChatPage';
 

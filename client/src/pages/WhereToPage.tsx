@@ -7,7 +7,7 @@ import { LatLngTuple, latLng } from "leaflet";
 import { decode } from "@here/flexpolyline";
 import MapComponent from "../components/MapComponent/MapComponent";
 import { InstructionsI, RouteRequestI, SummaryI } from "../Types/Route";
-
+import "../styles/WhereToPage.css"
 const WhereToPage: React.FC = () => {
   const navigate = useNavigate();
   const { latitude, longitude, error: geoError } = usePosition();
@@ -84,6 +84,7 @@ const WhereToPage: React.FC = () => {
           policeStations: policeStations.map(({ lat, lon }: { lat: number; lon: number }) => [lat, lon] as LatLngTuple),
           hospitals: hospitals.map(({ lat, lon }: { lat: number; lon: number }) => [lat, lon] as LatLngTuple),
           theme: "standard", // Default theme passed; can be changed in JourneyPage
+          destinationName: destination, 
         },
       });
     } catch (err) {
@@ -103,26 +104,15 @@ const WhereToPage: React.FC = () => {
 
   return (
     <div className="where-to-page">
-      <h1>Where to?</h1>
-
-      {/* Current Location */}
-      <div>
-        <p>
-          <strong>Your Current Location:</strong>{" "}
-          {originCoords ? `${originCoords.lat.toFixed(4)}, ${originCoords.lon.toFixed(4)}` : "Fetching your location..."}
-        </p>
-        {geoError && <p style={{ color: "red" }}>Geolocation Error: {geoError}</p>}
-      </div>
-
+      
       {/* Destination Input */}
       <div>
-        <label htmlFor="destination">Destination:</label>
         <input
           type="text"
           id="destination"
           value={destination}
           onChange={(e) => setDestination(e.target.value)}
-          placeholder="Enter destination"
+          placeholder="Search here"
         />
       </div>
 
