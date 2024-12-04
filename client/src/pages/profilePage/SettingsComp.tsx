@@ -16,7 +16,7 @@ const SettingsPage: React.FC = () => {
   // State for default SOS message
   const [sosMessage, setSosMessage] = useState<string>("Help me, I am in danger!");
 
-  
+
 
   // Load saved settings on mount
   useEffect(() => {
@@ -24,26 +24,25 @@ const SettingsPage: React.FC = () => {
     if (savedSettings) {
       setSosSettings((prev) => ({ ...prev, ...savedSettings }));
       setSosMessage(savedSettings.sosMessage || "Help me, I am in danger!");
-      setTheme(savedSettings.theme || "light");
       document.documentElement.setAttribute("data-theme", savedSettings.theme || "light");
     }
   }, []);
 
   // Save settings to localStorage
   const saveSettings = () => {
-    const settingsToSave = { ...sosSettings, theme, sosMessage };
+    const settingsToSave = { ...sosSettings, sosMessage };
     localStorage.setItem("settings", JSON.stringify(settingsToSave));
     alert("Settings saved successfully!");
   };
 
-  
+
 
   // Handle toggling of SOS options
   const handleToggle = (option: keyof typeof sosSettings) => {
     setSosSettings((prev) => ({ ...prev, [option]: !prev[option] }));
   };
 
-  
+
 
   return (
     <div className="settings-page">
@@ -126,7 +125,7 @@ const SettingsPage: React.FC = () => {
       </section>
 
       {/* Appearance Section */}
-      
+
       <button className="save-button" onClick={saveSettings}>
         Save Settings
       </button>

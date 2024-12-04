@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useSocket } from '../../hooks/useSocket.js';
-import { latLng } from 'leaflet';
-import MapComponent from '../../components/MapComponent/MapComponent.js';
+// import { latLng } from 'leaflet';
+// import MapComponent from '../../components/MapComponent/MapComponent.js';
 
 
 
@@ -51,7 +51,7 @@ const ObserverPage = () => {
         )}
 
       </p>
-      {position &&  (
+{/*       {position &&  (
       <>
         <MapComponent
           latitude={position.latitude}
@@ -72,7 +72,7 @@ const ObserverPage = () => {
         }
 
         /></>
-)}
+)} */}
     </div>
   );
 }

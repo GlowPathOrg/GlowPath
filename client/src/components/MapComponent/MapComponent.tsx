@@ -15,6 +15,7 @@ import "../../styles/MapComponent.css";
 import mapThemes, { getDefaultTheme, isValidTheme } from "./MapThemes";
 import FitBounds from "./FitBounds";
 import { InstructionsI, SummaryI } from "../../Types/Route";
+import SosButton from "../../pages/journeyPage/SosButton";
 
 export interface MapComponentProps {
   latitude: number | null; // User's latitude

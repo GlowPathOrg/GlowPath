@@ -18,7 +18,7 @@ const NavigationPage: React.FC = () => {
   } = location.state || {};
 
   const [currentInstruction, setCurrentInstruction] = useState<string>(""); // Current turn-by-turn instruction
-
+  console.log(currentInstruction)
   // Set the initial instruction when instructions change
   useEffect(() => {
     if (instructions.length > 0) {
@@ -81,10 +81,10 @@ const NavigationPage: React.FC = () => {
     lineCap: "square", // Sharp ends
     lineJoin: "miter", // Sharp corners
   }}
-  weight={6} 
-/> 
+  weight={6}
+/>
           {/* Marker for the start point */}
-          <Marker position={route[0]} 
+          <Marker position={route[0]}
           />
 
           {/* Marker for the end point */}

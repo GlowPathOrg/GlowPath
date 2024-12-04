@@ -4,10 +4,9 @@ import Footer from "../../components/Footer"
 import { useState } from "react";
 import "../../styles/HomePage.css"; // Custom styles
 import WhereToPage from "../WhereToPage"; // WhereToPage component
-import SosButton from "../../pages/journeyPage/SosButton";
 const HomePage: React.FC = () => {
   const [isSearchExpanded, setIsSearchExpanded] = useState(false); // Toggle state for the search drawer
- 
+
 
   const handleSearchClick = () => {
     setIsSearchExpanded(true); // Expand the search drawer
@@ -22,7 +21,7 @@ const HomePage: React.FC = () => {
       {/* Map Section */}
       <div className="Home-map-container">
         <HomeMap />
-        
+
       </div>
 
       {/* Search Bar Section */}
@@ -51,7 +50,7 @@ const HomePage: React.FC = () => {
             <button className="back-button" onClick={handleCloseSearch}>
               <img src="https://img.icons8.com/?size=100&id=3e5DEX0jAFhN&format=png&color=FFFFFF"  alt="Search Icon"
         className="search-icon">
-             
+
        </img>
             </button>
             <WhereToPage />
