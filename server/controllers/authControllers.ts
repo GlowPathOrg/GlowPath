@@ -6,7 +6,7 @@ import UserModel from '../models/UserModel';
 import crypto from 'crypto';
 
 dotenv.config();
-
+// automatic jwtSecretgenerator
 const jwtSecret = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
 
 const generateToken = (user: any) => {
