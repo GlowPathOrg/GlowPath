@@ -4,10 +4,10 @@
   "description": "Glowpath server and client app",
   "main": "server/index.js",
   "scripts": {
-    "start": "npm --prefix server run start", // Only starts the server
-    "build": "npm --prefix server run build", // Removes client build
-    "heroku-postbuild": "npm run build", // Keeps Heroku's focus on building the server
-    "dev": "npm --prefix server run dev" // Focuses on server development
+    "start": "npm --prefix server run start",
+    "build": "npm --prefix server run build",
+    "heroku-postbuild": "npm run build",
+    "dev": "npm --prefix server run dev"
   },
   "dependencies": {
     "@types/cors": "^2.8.17",
