@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import axios from 'axios';
-import { RouteI, RouteRequestI } from '../Types/Route';
+import { RouteI, RouteRequestI } from '../Types/Route.js';
 import { Request, Response } from 'express';
 
 dotenv.config();
