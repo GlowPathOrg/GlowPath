@@ -17,6 +17,8 @@ const ObserverPage = () => {
     joinShare,
   } = useSocket({ password });
 
+  useEffect(()=>{if (!position) {console.log('not receiving position yet')} else console.log('position in observer page is ', position.latitude)}, [position])
+
   useEffect(() => {
     connectSocket();
     if (id) joinShare(id);

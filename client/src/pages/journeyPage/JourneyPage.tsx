@@ -59,7 +59,8 @@ const JourneyPage: React.FC = () => {
 
   useEffect(() => {
     connectSocket();
-  }, [connectSocket]);
+    // don't include in dev dependencies!
+  }, []);
 
   useEffect(() => {
     if (latitude && longitude) {
@@ -200,7 +201,7 @@ useEffect(() => {
       console.log("Trying to send position to share");
       const typedPosition: PositionI = position;
       console.log('my typed position', typedPosition);
-      sendPosition(typedPosition, shareId);
+      sendPosition(typedPosition);
       console.log('this may have been sent.')
     }
   }, [isConnected, position, sendPosition, shareId]);

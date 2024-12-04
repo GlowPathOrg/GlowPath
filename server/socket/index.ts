@@ -1,10 +1,10 @@
 import { Server } from "socket.io";
 import { createServer } from "node:http";
 import { Express } from "express";
-import Share from "../models/Share"
+import Share from "../models/Share";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import UserModel from "../models/User";
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import mongoose from "mongoose";
 
@@ -14,86 +14,107 @@ export const setupSocket = (app: Express) => {
   const server = createServer(app);
   const io = new Server(server, {
     cors: {
-      origin: "http://localhost:5173"
+      origin: "http://localhost:5173",
     },
     connectionStateRecovery: {
-      // the backup duration of the sessions and the packets
       maxDisconnectionDuration: 2 * 60 * 1000,
-      // whether to skip middlewares upon successful recovery
       skipMiddlewares: true,
-    }
+    },
   });
-
-  /* io.use((socket, next) => {
-    console.log("Logging socket: ", socket);
-    next();
-  }); */
-
 
   io.engine.on("connection_error", (err) => {
-    console.log(err.req);      // the request object
-    console.log(err.code);     // the error code, for example 1
-    console.log(err.message);  // the error message, for example "Session ID unknown"
-    console.log(err.context);  // some additional error context
+    console.error("Connection error:", err);
   });
 
-
   io.on("connection", (socket) => {
-    console.log("Connected to socket " + socket.id);
+    console.log(`Connected to socket ${socket.id}`);
 
     if (socket.recovered) {
-      // recovery was successful: socket.id, socket.rooms and socket.data were restored
-      console.log("Recovered session")
+      console.log("Recovered session for socket:", socket.id);
     } else {
-      // new or unrecoverable session
-      console.log("New session")
+      console.log("New session for socket:", socket.id);
     }
 
-    socket.on("host-share", async (id) => {
-      if (!id) return console.log("no id");
-      const sanitizedId = id.replace(/[$/(){}]/g, "").trim();
-      if (!mongoose.Types.ObjectId.isValid(sanitizedId)) {
-        return console.log("Invalid ObjectId format");
-      }
-      const token = socket.handshake.auth.token;
-      const JWT_SECRET = process.env.JWT_SECRET
-      if (!JWT_SECRET) return console.log("no jwt secret");
-      const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
-      const { id: userId } = decoded;
-      const user = await UserModel.findOne({ _id: userId });
-      if (!user) return console.log("no user");
-      const share = await Share.findOne({ _id: sanitizedId, owner: user });
-      if (!share) return console.log("no share");
-      socket.join(sanitizedId);
-      console.log(socket.id + " joined room " + sanitizedId);
-      // TODO: send some kind of error to client when this fails https://socket.io/docs/v4/listening-to-events/
-      });
 
-    socket.on("join-share", async (id, cb) => {
-      console.log("socket on joinshare....");
-      if (!id) return console.log("no id");
-      const sanitizedId = id.replace(/[$/(){}]/g, "");
-      if (!mongoose.Types.ObjectId.isValid(sanitizedId)) {
-        return console.log("Invalid ObjectId format");
+    socket.on("host-share", async (id) => {
+      try {
+        const sanitizedId = sanitizeId(id);
+        if (!sanitizedId) {
+          console.error(`[${socket.id}] Invalid share ID.`);
+          return;
+        }
+
+        const token = socket.handshake.auth.token;
+        const JWT_SECRET = process.env.JWT_SECRET;
+        if (!JWT_SECRET) {
+          console.error(`[${socket.id}] Missing JWT secret.`);
+          return;
+        }
+
+        const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
+        const user = await UserModel.findOne({ _id: decoded._id });
+        const share = await Share.findOne({ _id: sanitizedId, owner: user });
+
+        if (!user || !share) {
+          console.error(`[${socket.id}] Unauthorized.`);
+          return;
+        }
+          // saving room id - this was why it wasn't connecting to the front end
+        socket.data.room = sanitizedId;
+        socket.join(sanitizedId);
+        console.log(`[${socket.id}] Hosted and joined room: ${sanitizedId}`);
+      } catch (err) {
+        console.error(`[${socket.id}] Error in host-share:`, err);
       }
-      const password = socket.handshake.auth.password;
-      if (!password) return console.log("no password");
-      const share = await Share.findOne({_id: sanitizedId});
-      if (!share) return console.log("no share");
-      const matchingPasswords = await bcrypt.compare(password, share.password);
-      if (!matchingPasswords) return console.log("wrong password");
-      socket.join(sanitizedId);
-      console.log(socket.id + " joined room " + sanitizedId);
-      // TODO: send some kind of error to client when this fails https://socket.io/docs/v4/listening-to-events/
-      cb("This event was received and processed");
     });
 
-      socket.on("position", (position, room) => {
-        console.log("Got position and relay it to room " + room);
-        socket.to(room).emit("position", position);
-      })
 
+    socket.on("join-share", async (id, cb) => {
+      try {
+        const sanitizedId = sanitizeId(id);
+        if (!sanitizedId) {
+          console.error(`[${socket.id}] Invalid share ID.`);
+          return cb && cb("Invalid share ID.");
+        }
+
+        const password = socket.handshake.auth.password;
+        const share = await Share.findOne({ _id: sanitizedId });
+        const matchingPasswords = await bcrypt.compare(password, share?.password || "");
+
+        if (!share || !matchingPasswords) {
+          console.error(`[${socket.id}] Unauthorized.`);
+          return cb && cb("Unauthorized.");
+        }
+
+        socket.data.room = sanitizedId;
+        socket.join(sanitizedId);
+        console.log(`[${socket.id}] Joined room: ${sanitizedId}`);
+        cb && cb("Successfully joined the room.");
+      } catch (err) {
+        console.error(`[${socket.id}] Error in join-share:`, err);
+        cb && cb("Server error.");
+      }
+    });
+
+
+    socket.on("position", (position) => {
+      const room = socket.data.room;
+      if (!room) {
+        console.error(`[${socket.id}] No room associated. Cannot emit position.`);
+        return;
+      }
+      console.log(`[${socket.id}] Sending position to room ${room}:`, position);
+      socket.to(room).emit("position", position);
+    });
+
+    /**
+     * Helper function to sanitize IDs
+     */
+    const sanitizeId = (id: string): string | null => {
+      const sanitizedId = id.replace(/[$/(){}]/g, "").trim();
+      return mongoose.Types.ObjectId.isValid(sanitizedId) ? sanitizedId : null;
+    };
   });
 
   return server;
-}
+};

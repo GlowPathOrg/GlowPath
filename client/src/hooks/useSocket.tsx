@@ -13,7 +13,7 @@ interface AlarmI {
 }
 let socket: Socket | null;
 
-export const useSocket = ({ password }: {password?: string}) => {
+export const useSocket = ({ password }: { password?: string }) => {
   const [isConnected, setIsConnected] = useState(false);
   const [position, setPosition] = useState<PositionI | null>();
   const [messages, setMessages] = useState<MessageI[] | []>([]);
@@ -32,7 +32,6 @@ export const useSocket = ({ password }: {password?: string}) => {
 
   const connectSocket = () => {
     if (!isConnected) {
-      console.log("socket.connect() was called");
       socket?.connect();
     } else console.log('am i connected in hook?', isConnected)
   };
@@ -42,7 +41,6 @@ export const useSocket = ({ password }: {password?: string}) => {
   }
 
   function joinShare (id: string) {
-    console.log("joinShare is called with id " + id);
     console.log("isConnected: ", isConnected);
     if (isConnected && socket) {
       socket.emit("join-share", id, (response: string) => {
@@ -55,6 +53,9 @@ export const useSocket = ({ password }: {password?: string}) => {
     if (!position) {
       console.warn("can't find position!");
       return;
+    }
+    if (!socket) {
+      console.log('cannot find')
     }
     if (isConnected && socket) {
       console.log("Sending position to room:", position);
@@ -75,8 +76,10 @@ export const useSocket = ({ password }: {password?: string}) => {
     initialized.current = true;
 
 
+
+
     socket?.on("connect", () => {
-      console.log("Socket connected");
+      console.log("Socket connected in useSocket");
       setIsConnected(true);
     });
 
@@ -91,8 +94,13 @@ export const useSocket = ({ password }: {password?: string}) => {
       setIsConnected(false);
     });
 
-    socket?.on("location", (newPosition: PositionI) => {
-      console.log("setting position:", newPosition);
+
+    socket?.on("position", (newPosition) => {
+      console.log("Client: Received position update from server:", newPosition);
+      if (!newPosition) {
+        console.error("Client: Received empty position data.");
+        return;
+      }
       setPosition(newPosition);
     });
 
@@ -112,7 +120,6 @@ export const useSocket = ({ password }: {password?: string}) => {
       socket?.off("connect");
       socket?.off("connect_error");
       socket?.off("disconnect");
-      socket?.off("location");
       socket?.off("message");
       socket?.off("alarm");
       socket?.disconnect();
