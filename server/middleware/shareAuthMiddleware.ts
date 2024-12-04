@@ -16,7 +16,7 @@ export const shareAuthMiddleware = async (req: Request, res: Response, next: Nex
       return;
     }
     const sanitizedId = id.replace(/[$/(){}]/g, "");
-    const share = await Share.findOne({_id: sanitizedId});
+    const share = await Share.findOne({_id: sanitizedId}).populate("route").populate("owner");
     if (!share) {
       res.status(401).json({error: "Unauthorized"});
       return;

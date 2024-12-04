@@ -1,14 +1,15 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useSocket } from '../../hooks/useSocket.js';
-// import { latLng } from 'leaflet';
-// import MapComponent from '../../components/MapComponent/MapComponent.js';
-
-
+import { latLng } from 'leaflet';
+import MapComponent from '../../components/MapComponent/MapComponent.js';
+import { accessShare } from '../../services/shareService.js';
+import { RouteI } from '../../Types/Route.js';
 
 const ObserverPage = () => {
+  const [route, setRoute] = useState<RouteI>({polyline: [], instructions: [], summary: {duration: 0, length: 0}});
   const [searchParams] = useSearchParams();
-  const { id } = useParams();
+  const { id } = useParams() || "";
   const password = searchParams.get("password") || "";
 
 
@@ -35,6 +36,21 @@ const ObserverPage = () => {
     }
   }, [id, isConnected]);
 
+  async function getShareOnLoad () {
+    const result: any = await accessShare(id as string, password);
+    if (result.data) {
+      setRoute(result.data.route);
+      console.log("Set route to result of API request");
+      console.log(result.data);
+    }
+  }
+
+  useEffect(() => {
+    if (id && password) {
+      getShareOnLoad();
+    }
+  },[])
+
   return (
     <div>
       <h1>Observer Page</h1>
@@ -51,28 +67,27 @@ const ObserverPage = () => {
         )}
 
       </p>
-{/*       {position &&  (
+     {position && route ? (
       <>
         <MapComponent
           latitude={position.latitude}
-            longitude={position.longitude}
-            heading={position.heading}
-          geolocationError={null  }
-          route={currentRoute}
-          summary={currentSummary}
-          instructions={currentInstructions}
-          originCoords={latLng(currentRoute[0][0], currentRoute[0][1])}
-          litStreets={litStreets}
-          sidewalks={sidewalks}
-          policeStations={policeStations}
-          hospitals={hospitals}
-          destinationCoords={
-          destinationCoords ||
-          latLng(currentRoute[currentRoute.length - 1][0], currentRoute[currentRoute.length - 1][1])
-        }
-
-        /></>
-)} */}
+          longitude={position.longitude}
+          heading={position.heading}
+          geolocationError={null}
+          route={route?.polyline}
+          summary={route?.summary}
+          instructions={route?.instructions}
+          litStreets={[]}
+          sidewalks={[]}
+          policeStations={[]}
+          hospitals={[]}
+          originCoords={latLng(route?.polyline[0][0], route?.polyline[0][1])}
+          destinationCoords={latLng(route?.polyline[route.polyline.length - 1][0], route?.polyline[route.polyline.length - 1][1])}
+          theme={"standard"}
+          />
+      </>
+) : "No position or route available"
+}
     </div>
   );
 }
