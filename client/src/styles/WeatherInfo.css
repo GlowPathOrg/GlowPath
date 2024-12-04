@@ -11,46 +11,46 @@
 .weather-info img {
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.1);
-  width: 50px; /* Default size */
-  height: 50px; /* Default size */
-  margin-right: 10px; /* Space between image and text */
+  width: 50px; 
+  height: 50px; 
+  margin-right: 10px; 
 }
 
 .weather-info span {
-  font-size: 16px; /* Default text size */
+  font-size: 16px; 
 }
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .weather-info {
-    flex-direction: column; /* Stack items vertically on tablets */
-    padding: 8px; /* Adjust padding */
+    flex-direction: column; 
+    padding: 8px; 
   }
 
   .weather-info img {
-    width: 40px; /* Reduce image size */
+    width: 40px; 
     height: 40px;
-    margin-right: 0; /* Remove horizontal spacing */
-    margin-bottom: 5px; /* Add spacing below the image */
+    margin-right: 0; 
+    margin-bottom: 5px; 
   }
 
   .weather-info span {
-    font-size: 14px; /* Adjust text size */
-    text-align: center; /* Center-align text */
+    font-size: 14px; 
+    text-align: center; 
   }
 }
 
 @media (max-width: 480px) {
   .weather-info {
-    padding: 6px; /* Reduce padding for phones */
+    padding: 6px; 
   }
 
   .weather-info img {
-    width: 35px; /* Further reduce image size */
+    width: 35px; 
     height: 35px;
   }
 
   .weather-info span {
-    font-size: 12px; /* Smaller text size for phones */
+    font-size: 12px; 
   }
 }

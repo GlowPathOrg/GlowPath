@@ -15,6 +15,9 @@ import { createShare } from "../../services/shareService";
 import { RouteI, RouteRequestI } from "../../Types/Route";
 import { fetchInfrastructureData, processInfrastructureData } from "../../services/overpassService";
 import mapThemes from "../../components/MapComponent/MapThemes";
+import { MdEmergencyShare } from "react-icons/md";
+import { TbNavigationCancel } from "react-icons/tb";
+import Footer from "../../components/Footer"
 import { io } from "socket.io-client";
 import { getToken } from "../../utilities/token";
 const socketServer = import.meta.env.VITE_BACKEND_URL || "http://localhost:3002";
@@ -128,7 +131,7 @@ const JourneyPage: React.FC = () => {
   }, [latitude, longitude, currentRoute, transportMode])
 
   // Trigger rerouting when deviation is detected
-/*    useEffect(() => {
+   /* useEffect(() => {
     const rerouteIfNeeded = async () => {
       if (userDeviationDetected) {
         await handleReroute(); // Ensure this function is awaited if it's asynchronous
@@ -255,14 +258,29 @@ const JourneyPage: React.FC = () => {
       <div className="features-container" >
         <SosButton onSOSActivated={handleSOSActivated} />
         < AlarmButton />
-        <button className="feature-button" onClick={handleShare} >
-          Share
-        </button>
-        < button className="feature-button" onClick={() => navigate("/")}>
-          Cancel
-        </button>
-        < div className="theme-selector" >
-          <label htmlFor="map-theme" > Map Theme: </label>
+        <MdEmergencyShare
+          onClick={handleShare}
+          style={{
+            fontSize: "40px",
+            color: "#EBEBEB",
+            cursor: "pointer",
+            transition: "transform 0.2s ease",
+          }}
+          title="Share Journey"
+        />
+        <TbNavigationCancel onClick={() => navigate("/")} style={{
+            fontSize: "40px",
+            color: "#EBEBEB",
+            cursor: "pointer",
+            transition: "transform 0.2s ease",
+          }}  title="Cancel Journey"/>
+       
+        <div className="theme-selector">
+    <img
+      src="https://img.icons8.com/?size=100&id=37073&format=png&color=EBEBEB"
+      alt="Map Theme Icon"
+      className="icon"
+    />
           < select
             id="map-theme"
             value={mapTheme}
@@ -280,6 +298,7 @@ const JourneyPage: React.FC = () => {
       </div>
 
       < WeatherInfo />
+      <Footer/>
     </div>
   );
 };

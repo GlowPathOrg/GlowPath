@@ -5,7 +5,7 @@ import RegisterComponent from "./RegisterComponent";
 import "../../styles/profilePage.css";
 import "../../styles/Footer.css";
 import LoginComponent from "./LoginComponent";
-import { Link } from "react-router-dom";
+import Footer from "../../components/Footer"
 import InfoComponent from "./InfoComponent";
 
 const ProfilePage = () => {
@@ -41,22 +41,7 @@ const ProfilePage = () => {
           {viewOption === "" && <RegisterComponent setViewOption={setViewOption} />}
           {viewOption === "login" && <LoginComponent setViewOption={setViewOption} />}
         </div>
-        <footer className="footer-bar">
-          {/* Home Button */}
-          <Link to="/" className="footer-icon">
-            🏠 {/* Home Icon */}
-          </Link>
-
-          {/* History Button */}
-          <Link to="/analytics" className="footer-icon">
-            🕒 {/* History Icon */}
-          </Link>
-
-          {/* Profile Button */}
-          <Link to="/profile" className="footer-icon">
-            👤 {/* Profile Icon */}
-          </Link>
-        </footer>
+       <Footer/>
       </div>
     </div>
   );
