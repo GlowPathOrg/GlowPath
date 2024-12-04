@@ -18,7 +18,6 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
         try {
             const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
             const { _id } = decoded;
-            console.log('decoded after big change', decoded)
             const user: UserI | null = await UserModel.findOne({ _id: _id });
             if (user) {
                 req.user = user;

@@ -53,8 +53,13 @@ const JourneyPage: React.FC = () => {
   const {
     isConnected,
     sendPosition,
+    connectSocket,
     hostShare,
   } = useSocket({});
+
+  useEffect(() => {
+    connectSocket();
+  }, []);
 
   useEffect(() => {
     if (latitude && longitude) {
@@ -159,13 +164,10 @@ useEffect(() => {
 
   async function handleShare () {
     try {
-      console.log('Trying to share')
+
       const route: RouteI = {polyline: currentRoute, instructions: currentInstructions, summary: currentSummary};
-      console.log('about to create shre with route', route)
       const result = await createShare(route);
-      console.log('Share returned from server: ', result);
       setShareId(result.data.id);
-      localStorage.setItem("shareId", result.data.id);
     } catch (err) {
       console.error("Error during sharing: ", err);
     }
@@ -181,16 +183,22 @@ useEffect(() => {
 
 
   useEffect(() => {
+    console.log('connected?', isConnected)
     if (isConnected && shareId) {
       hostShare(shareId);
     }
   }, [isConnected, shareId, hostShare]);
+  useEffect(() => {
+    console.log("Updated position:", position);
+  }, [position]);
 
   useEffect(() => {
     if (isConnected) {
       console.log("Trying to send position to share");
       const typedPosition: PositionI = position;
+      console.log('my typed position', typedPosition);
       sendPosition(typedPosition);
+      console.log('this may have been sent.')
     }
   }, [isConnected, position, sendPosition, shareId]);
 

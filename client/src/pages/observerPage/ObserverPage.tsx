@@ -11,20 +11,24 @@ const ObserverPage = () => {
 
   const {
     isConnected,
+    connectSocket,
     position,
     error,
     joinShare,
   } = useSocket({ password });
 
-
-
+  useEffect(() => {
+    connectSocket();
+    if (id) joinShare(id);
+  }, [connectSocket, id, joinShare]);
 
   useEffect(() => {
     if (id && isConnected) {
-      console.log("Socket connecting to room " + id);
-      joinShare(id);
+      console.log("You are connected and have an id!" + id);
+
+    //  joinShare(id);
     }
-  },[id, isConnected, joinShare]);
+  },[id, isConnected]);
 
   return (
     <div>
@@ -40,6 +44,7 @@ const ObserverPage = () => {
         ) : (
           "Waiting for position updates..."
         )}
+
       </p>
     </div>
   );

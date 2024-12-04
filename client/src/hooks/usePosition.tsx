@@ -53,7 +53,7 @@ export const usePosition = () => {
       setError("Navigator doesn't support geolocation");
     }
     return () => {
-      console.log("Clearing watcher on geolocation because component is about to unmount");
+      console.log("Clearing watcher on geolocation");
       if (watchIdRef.current !== null) {
         navigator.geolocation.clearWatch(watchIdRef.current);
       }

@@ -24,7 +24,8 @@ export const createShare = async (req: Request, res: Response): Promise<void> =>
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     const newRoute = await RouteModel.create(route)
-    const newShare = await Share.create({ owner: user, route: newRoute._id, password: hashedPassword});
+    const newShare = await Share.create({ _id: new mongoose.Types.ObjectId(), owner: user, route: newRoute._id, password: hashedPassword});
+    console.log(`http://localhost:5173/observe/${newRoute._id}?password=${password}`)
     res.status(200).json({id: newShare._id, password}); // TODO: this needs to be checked to conform to frontend expectations
   } catch (error) {
     console.log(error);

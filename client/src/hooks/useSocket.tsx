@@ -34,7 +34,7 @@ export const useSocket = ({ password }: {password?: string}) => {
     if (!isConnected) {
       console.log("socket.connect() was called");
       socket?.connect();
-    }
+    } else console.log('am i connected in hook?', isConnected)
   };
 
   function hostShare (id: string) {
@@ -46,13 +46,14 @@ export const useSocket = ({ password }: {password?: string}) => {
     console.log("isConnected: ", isConnected);
     if (isConnected && socket) {
       socket.emit("join-share", id, (response: string) => {
-        console.log(response);
+        console.log('here is the response: ', response);
       });
     }
   }
 
   function sendPosition (position: PositionI) {
     if (isConnected && socket) socket.emit("position", position);
+    console.log('emitted', position)
   }
 
   function sendMessage (message: MessageI) {
@@ -67,7 +68,6 @@ export const useSocket = ({ password }: {password?: string}) => {
     if (initialized.current) return;
     initialized.current = true;
 
-    console.log("Socket useEffect is in action");
 
     socket?.on("connect", () => {
       console.log("Socket connected");
@@ -86,14 +86,17 @@ export const useSocket = ({ password }: {password?: string}) => {
     });
 
     socket?.on("location", (newPosition: PositionI) => {
+      console.log("setting position:", newPosition);
       setPosition(newPosition);
     });
 
     socket?.on("message", (newMessage: MessageI) => {
+      console.log('message received!')
       setMessages((previous) => [...previous, newMessage]);
     });
 
     socket?.on("alarm", (newAlarm: AlarmI) => {
+      console.log('alarm received')
       setAlarms((previous) => [...previous, newAlarm]);
     });
 
@@ -108,7 +111,7 @@ export const useSocket = ({ password }: {password?: string}) => {
       socket?.off("alarm");
       socket?.disconnect();
     };
-  }, []);
+  }, [isConnected]);
 
   return { isConnected, position, messages, alarms, error, sendPosition, sendMessage, sendAlarm, hostShare, joinShare, connectSocket };
 }

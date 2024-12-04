@@ -39,7 +39,7 @@ export const setupSocket = (app: Express) => {
 
 
   io.on("connection", (socket) => {
-    console.log("Connected to " + socket.id);
+    console.log("Connected to socket " + socket.id);
 
     if (socket.recovered) {
       // recovery was successful: socket.id, socket.rooms and socket.data were restored
