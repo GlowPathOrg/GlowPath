@@ -22,8 +22,10 @@ export const createShare = async (req: Request, res: Response): Promise<void> =>
     const password = uuid();
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    const newRoute = await RouteModel.create(route)
-    const newShare = await Share.create({owner: user, route: newRoute._id, password: hashedPassword});
+    const newRoute = new RouteModel(route);
+    await newRoute.save();
+    const newShare = new Share({owner: user, route: newRoute._id, password: hashedPassword});
+    await newShare.save();
     res.status(200).json({id: newShare._id, password}); // TODO: this needs to be checked to conform to frontend expectations
   } catch (error) {
     console.log(error);
