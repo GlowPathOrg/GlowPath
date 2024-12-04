@@ -14,7 +14,10 @@ export const setupSocket = (app: Express) => {
   const server = createServer(app);
   const io = new Server(server, {
     cors: {
-      origin: "http://localhost:5173",
+      origin: [
+        "http://localhost:5173", // Local development
+        "https://glowpathorg.github.io/GlowPath/", // Live link
+      ],
     },
     connectionStateRecovery: {
       maxDisconnectionDuration: 2 * 60 * 1000,
@@ -34,7 +37,6 @@ export const setupSocket = (app: Express) => {
     } else {
       console.log("New session for socket:", socket.id);
     }
-
 
     socket.on("host-share", async (id) => {
       try {
@@ -59,7 +61,7 @@ export const setupSocket = (app: Express) => {
           console.error(`[${socket.id}] Unauthorized.`);
           return;
         }
-          // saving room id - this was why it wasn't connecting to the front end
+
         socket.data.room = sanitizedId;
         socket.join(sanitizedId);
         console.log(`[${socket.id}] Hosted and joined room: ${sanitizedId}`);
@@ -67,7 +69,6 @@ export const setupSocket = (app: Express) => {
         console.error(`[${socket.id}] Error in host-share:`, err);
       }
     });
-
 
     socket.on("join-share", async (id, cb) => {
       try {
@@ -96,7 +97,6 @@ export const setupSocket = (app: Express) => {
       }
     });
 
-
     socket.on("position", (position) => {
       const room = socket.data.room;
       if (!room) {
@@ -118,3 +118,4 @@ export const setupSocket = (app: Express) => {
 
   return server;
 };
+

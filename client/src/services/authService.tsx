@@ -69,26 +69,32 @@ export const login = async (userData: LoginDataI, handleLogin: (token: string, u
   }
 };
 
-export const editProfile = async (userEdit: { [x: string]: string; password: string; _id: string }, handleLogin: (token: string, userData: UserI)=>void): Promise<AxiosResponse<AuthResponse> | undefined> => {
-
+export const editProfile = async (
+  userEdit: {
+    [key in keyof typeof FormData]?: string;
+  } & { _id: string },
+  handleLogin: (token: string, userData: UserI) => void
+): Promise<AxiosResponse<AuthResponse> | undefined> => {
   try {
     const token = getToken();
 
-    console.log('sending to edit: ', userEdit)
+    console.log('sending to edit: ', userEdit);
+
     const response = await axios.post<AuthResponse>(`${AUTH_URL}/edit`, userEdit, {
       withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${token}`,
       }
     });
+
     if (response.data.token && response.data.user) {
       handleLogin(response.data.token, response.data.user);
     }
-    return response;}
-      catch (error) {
-        console.log('error loading profile', error);
-      throw error;
+    return response;
+  } catch (error) {
+    console.log('error loading profile', error);
+    throw error;
   }
 };
 
