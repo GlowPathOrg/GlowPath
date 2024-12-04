@@ -3,7 +3,6 @@ import { setupSocket } from "./socket/index.js";
 import dotenv from "dotenv"; // to access .env
 import cors, { CorsOptions } from "cors";
 import notifyRoutes from "./routes/notifyRoutes";
-const app = express();
 import authRoutes from "./routes/authRoutes.js";
 import shareRoutes from "./routes/shareRoutes.js";
 import { mongooseConnect, DBConnect } from "./models/index.js";
