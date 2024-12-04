@@ -2,165 +2,137 @@ import { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import UserModel from '../models/User';
+import UserModel from '../models/UserModel';
 import crypto from 'crypto';
+
 dotenv.config();
+// automatic jwtSecretgenerator
+const jwtSecret = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
 
-const jwtSecret = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex')
+const generateToken = (user: any) => {
+    return jwt.sign(
+        { _id: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName, telephone: user.telephone },
+        jwtSecret,
+        { expiresIn: '1d' }
+    );
+};
 
+export const registerController = async (req: Request, res: Response): Promise<void> => {
+    const { email, password, firstName, lastName, telephone } = req.body;
 
-export const registerController = async (req: Request, res: Response): Promise<void | void> => {
-    try {
-        const { email, password, firstName, lastName, telephone } = req.body;
+    if (!email || !password || !firstName || !lastName) {
+        throw new Error('Name, email, and password are required');
+    }
 
-        if (!email || !password || !firstName || !lastName) {
-            throw new Error(`Name, email, password are all required`)
-        }
-        if (password.length < 8 /* || !/[A-Z]/.test(password) || !/[0-9]/.test(password) */) {
-            throw new Error(`Password doesn't meet strength requirements`)
-        }
-        const existingUser = await UserModel.findOne({ email });
-        if (existingUser) {
-            res.status(400)
-            throw new Error('User already exists');
-            ;
-        };
+    if (password.length < 8) {
+        throw new Error("Password doesn't meet the minimum length requirement of 8 characters");
+    }
 
-        const user = new UserModel({ email, password, firstName, lastName, telephone });
-        await user.save();
-        const token = jwt.sign(
-            {
-                _id: user._id,
-                email: user.email,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                telephone: user.telephone,
-                password: '*****',
-                messages: [],
-                places: [],
-                contacts: [],
-                tripHistory: []
-            },
-            jwtSecret,
-            { expiresIn: '48h' }
-        );
-        console.log(`user ${user.firstName} ${user.lastName} registered`)
-        res.status(201).json({
-            message: `${user.email} was successfully registered`,
-            token
+    const existingUser = await UserModel.findOne({ email });
+    if (existingUser) {
+        throw new Error('User with this email already exists');
+    }
+    // changed this
+    const newUser = new UserModel({ email, password, firstName, lastName, telephone });
+    await newUser.save();
+
+    const token = generateToken(newUser);
+
+    res.status(201).json({
+        message: `${newUser.email} was successfully registered`,
+        token,
+        user: {
+            _id: newUser._id,
+            email: newUser.email,
+            firstName: newUser.firstName,
+            lastName: newUser.lastName,
+            telephone: newUser.telephone,
+        },
+    });
+};
+
+export const editController = async (req: Request, res: Response): Promise<void> => {
+    const { _id, password, ...updates } = req.body;
+
+    if (!updates || !_id) {
+        res.status(400).json({
+            message: 'Invalid request, no updates or user ID provided',
         });
+        throw new Error;
+    }
+
+    const user = await UserModel.findById(_id);
+    if (!user) {
+        res.status(400).json({
+            message: 'User not found',
+        });
+        throw new Error;
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+        res.status(400).json({
+            message: 'Incorrect password',
+        });
+        throw new Error
+    }
+    // change this
+    Object.assign(user, updates);
+    await user.save();
+
+    const token = generateToken(user);
+
+    res.status(200).json({
+        message: 'User information updated successfully',
+        token,
+        user: {
+            _id: user._id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            telephone: user.telephone,
+        },
+    });
+};
+
+export const loginController = async (req: Request, res: Response): Promise<void> => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        res.status(400).json({
+            message: 'Email and password are required',
+        })
+        throw new Error;
 
     }
-    catch (error) {
 
-        res.status(500).json({ error: `Server error in register controller:` + error })
-
+    const user = await UserModel.findOne({ email });
+    if (!user) {
+        res.status(400).json({
+            message: 'Invalid email or password',
+        });
+        throw new Error;
     }
-}
-export const editController = async (req: Request, res: Response): Promise<void | void> => {
-    try {
-        const toEdit: { [x: string]: string; password: string; _id: string } = req.body;
-        console.log('to edit: ', toEdit)
-        const fieldToUpdate = Object.keys(toEdit).find(key => key !== 'password' && key !== '_id');
-        if (!fieldToUpdate) {
-            res.status(400);
-            throw new Error('could not read field to update')
-        }
-        const filter = { _id: toEdit._id };
-        const potentialUser = await UserModel.findOne(filter);
-        if (!potentialUser) {
-            res.status(400);
-            throw new Error('no user found')
-        }
 
-        const isMatch = await bcrypt.compare(toEdit.password, potentialUser.password);
-        if (!isMatch) {
-            res.status(401);
-            throw new Error('passwords did not match. could not edit information')
-        }
-
-        const update = { [fieldToUpdate]: toEdit[fieldToUpdate] };
-        const updated = await UserModel.findOneAndUpdate(filter, update);
-        if (updated) {
-
-            const token = jwt.sign({ id: updated._id, email: updated.email, firstName: updated.firstName, lastName: updated.lastName, telephone: updated.telephone }, jwtSecret, { expiresIn: '1d' });
-            res.status(200).json({
-                token,
-                updated: {
-                    _id: updated._id,
-                    email: updated.email,
-                    firstName: updated.firstName,
-                    lastName: updated.lastName,
-                    telephone: updated.telephone,
-                    password: '*******',
-                    messages: [],
-                    places: [],
-                    contacts: [],
-                    tripHistory: []
-                }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+        res.status(400).json({
+            message: 'Login successful',
             });
-
-
-
-        }
-
-        else {
-            res.status(400);
-            throw new Error('User info not found')
-        }
+        throw new Error('Invalid email or password');
     }
-    catch (error) {
 
-        res.status(500).json({ error: `Server error in register controller:` + error })
+    const token = generateToken(user);
 
-    }
-}
-
-export const loginController = async (req: Request, res: Response): Promise<void | void> => {
-    try {
-        const { email, password } = req.body;
-        if (!email || !password) {
-            res.status(400);
-            throw new Error('Missing email or password')
-        }
-        const user = await UserModel.findOne({ email });
-        if (!user) {
-            res.status(401);
-            throw new Error('No user found');
-
-        }
-        if (!process.env.JWT_SECRET) {
-            console.log("No JWT Secret Found!");
-            res.status(500).json({ error: 'JWT_SECRET is not defined in environment variables' });
-            ;
-        }
-        else {
-
-            const isMatch = await bcrypt.compare(password, user.password);
-            if (!isMatch) {
-                res.status(401).json({ error: 'Invalid credentials' });
-            }
-
-            const token = jwt.sign({ id: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName, telephone: user.telephone }, jwtSecret, { expiresIn: '1d' });
-            res.status(200).json({
-                token,
-                user: {
-                    _id: user._id,
-                    email: user.email,
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    telephone: user.telephone,
-                    password: '*******',
-                    messages: [],
-                    places: [],
-                    contacts: [],
-                    tripHistory: []
-                }
-            });
-        }
-    }
-    catch (error) {
-        console.error('Error during login:', error);
-        res.status(500).json({ error: 'Server error' });
-    }
-}
+    res.status(200).json({
+        message: 'Login successful',
+        token,
+        user: {
+            _id: user._id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            telephone: user.telephone,
+        },
+    });
+};

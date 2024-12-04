@@ -1,7 +1,7 @@
 import express from "express";
-import { createShare, accessShare } from "../controllers/shareControllers";
-import { authMiddleware } from "../middleware/authMiddleware";
-import { shareAuthMiddleware } from "../middleware/shareAuthMiddleware";
+import { createShare, accessShare } from "../controllers/shareControllers.js";
+import { authMiddleware } from "../middleware/authMiddleware.js";
+import { shareAuthMiddleware } from "../middleware/shareAuthMiddleware.js";
 
 const shareRoutes = express.Router();
 

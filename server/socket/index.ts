@@ -1,9 +1,9 @@
 import { Server } from "socket.io";
 import { createServer } from "node:http";
 import { Express } from "express";
-import Share from "../models/Share"
+import Share from "../models/Share.js"
 import jwt, { JwtPayload } from "jsonwebtoken";
-import UserModel from "../models/User";
+import UserModel from "../models/UserModel.js";
 import dotenv from 'dotenv';
 import bcrypt from "bcrypt";
 
@@ -13,7 +13,10 @@ export const setupSocket = (app: Express) => {
   const server = createServer(app);
   const io = new Server(server, {
     cors: {
-      origin: "http://localhost:5173"
+      origin: [
+        "http://localhost:5173",
+        "https://glowpathorg.github.io/GlowPath/"
+      ]
     }
   });
 
