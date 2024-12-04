@@ -32,7 +32,7 @@ export const registerController = async (req: Request, res: Response): Promise<v
     if (existingUser) {
         throw new Error('User with this email already exists');
     }
-
+    // changed this
     const newUser = new UserModel({ email, password, firstName, lastName, telephone });
     await newUser.save();
 
@@ -76,7 +76,7 @@ export const editController = async (req: Request, res: Response): Promise<void>
         });
         throw new Error
     }
-
+    // change this
     Object.assign(user, updates);
     await user.save();
 
