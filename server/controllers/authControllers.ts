@@ -58,12 +58,7 @@ export const registerController = async (req: Request, res: Response): Promise<v
         });
 
     }
-    catch (error) {
 
-        res.status(500).json({ error: `Server error in register controller:` + error })
-
-    }
-}
 export const editController = async (req: Request, res: Response): Promise<void | void> => {
     try {
         const toEdit: { [x: string]: string; password: string; _id: string } = req.body;
