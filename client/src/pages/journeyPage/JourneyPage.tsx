@@ -19,6 +19,10 @@ import { io } from "socket.io-client";
 import { getToken } from "../../utilities/token";
 const socketServer = import.meta.env.VITE_BACKEND_URL || "http://localhost:3002";
 
+const socket = io(socketServer, {
+  auth: { token: getToken() }
+});
+
 const JourneyPage: React.FC = () => {
   // React router hooks to access location state and navigate
   const location = useLocation();
@@ -44,7 +48,7 @@ const JourneyPage: React.FC = () => {
   const [currentInstructions, setCurrentInstructions] = useState(initialInstructions); // Instructions
   const [userDeviationDetected, setUserDeviationDetected] = useState(false); // Track route deviation
   const [rerouted, setRerouted] = useState(false); // Track if rerouting occurred
-  const [shareId, setShareId] = useState("");
+  const [shareId, setShareId] = useState((localStorage.getItem("shareId") || ""));
   const [litStreets, setLitStreets] = useState<LatLngTuple[]>([]);
   const [sidewalks, setSidewalks] = useState<{ geometry: { lat: number; lon: number }[] }[]>([]);
   const [policeStations, setPoliceStations] = useState<LatLngTuple[]>([]);
@@ -128,7 +132,7 @@ const JourneyPage: React.FC = () => {
   }, [latitude, longitude, currentRoute, transportMode])
 
   // Trigger rerouting when deviation is detected
-   useEffect(() => {
+/*    useEffect(() => {
     const rerouteIfNeeded = async () => {
       if (userDeviationDetected) {
         await handleReroute(); // Ensure this function is awaited if it's asynchronous
@@ -137,7 +141,7 @@ const JourneyPage: React.FC = () => {
 
     rerouteIfNeeded(); // Call the function within the useEffect
 
-  }, [userDeviationDetected, handleReroute]);
+  }, [userDeviationDetected, handleReroute]); */
 
   // Announce turn-by-turn instructions using audio
   const announceTurn = (instruction: string) => {
@@ -155,9 +159,6 @@ const JourneyPage: React.FC = () => {
   }, [currentInstructions]);
 
   // Socket-related hooks and functions
-  const socket = io(socketServer, {
-    auth: { token: getToken() }
-  });
 
   async function handleShare () {
     try {
@@ -166,22 +167,38 @@ const JourneyPage: React.FC = () => {
       const result = await createShare(route);
       console.log('Share returned from server: ', result);
       setShareId(result.data.id);
+      localStorage.setItem("shareId", result.data.id);
     } catch (err) {
       console.error("Error during sharing: ", err);
     }
+  }
+
+ function handleCancel () {
+    localStorage.removeItem("shareId");
+    navigate("/");
   }
 
   function hostShare (id: string) {
     if (isConnected) socket.emit("host-share", id);
   }
 
-  function sendPosition (position: PositionI) {
-    if (isConnected) socket.emit("position", position);
+  function sendPosition (position: PositionI, room: string) {
+    if (isConnected) socket.emit("position", position, room);
   }
 
   useEffect(() => {
     socket.on("connect", () => {
-      console.log("Socket connected");
+      console.log("Socket connected with id " + socket.id);
+      if (socket.recovered) {
+        // any event missed during the disconnection period will be received now
+        console.log("Recovered session on client")
+      } else {
+        console.log("New session on client")
+        // new or unrecoverable session
+      }
+      if (shareId) {
+        hostShare(shareId);
+      }
       setIsConnected(true);
     });
 
@@ -203,16 +220,18 @@ const JourneyPage: React.FC = () => {
   },[])
 
   useEffect(() => {
+    console.log("ShareId or isConnected changed, trying to join room");
+    console.log("Trying to join room while isConnected is ", isConnected);
     if (isConnected) {
       console.log("Trying to connect to share " + shareId);
       hostShare(shareId);
     }
-  },[shareId]);
+  },[isConnected, shareId]);
 
   useEffect(() => {
     if (isConnected) {
       console.log("Trying to send position to share");
-      sendPosition(position);
+      sendPosition(position, shareId);
     }
   }, [position]);
 
@@ -258,7 +277,7 @@ const JourneyPage: React.FC = () => {
         <button className="feature-button" onClick={handleShare} >
           Share
         </button>
-        < button className="feature-button" onClick={() => navigate("/")}>
+        < button className="feature-button" onClick={handleCancel}>
           Cancel
         </button>
         < div className="theme-selector" >

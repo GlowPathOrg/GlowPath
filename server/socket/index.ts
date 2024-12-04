@@ -14,6 +14,12 @@ export const setupSocket = (app: Express) => {
   const io = new Server(server, {
     cors: {
       origin: "http://localhost:5173"
+    },
+    connectionStateRecovery: {
+      // the backup duration of the sessions and the packets
+      maxDisconnectionDuration: 2 * 60 * 1000,
+      // whether to skip middlewares upon successful recovery
+      skipMiddlewares: true,
     }
   });
 
@@ -30,8 +36,17 @@ export const setupSocket = (app: Express) => {
     console.log(err.context);  // some additional error context
   });
 
+
   io.on("connection", (socket) => {
     console.log("Connected to " + socket.id);
+
+    if (socket.recovered) {
+      // recovery was successful: socket.id, socket.rooms and socket.data were restored
+      console.log("Recovered session")
+    } else {
+      // new or unrecoverable session
+      console.log("New session")
+    }
 
     socket.on("host-share", async (id) => {
       if (!id) return console.log("no id");
@@ -66,6 +81,11 @@ export const setupSocket = (app: Express) => {
       // TODO: send some kind of error to client when this fails https://socket.io/docs/v4/listening-to-events/
       cb("This event was received and processed");
     });
+
+    socket.on("position", (position, room) => {
+      console.log("Got position and relay it to room " + room);
+      socket.to(room).emit("position", position);
+    })
 
   });
 

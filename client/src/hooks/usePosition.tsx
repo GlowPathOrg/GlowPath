@@ -22,6 +22,7 @@ const initialPosition = {
 
 export const usePosition = () => {
   const [position, setPosition] = useState<PositionI>(initialPosition);
+  const [watchId, setWatchId] = useState<number>(0);
   const [error, setError] = useState("");
 
   function handleSuccess (position: GeolocationPosition) {
@@ -44,11 +45,17 @@ export const usePosition = () => {
       const options = {
         enableHighAccuracy: true,
         maximumAge: 30000,
-        timeout: 60000
+        timeout: 600000
       }
-      navigator.geolocation.watchPosition(handleSuccess, handleError, options);
+      console.log("Initializing watcher on geolocation")
+      const id = navigator.geolocation.watchPosition(handleSuccess, handleError, options);
+      setWatchId(id);
     } else {
       setError("Navigator doesn't support geolocation");
+    }
+    return () => {
+      console.log("Clearing watcher on geolocation because component is about to unmount");
+      navigator.geolocation.clearWatch(watchId);
     }
   }, [])
 

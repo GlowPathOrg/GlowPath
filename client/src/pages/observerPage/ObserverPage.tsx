@@ -8,6 +8,7 @@ const ObserverPage = () => {
   const { id } = useParams();
   const password = searchParams.get("password") || "";
   const [isConnected, setIsConnected] = useState(false);
+  const [position, setPosition] = useState(false);
 
   const socket = io(socketServer, {
     auth: { password }
@@ -24,7 +25,7 @@ const ObserverPage = () => {
   useEffect(() => {
 
     socket.on("connect", () => {
-      console.log("Socket connected");
+      console.log("Socket connected with id " + socket.id);
       setIsConnected(true);
     });
 
@@ -37,10 +38,16 @@ const ObserverPage = () => {
       console.log("Socket about to get disconnected");
     })
 
+    socket.on("position", (position) => {
+      console.log(position);
+      setPosition(position);
+    });
+
     return () => {
       socket.off("connect");
       socket.off("connect_error");
       socket.off("disconnect");
+      socket.off("position");
       console.log("Removed all event listeners because component is about to dismount");
     }
 
@@ -55,7 +62,7 @@ const ObserverPage = () => {
 
   return (
   <>
-    <h1>{isConnected}</h1>
+    <h1>{position}</h1>
   </>
   );
 
