@@ -3,7 +3,7 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import { useSocket } from '../../hooks/useSocket.js';
 import { latLng } from 'leaflet';
 import MapComponent from '../../components/MapComponent/MapComponent.js';
-import { MapComponentProps } from '../../components/MapComponent/MapComponent.js';
+
 
 
 const ObserverPage = () => {
@@ -57,20 +57,19 @@ const ObserverPage = () => {
           latitude={position.latitude}
             longitude={position.longitude}
             heading={position.heading}
-          // geolocationError={position.geoError || null
-        //  }
-          // route={currentRoute}
-          // summary={currentSummary}
-          // instructions={currentInstructions}
-          // originCoords={latLng(currentRoute[0][0], currentRoute[0][1])}
-          // litStreets={litStreets}
-          // sidewalks={sidewalks}
-          // policeStations={policeStations}
-          // hospitals={hospitals}
-          // destinationCoords={
-            // destinationCoords ||
-            //latLng(currentRoute[currentRoute.length - 1][0], currentRoute[currentRoute.length - 1][1])
-          }
+          geolocationError={null  }
+          route={currentRoute}
+          summary={currentSummary}
+          instructions={currentInstructions}
+          originCoords={latLng(currentRoute[0][0], currentRoute[0][1])}
+          litStreets={litStreets}
+          sidewalks={sidewalks}
+          policeStations={policeStations}
+          hospitals={hospitals}
+          destinationCoords={
+          destinationCoords ||
+          latLng(currentRoute[currentRoute.length - 1][0], currentRoute[currentRoute.length - 1][1])
+        }
 
         /></>
 )}
