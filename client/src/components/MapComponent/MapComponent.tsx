@@ -15,8 +15,8 @@ import "../../styles/MapComponent.css";
 import mapThemes, { getDefaultTheme, isValidTheme } from "./MapThemes";
 import FitBounds from "./FitBounds";
 import { InstructionsI, SummaryI } from "../../Types/Route";
-import SosButton from "../../pages/journeyPage/SosButton";
-interface MapComponentProps {
+
+export interface MapComponentProps {
   latitude: number | null; // User's latitude
   longitude: number | null; // User's longitude
   geolocationError: string | null; // Geolocation error message
@@ -89,7 +89,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
     <div className="map-component">
 
       {/* Map Container */}
-      
+
       <MapContainer
         className="map-container"
         center={originCoords || latLng(52.4771, 13.431)}
@@ -108,7 +108,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
           <p style={{ color: "red" }}>Invalid map theme URL</p>
         )}
 
-        
+
 
 
         {/* Lit Streets */}
