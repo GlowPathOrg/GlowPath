@@ -16,7 +16,7 @@ import mapThemes, { getDefaultTheme, isValidTheme } from "./MapThemes";
 import FitBounds from "./FitBounds";
 import { InstructionsI, SummaryI } from "../../Types/Route";
 
-interface MapComponentProps {
+export interface MapComponentProps {
   latitude: number | null; // User's latitude
   longitude: number | null; // User's longitude
   geolocationError: string | null; // Geolocation error message
