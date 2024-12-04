@@ -146,14 +146,7 @@ const SettingsPage: React.FC = () => {
         <h2>Emergency Contacts</h2>
         <button
           onClick={() => navigate("/contact-manager")}
-          style={{
-            padding: "10px 20px",
-            backgroundColor: "blue",
-            color: "white",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
+          
         >
           Manage Contacts
         </button>

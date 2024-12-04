@@ -1,56 +1,61 @@
 .weather-info {
+  margin: 10px 10px 60px; /* Added margin-bottom for spacing */
+  padding: 5px; /* Increased padding for better spacing */
+  background-color: #2c2c2c;
+  border-radius: 10px;
+  border: 1px solid #444444;
+  text-align: center;
+  font-size: 14px; /* Slightly larger font size */
   display: flex;
   align-items: center;
-  justify-content: center;
-  background-color: #f0f0f0;
-  padding: 10px;
-  border-radius: 8px;
-  font-family: Arial, sans-serif;
+  justify-content: space-between;
 }
 
 .weather-info img {
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.1);
-  width: 50px; 
-  height: 50px; 
-  margin-right: 10px; 
+  width: 70px; /* Increased image width */
+  height: 70px; /* Increased image height */
+  margin-right: 15px; /* Larger spacing between image and text */
 }
 
 .weather-info span {
-  font-size: 16px; 
+  font-size: 18px; /* Larger text size */
+  font-weight: bold; /* Make the text more prominent */
 }
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .weather-info {
     flex-direction: column; 
-    padding: 8px; 
+    padding: 12px; /* Adjusted padding */
+    margin-bottom: 40px; /* Reduced margin-bottom for smaller screens */
   }
 
   .weather-info img {
-    width: 40px; 
-    height: 40px;
+    width: 60px; /* Adjusted image size */
+    height: 60px;
     margin-right: 0; 
-    margin-bottom: 5px; 
+    margin-bottom: 8px; /* Add space below the image */
   }
 
   .weather-info span {
-    font-size: 14px; 
+    font-size: 16px; /* Adjusted text size */
     text-align: center; 
   }
 }
 
 @media (max-width: 480px) {
   .weather-info {
-    padding: 6px; 
+    padding: 10px; 
   }
 
   .weather-info img {
-    width: 35px; 
-    height: 35px;
+    width: 50px; /* Adjusted for smaller screens */
+    height: 50px;
   }
 
   .weather-info span {
-    font-size: 12px; 
+    font-size: 14px; /* Adjusted text size */
   }
 }

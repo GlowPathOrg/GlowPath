@@ -145,7 +145,7 @@ const SOSButton: React.FC<SOSButtonProps> = ({ onSOSActivated }) => {
               onClick={handleSendSOS}
               style={{
                 padding: '10px 20px',
-                backgroundColor: 'blue',
+                backgroundColor: 'black',
                 color: 'white',
                 border: 'none',
                 borderRadius: '5px',

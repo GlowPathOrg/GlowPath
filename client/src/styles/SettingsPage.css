@@ -73,26 +73,6 @@ ul li button:hover {
   opacity: 0.8;
 }
 
-/* SOS Button styles */
-.sos-button {
-  display: block;
-  margin: 20px auto;
-  padding: 15px 30px;
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: var(--text-color);
-  background-color: red;
-  border: none;
-  border-radius: 50%;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
-}
-
-.sos-button:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
-}
 
 /* Theme Toggle Button */
 .theme-toggle-button {
@@ -109,6 +89,18 @@ ul li button:hover {
 .theme-toggle-button:hover {
   transform: scale(1.05);
   opacity: 0.9;
+}
+
+.save-button {
+
+padding: 10px 20px;
+  font-size: 1rem;
+  border: none;
+  background-color: var(--button-background);
+  color: var(--button-color);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
 }
 
 /* Root variables for themes */

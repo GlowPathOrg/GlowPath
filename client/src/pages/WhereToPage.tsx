@@ -145,11 +145,11 @@ const WhereToPage: React.FC = () => {
           <ul>
             {searchHistory.map((item, index) => (
               <li key={index}>
-                <button onClick={() => handleHistoryClick(item)}>{item}</button>
+                <button id="history-btn" onClick={() => handleHistoryClick(item)}>{item}</button>
               </li>
             ))}
           </ul>
-          <button onClick={clearHistory}>Clear History</button>
+          <button id="history-btn" onClick={clearHistory}>Clear History</button>
         </div>
       )}
 
