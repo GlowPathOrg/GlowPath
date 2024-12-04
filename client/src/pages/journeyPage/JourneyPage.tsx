@@ -170,13 +170,25 @@ useEffect(() => {
 
   async function handleShare () {
     try {
-
+      if (shareId) {
+        alert("Active share already in progress");
+        return;
+      }
       const route: RouteI = {polyline: currentRoute, instructions: currentInstructions, summary: currentSummary};
       console.log('sharing' , route)
       const result = await createShare(route);
       console.log(`OBSERVER PAGE:  http://localhost:5173/observe/:${result.data.id}?password=${result.data.password}`)
       setShareId(result.data.id);
-
+      const data = {
+        title: "Shared Location",
+        text: "Please follow the link to access the shared location",
+        url: import.meta.env.BASE_URL + "/share/" + result.data.id + "?password=" + result.data.password
+      };
+      if ("share" in navigator) {
+        await navigator.share(data);
+      } else {
+        alert("data");
+      }
     } catch (err) {
       console.error("Error during sharing: ", err);
     }
