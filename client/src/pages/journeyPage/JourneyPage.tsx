@@ -174,7 +174,7 @@ useEffect(() => {
       const route: RouteI = {polyline: currentRoute, instructions: currentInstructions, summary: currentSummary};
       console.log('sharing' , route)
       const result = await createShare(route);
-      console.log(`OBSERVER PAGE:  http://localhost:5173/observe/:${result.data.id}?password=${result.data.password}`)
+      console.log(`OBSERVER PAGE:  https://glowpathorg.github.io/GlowPath/observe/:${result.data.id}?password=${result.data.password}`)
       setShareId(result.data.id);
 
     } catch (err) {

@@ -52,7 +52,7 @@ const SOSButton: React.FC<SOSButtonProps> = ({ onSOSActivated }) => {
 
   const notifyEmergencyContacts = async (contacts: string[], message: string) => {
     try {
-      const response = await fetch("http://localhost:3002/notify-contacts", {
+      const response = await fetch("https://glowpath-a7681fe09c29.herokuapp.com/notify-contacts", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

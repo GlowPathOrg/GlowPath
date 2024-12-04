@@ -2,7 +2,7 @@ import { io, Socket } from "socket.io-client";
 import { useState, useEffect, useRef } from 'react';
 import { getToken } from "../utilities/token";
 import { PositionI } from "./usePosition";
-const socketServer = import.meta.env.VITE_BACKEND_URL || "http://localhost:3002";
+const socketServer = import.meta.env.VITE_BACKEND_URL || "https://glowpath-a7681fe09c29.herokuapp.com";
 
 interface MessageI {
   text: string;
