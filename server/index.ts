@@ -8,32 +8,32 @@ import { mongooseConnect, DBConnect } from "./models/index.js";
 import routeApiRouter from "./routes/routingRoutes.js";
 import routingRoutes from "./routes/routingRoutes.js";
 
+
 dotenv.config()
 const app = express();
-const SERVER_PORT = process.env.SERVER_PORT || 3002;
+const PORT = process.env.PORT || 3002;
 
-
-const CLIENT_PORT = process.env.CLIENT_PORT;
-// connection to database
-
-
-
-// cors
-var whitelist = [`https://glowpathorg.github.io`, `http://localhost:${CLIENT_PORT}`, `http://localhost:${SERVER_PORT}`] // cors whitelist
- var corsOptions: CorsOptions = {
+// hardcoded whitelist to reduce port variables.
+const whitelist = [
+  'https://glowpathorg.github.io', // prod
+  'http://localhost:5173', // dev
+];
+const corsOptions: CorsOptions = {
   origin: function (origin, callback) {
-
-      if (!origin || whitelist.indexOf(origin) !== -1) {
-        callback(null, true)
-      } else {
-        callback(new Error(origin + " is not included in CORS policy." + CLIENT_PORT))
-      }
-
+    console.log('Incoming request origin:', origin);
+    if (!origin || whitelist.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.error('Blocked by CORS:', origin);
+      callback(new Error(origin + ' is not included in CORS policy.'));
+    }
   },
-   methods: "GET,POST",
-   allowedHeaders: "Content-Type, Authorization",
-   credentials: true
-}
+  methods: 'GET,POST,OPTIONS',
+  allowedHeaders: 'Content-Type, Authorization',
+  credentials: true,
+};
+
+
 //websockets content
 const server = setupSocket(app); // This is needed to setup socket.io
 
@@ -54,6 +54,6 @@ app.use("/auth", authRoutes);
 app.use(shareRoutes);
 app.use("/route", routingRoutes);
 
-server.listen(SERVER_PORT, () => {
-  console.log(`GlowPath CORS-enabled server listening on port ${SERVER_PORT}`);
+server.listen(PORT, () => {
+  console.log(`GlowPath CORS-enabled server listening on port ${PORT}`);
 });
