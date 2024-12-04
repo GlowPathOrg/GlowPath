@@ -15,7 +15,7 @@ export const createShare = async (req: Request, res: Response): Promise<void> =>
       return;
     }
     const user = req.user;
-    if (!user) { // TODO: this should be prohibited by the auth middleware
+    if (!user) {
       res.status(401).json({error: "Unauthorized"})
       return;
     }
