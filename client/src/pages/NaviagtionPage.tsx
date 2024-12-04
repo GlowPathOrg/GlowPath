@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Polyline, useMap } from "react-leaflet";
 import "../styles/NavigationPage.css";
+import Footer from "../components/Footer"
 
 const NavigationPage: React.FC = () => {
   const location = useLocation();
@@ -25,11 +26,10 @@ const NavigationPage: React.FC = () => {
     }
   }, [instructions]);
 
-  // component to automatically follow and fit the map bounds to the route (needs testing)
+  // Component to automatically follow and fit the map bounds to the route
   const AutoFollowMap = () => {
     const map = useMap();
 
-    // Center the map on the route
     useEffect(() => {
       if (route.length > 0) {
         map.fitBounds(route);
@@ -45,7 +45,6 @@ const NavigationPage: React.FC = () => {
     dark: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
     satellite: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
   };
-
 
   // Handle the "Start Journey" button click
   const handleStartJourney = () => {
@@ -63,42 +62,62 @@ const NavigationPage: React.FC = () => {
   return (
     <div className="navigation-page">
       {route.length > 0 ? (
-        <MapContainer center={route[0]} zoom={15} style={{ height: "60vh" }}>
+        <MapContainer
+          center={route[0]} // Center the map on the start of the route
+          zoom={15}
+          style={{ height: "60vh" }}
+        >
           {/* Add the selected tile layer theme */}
           <TileLayer
             url={tileLayerThemes[theme] || tileLayerThemes["standard"]}
             attribution="&copy; OpenStreetMap contributors"
           />
           {/* Draw the route on the map */}
-          <Polyline positions={route} color="blue" weight={6} />
+          <Polyline
+  positions={route}
+  pathOptions={{
+    color: "pink",
+    weight: 6,
+    lineCap: "square", // Sharp ends
+    lineJoin: "miter", // Sharp corners
+  }}
+  weight={6} 
+/> 
           {/* Marker for the start point */}
-          <Marker position={route[0]} />
+          <Marker position={route[0]} 
+          />
+
           {/* Marker for the end point */}
           <Marker position={route[route.length - 1]} />
           {/* Automatically follow the route */}
           <AutoFollowMap />
         </MapContainer>
       ) : (
-        <p>Loading map...</p>
+        <p>Loading map...</p> // Display a fallback message while the map is loading
       )}
-      <div className="navigation-info">
-        {/* Display the current instruction */}
-        <h3>{currentInstruction}</h3>
-        {/* Display the next instruction or a default message */}
-        <p>Towards: {instructions?.[1]?.instruction || "Destination"}</p>
-        {/* Display route distance and duration */}
-        <p>
-          {summary.length / 1000} km • {Math.ceil(summary.duration / 60)} min
-        </p>
 
-        <button className="start-button" onClick={handleStartJourney}>
-          Start Journey
-        </button>
-
-        <button className="exit-button" onClick={() => navigate("/")}>
-          Exit
-        </button>
-      </div>
+<div className="navigation-info">
+<div className="route-details">
+    <div className="route-step">
+      <span className="route-step-icon">📍</span>
+      <span>Current Location</span>
+    </div>
+    <div className="route-step">
+      <span className="route-step-icon">🏁</span>
+      <span>{location.state?.destinationName || "Destination"}</span>
+    </div>
+  </div>
+  <p>{summary.length / 1000} km • {Math.ceil(summary.duration / 60)} min</p>
+  <div className="button-group">
+    <button className="start-button" onClick={handleStartJourney}>
+      Start Journey
+    </button>
+    <button className="exit-button" onClick={() => navigate("/")}>
+      Exit
+    </button>
+  </div>
+</div>
+<Footer/>
     </div>
   );
 };

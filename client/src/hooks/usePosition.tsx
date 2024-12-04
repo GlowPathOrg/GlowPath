@@ -44,7 +44,7 @@ export const usePosition = () => {
       const options = {
         enableHighAccuracy: true,
         maximumAge: 30000,
-        timeout: 60000
+        timeout: 600000
       }
       navigator.geolocation.watchPosition(handleSuccess, handleError, options);
     } else {

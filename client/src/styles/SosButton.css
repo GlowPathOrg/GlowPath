@@ -1,0 +1,25 @@
+.sos-button {
+    position: fixed; /* Ensure it's fixed in the desired position */
+    bottom: 6rem; /* Distance from the bottom */
+    right: 2rem; /* Adjust this value to move it more to the right */
+    width: 5rem; /* Set the button's width */
+    height: 5rem; /* Make it a perfect circle */
+    border-radius: 50%; /* Ensure the button is circular */
+    background: linear-gradient(135deg, #FF0066, #FF3C99); /* Gradient background */
+    color: white; /* White text color */
+    font-size: 1.5rem; /* Adjust font size for SOS */
+    font-weight: bold; /* Bold font for emphasis */
+    display: flex; /* Use flexbox to center the text */
+    align-items: center; /* Center text vertically */
+    justify-content: center; /* Center text horizontally */
+    box-shadow: 0 0 15px rgba(255, 0, 102, 0.7); /* Glowing effect */
+    z-index: 1000; /* Ensure it appears above other elements */
+    cursor: pointer; /* Change the cursor to pointer on hover */
+    text-transform: uppercase; /* Make the text uppercase */
+    transition: transform 0.2s ease, box-shadow 0.2s ease; /* Add smooth hover effect */
+  }
+  
+  .sos-button:hover {
+    transform: scale(1.1); /* Slightly enlarge on hover */
+    box-shadow: 0 0 20px rgba(255, 0, 102, 1); /* Intensify glow on hover */
+  }

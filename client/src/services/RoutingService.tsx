@@ -1,9 +1,10 @@
-import axios from 'axios';
+import axios from "axios";
+import { decode } from "@here/flexpolyline";
+import {
+  fetchInfrastructureData,
+  processInfrastructureData,
+} from "../services/overpassService";
 import { RouteRequestI } from '../Types/Route';
-
-
-
-// fetch a route from the HERE API
 export const fetchRoute = async (
   RouteReqItem: RouteRequestI
 ) => {
@@ -13,7 +14,7 @@ export const fetchRoute = async (
   const [destinationLat, destinationLon] = destination;
 
   // Changed from api url to backend url
-  const url = import.meta.env.BACKEND_URL ||'http://localhost:3002';
+  const url = import.meta.env.VITE_BACKEND_URL ||'http://localhost:3002';
   try {
     // Log the parameters being sent to the API for debugging purposes
     /* console.log('Request Parameters:', {
@@ -33,13 +34,55 @@ export const fetchRoute = async (
     }
 
     const response = await axios.get(`${url}/route/fetch`, { params });
-    const data = response.data;
-    console.log('here is data', data)
+    const route = response.data;
+    console.log('here is data', route)
     // Check if the API response contains routes
-    if (data) {
-      return data
-    } else throw new Error('error in awaiting controller from route service')
+    if (route) {
+           const decodedPolyline = decode(route.polyline).polyline;
 
+      const latitudes = decodedPolyline.map(([lat]) => lat);
+      const longitudes = decodedPolyline.map(([, lon]) => lon);
+      const southWest: [number, number] = [
+        Math.min(...latitudes),
+        Math.min(...longitudes),
+      ];
+      const northEast: [number, number] = [
+        Math.max(...latitudes),
+        Math.max(...longitudes),
+      ];
+
+      const rawInfrastructureData = await fetchInfrastructureData(
+        southWest,
+        northEast
+      );
+
+      const {
+        litStreets = [],
+        sidewalks = [],
+        policeStations = [],
+        hospitals = [],
+      } = processInfrastructureData(rawInfrastructureData);
+
+      // Dummy safety data for demonstration purposes
+      const safetyData = decodedPolyline.map(([lat, lon]) => ({
+        lat,
+        lon,
+        level: Math.random() * 10, // Random safety level between 0 and 10
+    }));
+
+      return {
+        polyline: route.polyline,
+        summary: route.summary,
+        instructions: route.actions || [],
+        litStreets,
+        sidewalks,
+        policeStations,
+        hospitals,
+        safetyData, // Include safety data
+      };
+    } else {
+      throw new Error("No route found in the API response");
+    }
   } catch (error) {
 
     console.error('Request failed:' + error);

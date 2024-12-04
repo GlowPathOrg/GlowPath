@@ -2,9 +2,9 @@ import axios, { AxiosResponse } from "axios";
 import { RegisterDataI, LoginDataI, UserI } from "../Types/User";
 
 
-
+// i could not get env to work - have it here
 // Base URL for the backend API
-const BACKEND_URL = "http://localhost:3002/auth";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL + "/auth" || "http://localhost:3002/auth";
 // Get the stored token from localStorage
 export const getToken = (): string | null => {
   return localStorage.getItem("token");

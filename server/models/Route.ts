@@ -35,13 +35,13 @@ export const SummarySchema = new Schema({
         required: true },
     baseDuration: {
         type: Number,
-        required: true }
+        required: false }
 });
 
 // Main schema for Route
 export const RouteSchema = new Schema({
     polyline: {
-        type: String,
+        type: Array,
         required: true },
     instructions: [NavigationSchema],
     summary: SummarySchema,

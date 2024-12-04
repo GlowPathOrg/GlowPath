@@ -1,20 +1,16 @@
-
-
 import HomeMap from "../HomePage/HomeMap";
-import "../../styles/HomePage.css"; // Import custom styles if needed
-import '../../styles/Footer.css'
+import "../../styles/HomePage.css"; // Custom styles
+import Footer from "../../components/Footer"
 import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
-import "../../styles/HomePage.css"; // Import custom styles
-import WhereToPage from "../WhereToPage"; // Import WhereToPage component
-
-
+import "../../styles/HomePage.css"; // Custom styles
+import WhereToPage from "../WhereToPage"; // WhereToPage component
+import SosButton from "../../pages/journeyPage/SosButton";
 const HomePage: React.FC = () => {
-  const [isSearchExpanded, setIsSearchExpanded] = useState(false); // State to toggle search drawer
-  const navigate = useNavigate();
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false); // Toggle state for the search drawer
+ 
 
   const handleSearchClick = () => {
-    setIsSearchExpanded(true); // Expand the search drawer when clicked
+    setIsSearchExpanded(true); // Expand the search drawer
   };
 
   const handleCloseSearch = () => {
@@ -22,50 +18,49 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <div className="home-page">
+    <div className="main">
       {/* Map Section */}
       <div className="Home-map-container">
         <HomeMap />
+        
       </div>
 
-      {/* Search Bar Section (under the map) */}
+      {/* Search Bar Section */}
       {!isSearchExpanded && (
-        <div className="search-section">
+        <div className="tray">
           <div className="search-bar" onClick={handleSearchClick}>
-            <input type="text" placeholder="Where to?" readOnly />
-            <button className="microphone-icon">🎤</button>
+          <img
+        src="https://img.icons8.com/?size=100&id=AXAzyxeWycrs&format=png&color=F25081"
+        alt="Search Icon"
+        className="search-icon"></img>
+            <input
+              type="text"
+              className="searchbox"
+              placeholder="Search here"
+              readOnly
+            />
+           <img src="/public/search.svg" alt="Search Icon" className="button-icon" />
           </div>
         </div>
       )}
 
       {/* Expandable Search Drawer */}
       {isSearchExpanded && (
-        <div className="full-page-overlay">
-          {/* WhereToPage Content */}
+        <div className="tray">
           <div className="expanded-search">
             <button className="back-button" onClick={handleCloseSearch}>
-              ⬅ Back
+              <img src="https://img.icons8.com/?size=100&id=3e5DEX0jAFhN&format=png&color=FFFFFF"  alt="Search Icon"
+        className="search-icon">
+             
+       </img>
             </button>
             <WhereToPage />
           </div>
         </div>
       )}
 
-      {/* Footer Section */}
-      <footer className="footer-bar">
-        {/* Navigation Icons */}
-        <button className="footer-icon" onClick={() => navigate("/")}>
-          🏠 {/* Home Icon */}
-        </button>
-        <button className="footer-icon" onClick={() => navigate("/analytics")}>
-          📊 {/* Analytics Icon */}
-        </button>
-        <button className="footer-icon" onClick={() => navigate("/profile")}>
-          👤 {/* Profile Icon */}
-        </button>
-      </footer>
+     <Footer/>
     </div>
-
   );
 };
 

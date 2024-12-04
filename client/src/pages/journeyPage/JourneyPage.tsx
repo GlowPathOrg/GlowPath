@@ -1,4 +1,4 @@
-// Import necessary modules and components
+// my file
 import { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import MapComponent from "../../components/MapComponent/MapComponent";
@@ -6,15 +6,21 @@ import ProgressBar from "./ProgressBar";
 import SosButton from "./SosButton";
 import AlarmButton from "./AlarmButton";
 import WeatherInfo from "./WeatherInfo";
-import { usePosition } from "../../hooks/usePosition";
+import { PositionI, usePosition } from "../../hooks/usePosition";
 import { fetchRoute } from "../../services/RoutingService";
-import { latLng } from "leaflet";
+import { latLng, LatLngTuple } from "leaflet";
 import { decode } from "@here/flexpolyline";
-import { LatLngTuple } from "leaflet";
 import "../../styles/JourneyPage.css";
-import { useSocket } from "../../hooks/useSocket";
 import { createShare } from "../../services/shareService";
-import { RouteRequestI } from "../../Types/Route";
+import { RouteI, RouteRequestI } from "../../Types/Route";
+import { fetchInfrastructureData, processInfrastructureData } from "../../services/overpassService";
+import mapThemes from "../../components/MapComponent/MapThemes";
+import { MdEmergencyShare } from "react-icons/md";
+import { TbNavigationCancel } from "react-icons/tb";
+import Footer from "../../components/Footer"
+import { io } from "socket.io-client";
+import { getToken } from "../../utilities/token";
+const socketServer = import.meta.env.VITE_BACKEND_URL || "http://localhost:3002";
 
 const JourneyPage: React.FC = () => {
   // React router hooks to access location state and navigate
@@ -30,7 +36,7 @@ const JourneyPage: React.FC = () => {
     route: initialRoute = [],
     summary: initialSummary = { distance: 0, duration: 0 },
     instructions: initialInstructions = [],
-    theme = "standard",
+    theme: initialTheme = "standard",
     transportMode = "pedestrian",
     destinationCoords = null,
   } = location.state || {};
@@ -41,7 +47,33 @@ const JourneyPage: React.FC = () => {
   const [currentInstructions, setCurrentInstructions] = useState(initialInstructions); // Instructions
   const [userDeviationDetected, setUserDeviationDetected] = useState(false); // Track route deviation
   const [rerouted, setRerouted] = useState(false); // Track if rerouting occurred
+  const [shareId, setShareId] = useState("");
+  const [litStreets, setLitStreets] = useState<LatLngTuple[]>([]);
+  const [sidewalks, setSidewalks] = useState<{ geometry: { lat: number; lon: number }[] }[]>([]);
+  const [policeStations, setPoliceStations] = useState<LatLngTuple[]>([]);
+  const [hospitals, setHospitals] = useState<LatLngTuple[]>([]);
+  const [mapTheme, setMapTheme] = useState<string>(initialTheme);
+  const [isConnected, setIsConnected] = useState(false);
 
+  useEffect(() => {
+    if (latitude && longitude) {
+      const southWest: [number, number] = [latitude - 0.01, longitude - 0.01];
+      const northEast: [number, number] = [latitude + 0.01, longitude + 0.01];
+
+      fetchInfrastructureData(southWest, northEast)
+        .then((data) => {
+          const { litStreets, sidewalks, policeStations, hospitals } = processInfrastructureData(data);
+          setLitStreets(litStreets.map(({ lat, lon }) => [lat, lon] as LatLngTuple));
+          setSidewalks(sidewalks);
+          setPoliceStations(policeStations.map(({ lat, lon }) => [lat, lon] as LatLngTuple));
+          setHospitals(hospitals.map(({ lat, lon }) => [lat, lon] as LatLngTuple));
+        })
+        .catch((err) => console.error("Error fetching infrastructure data:", err));
+    }
+  }, [latitude, longitude]);
+
+
+  const handleThemeChange = (newTheme: string) => setMapTheme(newTheme);
   // Detect if the user deviates from the route
   useEffect(() => {
     if (latitude && longitude && currentRoute.length > 0) {
@@ -57,54 +89,58 @@ const JourneyPage: React.FC = () => {
     }
   }, [latitude, longitude, currentRoute]);
 
+  const handleSOSActivated = () => {
+    console.log('SOS button activated on Journey Page!');
+
+  };
   // Handle rerouting if the user deviates from the route
- const handleReroute = useCallback(async () => {
+  const handleReroute = useCallback(async () => {
 
-     if (!latitude || !longitude || currentRoute.length === 0) return;
+    if (!latitude || !longitude || currentRoute.length === 0) return;
 
-     try {
-       // Get the last point in the route as the destination
-       const destination = currentRoute[currentRoute.length - 1];
-       const [destLat, destLon] = destination;
+    try {
+      // Get the last point in the route as the destination
+      const destination = currentRoute[currentRoute.length - 1];
+      const [destLat, destLon] = destination;
 
-       const request: RouteRequestI = {
-         origin: [latitude, longitude],
-         destination: [destLat, destLon],
-         transportMode
-       }
+      const request: RouteRequestI = {
+        origin: [latitude, longitude],
+        destination: [destLat, destLon],
+        transportMode
+      }
 
 
-       // Fetch new route, summary, and instructions from the routing service
-       const { polyline, summary, instructions } = await fetchRoute(
-         request
-       );
+      // Fetch new route, summary, and instructions from the routing service
+      const { polyline, summary, instructions } = await fetchRoute(
+        request
+      );
 
-       // Decode the polyline into LatLng tuples
-       const decoded = decode(polyline);
-       if (decoded && Array.isArray(decoded.polyline)) {
-         const newRoute: LatLngTuple[] = decoded.polyline.map(([lat, lon]) => [lat, lon] as LatLngTuple);
-         setCurrentRoute(newRoute); // Update the route
-         setCurrentSummary(summary); // Update summary
-         setCurrentInstructions(instructions); // Update instructions
-         setRerouted(true); // Mark rerouting as done
-       }
-     } catch (error) {
-       console.error("Error during rerouting:", error); // Log rerouting errors
-     }
+      // Decode the polyline into LatLng tuples
+      const decoded = decode(polyline);
+      if (decoded && Array.isArray(decoded.polyline)) {
+        const newRoute: LatLngTuple[] = decoded.polyline.map(([lat, lon]) => [lat, lon] as LatLngTuple);
+        setCurrentRoute(newRoute); // Update the route
+        setCurrentSummary(summary); // Update summary
+        setCurrentInstructions(instructions); // Update instructions
+        setRerouted(true); // Mark rerouting as done
+      }
+    } catch (error) {
+      console.error("Error during rerouting:", error); // Log rerouting errors
+    }
 
- }, [latitude, longitude, currentRoute, transportMode])
+  }, [latitude, longitude, currentRoute, transportMode])
 
   // Trigger rerouting when deviation is detected
- useEffect(() => {
-  const rerouteIfNeeded = async () => {
-    if (userDeviationDetected) {
-      await handleReroute(); // Ensure this function is awaited if it's asynchronous
-    }
-  };
+   /* useEffect(() => {
+    const rerouteIfNeeded = async () => {
+      if (userDeviationDetected) {
+        await handleReroute(); // Ensure this function is awaited if it's asynchronous
+      }
+    };
 
-  rerouteIfNeeded(); // Call the function within the useEffect
+    rerouteIfNeeded(); // Call the function within the useEffect
 
-}, [userDeviationDetected, handleReroute]);
+  }, [userDeviationDetected, handleReroute]); */
 
   // Announce turn-by-turn instructions using audio
   const announceTurn = (instruction: string) => {
@@ -122,84 +158,147 @@ const JourneyPage: React.FC = () => {
   }, [currentInstructions]);
 
   // Socket-related hooks and functions
-  const { error: socketError, connectSocket, hostShare, sendPosition } = useSocket({});
+  const socket = io(socketServer, {
+    auth: { token: getToken() }
+  });
 
-  async function handleShare() {
+  async function handleShare () {
     try {
-      // Convert LatLng to string
-      const originCoords = `${currentRoute[0][0]},${currentRoute[0][1]}`;
-      const destinationCoordsFormatted =
-        destinationCoords || `${currentRoute[currentRoute.length - 1][0]},${currentRoute[currentRoute.length - 1][1]}`;
-
-      const result = await createShare({ origin: originCoords, destination: destinationCoordsFormatted });
-
-      if (result.id) {
-        connectSocket();
-        if (!socketError) hostShare(result.id);
-      }
+      console.log('Trying to share')
+      const route: RouteI = {polyline: currentRoute, instructions: currentInstructions, summary: currentSummary};
+      const result = await createShare(route);
+      console.log('Share returned from server: ', result);
+      setShareId(result.data.id);
     } catch (err) {
-      console.error("Error during sharing:", err);
+      console.error("Error during sharing: ", err);
     }
   }
 
+  function hostShare (id: string) {
+    if (isConnected) socket.emit("host-share", id);
+  }
+
+  function sendPosition (position: PositionI) {
+    if (isConnected) socket.emit("position", position);
+  }
+
   useEffect(() => {
-    if (socketError) {
-      console.error("Socket error:", socketError);
-    } else {
+    socket.on("connect", () => {
+      console.log("Socket connected");
+      setIsConnected(true);
+    });
+
+    socket.on("connect_error", (error) => {
+      console.log(error.message);
+      setIsConnected(false);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("Socket about to get disconnected");
+    })
+
+    return () => {
+      socket.off("connect");
+      socket.off("connect_error");
+      socket.off("disconnect");
+      console.log("Removed all event listeners because component is about to dismount");
+    }
+  },[])
+
+  useEffect(() => {
+    if (isConnected) {
+      console.log("Trying to connect to share " + shareId);
+      hostShare(shareId);
+    }
+  },[shareId]);
+
+  useEffect(() => {
+    if (isConnected) {
+      console.log("Trying to send position to share");
       sendPosition(position);
     }
-  }, [sendPosition, socketError, position]);
+  }, [position]);
 
   // Rendering
   return (
-    <div className="journey-page">
-      {/* Render the map component if the route is available */}
-      {currentRoute.length > 0 ? (
-        <MapComponent
-          latitude={latitude}
-          longitude={longitude}
-          heading={heading}
-          geolocationError={geoError || null}
-          route={currentRoute}
-          summary={currentSummary}
-          instructions={currentInstructions}
-          originCoords={latLng(currentRoute[0][0], currentRoute[0][1])}
-          destinationCoords={
-            destinationCoords ||
-            latLng(currentRoute[currentRoute.length - 1][0], currentRoute[currentRoute.length - 1][1])
-          }
-          theme={theme}
+    <div className="journey-page" >
+      {
+        currentRoute.length > 0 ? (
+          <MapComponent
+            latitude={latitude}
+            longitude={longitude}
+            heading={heading}
+            geolocationError={geoError || null
+            }
+            route={currentRoute}
+            summary={currentSummary}
+            instructions={currentInstructions}
+            originCoords={latLng(currentRoute[0][0], currentRoute[0][1])}
+            litStreets={litStreets}
+            sidewalks={sidewalks}
+            policeStations={policeStations}
+            hospitals={hospitals}
+            destinationCoords={
+              destinationCoords ||
+              latLng(currentRoute[currentRoute.length - 1][0], currentRoute[currentRoute.length - 1][1])
+            }
+            theme={mapTheme}
+          />
+        ) : (
+          <p>Loading route...</p>
+        )}
+
+      <div className="alert-container" >
+        <h3>Next Turn: </h3>
+        < p > {currentInstructions[0]?.instruction || "Continue straight"} </p>
+      </div>
+
+      < ProgressBar progress={rerouted ? 75 : 50} />
+
+      <div className="features-container" >
+        <SosButton onSOSActivated={handleSOSActivated} />
+        < AlarmButton />
+        <MdEmergencyShare
+          onClick={handleShare}
+          style={{
+            fontSize: "40px",
+            color: "#EBEBEB",
+            cursor: "pointer",
+            transition: "transform 0.2s ease",
+          }}
+          title="Share Journey"
         />
-      ) : (
-        <p>Loading route...</p>
-      )}
-
-      {/* Display the next turn instruction */}
-      <div className="alert-container">
-        <h3>Next Turn:</h3>
-        <p>{currentInstructions[0]?.instruction || "Continue straight"}</p>
+        <TbNavigationCancel onClick={() => navigate("/")} style={{
+            fontSize: "40px",
+            color: "#EBEBEB",
+            cursor: "pointer",
+            transition: "transform 0.2s ease",
+          }}  title="Cancel Journey"/>
+       
+        <div className="theme-selector">
+    <img
+      src="https://img.icons8.com/?size=100&id=37073&format=png&color=EBEBEB"
+      alt="Map Theme Icon"
+      className="icon"
+    />
+          < select
+            id="map-theme"
+            value={mapTheme}
+            onChange={(e) => handleThemeChange(e.target.value)}
+          >
+            {
+              Object.keys(mapThemes).map((themeKey) => (
+                <option key={themeKey} value={themeKey} >
+                  {themeKey.charAt(0).toUpperCase() + themeKey.slice(1)}
+                </option>
+              ))
+            }
+          </select>
+        </div>
       </div>
 
-      {/* Progress Bar Section */}
-      <ProgressBar progress={rerouted ? 75 : 50} />
-
-      {/* Buttons and Features Section */}
-      <div className="features-container">
-        <SosButton />
-        <AlarmButton />
-        <button className="feature-button" onClick={handleShare}>
-          Share
-        </button>
-        <button className="feature-button" onClick={() => navigate("/")}>
-          Cancel
-        </button>
-        <button className="feature-button">
-          chat
-        </button>
-      </div>
-
-      {/* Display weather information */}
-      <WeatherInfo />
+      < WeatherInfo />
+      <Footer/>
     </div>
   );
 };

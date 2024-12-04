@@ -1,30 +1,63 @@
+import { io } from "socket.io-client";
+import { useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-//import MapComponent from '../../components/MapComponent/MapComponent';
-import { useSocket } from '../../hooks/useSocket';
-import { useEffect } from 'react';
-//import { ShareI } from '../../services/shareService';
+const socketServer = import.meta.env.VITE_BACKEND_URL || "http://localhost:3002";
 
 const ObserverPage = () => {
-  //const [share, setShare] = useState<ShareI | null>();
   const [searchParams] = useSearchParams();
   const { id } = useParams();
   const password = searchParams.get("password") || "";
-  const { position, connectSocket, joinShare } = useSocket({password});
+  const [isConnected, setIsConnected] = useState(false);
+
+  const socket = io(socketServer, {
+    auth: { password }
+  });
+
+  function joinShare (id: string) {
+    if (isConnected) {
+      socket.emit("join-share", id, (response: string) => {
+        console.log(response);
+      });
+    }
+  }
 
   useEffect(() => {
-    if (id) {
-      connectSocket();
-      console.log("Connected to socket");
-      joinShare(id);
-      console.log("Joined share " + id);
-    }
-  }, []);
 
-return (
+    socket.on("connect", () => {
+      console.log("Socket connected");
+      setIsConnected(true);
+    });
+
+    socket.on("connect_error", (error) => {
+      console.log(error.message);
+      setIsConnected(false);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("Socket about to get disconnected");
+    })
+
+    return () => {
+      socket.off("connect");
+      socket.off("connect_error");
+      socket.off("disconnect");
+      console.log("Removed all event listeners because component is about to dismount");
+    }
+
+  },[]);
+
+  useEffect(() => {
+    if (id && isConnected) {
+      console.log("Socket connecting to room " + id);
+      joinShare(id);
+    }
+  },[id, isConnected]);
+
+  return (
   <>
-    <h1>{JSON.stringify(position)}</h1>
+    <h1>{isConnected}</h1>
   </>
-);
+  );
 
 }
 

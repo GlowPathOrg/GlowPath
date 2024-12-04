@@ -2,7 +2,7 @@ import { io } from "socket.io-client";
 import { useState, useEffect } from 'react';
 import { getToken } from "../utilities/token";
 import { PositionI } from "./usePosition";
-const socketServer = import.meta.env.BACKEND_URL;
+const socketServer = import.meta.env.VITE_BACKEND_URL || "http://localhost:3002";
 
 interface MessageI {
   text: string;
@@ -20,19 +20,15 @@ export const useSocket = ({ password }: {password?: string}) => {
   const [error, setError] = useState("");
 
   const socket = io(socketServer, {
-    autoConnect: false,
-    auth: cb => cb(
-      () => {
-        if (password) {
-          return {password};
-        } else {
-          return {token: getToken()}
-        }
-      }
-    )
+    //autoConnect: false,
+    auth: (cb) => {
+      cb(password ? {password} : {token: getToken()}) // pass credential to socket server
+    }
   });
 
   function connectSocket () {
+    console.log("socket.connect() was called");
+    console.log("isConnected: ", isConnected);
     if (!isConnected) socket.connect();
   }
 
@@ -41,7 +37,13 @@ export const useSocket = ({ password }: {password?: string}) => {
   }
 
   function joinShare (id: string) {
-    if (isConnected) socket.emit("join-share", id);
+    console.log("joinShare is called with id " + id);
+    console.log("isConnected: ", isConnected);
+    if (isConnected) {
+      socket.emit("join-share", id, (response: string) => {
+        console.log(response);
+      });
+    }
   }
 
   function sendPosition (position: PositionI) {
@@ -58,15 +60,21 @@ export const useSocket = ({ password }: {password?: string}) => {
 
   useEffect(() => {
 
+    console.log("useEffect is in action");
+
     socket.on("connect", () => {
       console.log("Socket connected");
       setIsConnected(true);
     });
 
     socket.on("connect_error", (error) => {
-      console.log("Socket error: " + error);
+      console.log(error.message);
       setError(error.message);
       setIsConnected(false);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("Socket about to get disconnected");
     })
 
     socket.on("location", (newPosition) => {
@@ -82,10 +90,12 @@ export const useSocket = ({ password }: {password?: string}) => {
     })
 
     return () => {
+      console.log("Socket will get disconnected because component gets unmounted");
+      setIsConnected(false);
       socket.disconnect();
     }
 
   },[]);
 
-  return { position, messages, alarms, error, sendPosition, sendMessage, sendAlarm, hostShare, joinShare, connectSocket };
+  return { isConnected, position, messages, alarms, error, sendPosition, sendMessage, sendAlarm, hostShare, joinShare, connectSocket };
 }

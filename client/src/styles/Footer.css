@@ -1,24 +1,31 @@
 .footer-bar {
-  display: flex;
-  justify-content: space-around;
-  padding: 10px 0;
-  background-color: #eeeeee;
-  border-top: 1px solid #cccccc;
-  width: 90vw;
-  margin: 0 auto;
-  position: relative;
-  bottom: 0;
-}
-
-.footer-icon {
-  font-size: 24px;
-  color: #6200ea;
-  border: none;
-  background: none;
-  cursor: pointer;
-  transition: color 0.3s ease;
-}
-
-.footer-icon:hover {
-  color: #3700b3;
-}
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3rem; /* Adjust height as needed */
+    background-color: #232323;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 10;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
+  }
+  
+  .footer-icon {
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+  }
+  
+  .footer-icon:hover {
+    opacity: 1;
+  }
+  
+  .footer-icon:active {
+    transform: scale(0.95); /* a click effect */
+  }
