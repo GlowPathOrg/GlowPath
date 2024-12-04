@@ -1,5 +1,5 @@
-import { io } from "socket.io-client";
-import { useState, useEffect } from 'react';
+import { io, Socket } from "socket.io-client";
+import { useState, useEffect, useRef } from 'react';
 import { getToken } from "../utilities/token";
 import { PositionI } from "./usePosition";
 const socketServer = import.meta.env.VITE_BACKEND_URL || "http://localhost:3002";
@@ -11,6 +11,7 @@ interface MessageI {
 interface AlarmI {
   text: string;
 }
+let socket: Socket | null;
 
 export const useSocket = ({ password }: {password?: string}) => {
   const [isConnected, setIsConnected] = useState(false);
@@ -19,27 +20,31 @@ export const useSocket = ({ password }: {password?: string}) => {
   const [alarms, setAlarms] = useState<AlarmI[] | []>([]);
   const [error, setError] = useState("");
 
-  const socket = io(socketServer, {
-    //autoConnect: false,
-    auth: (cb) => {
-      cb(password ? {password} : {token: getToken()}) // pass credential to socket server
-    }
-  });
-
-  function connectSocket () {
-    console.log("socket.connect() was called");
-    console.log("isConnected: ", isConnected);
-    if (!isConnected) socket.connect();
+  const initialized = useRef(false);
+  if (!socket) {
+    socket = io(socketServer, {
+      auth: (cb) => {
+        cb(password ? { password } : { token: getToken() }); // Pass credentials to the socket server
+      },
+      autoConnect: false, // Prevent auto-connect on initialization
+    });
   }
 
+  const connectSocket = () => {
+    if (!isConnected) {
+      console.log("socket.connect() was called");
+      socket?.connect();
+    }
+  };
+
   function hostShare (id: string) {
-    if (isConnected) socket.emit("host-share", id);
+    if (isConnected && socket) socket.emit("host-share", id);
   }
 
   function joinShare (id: string) {
     console.log("joinShare is called with id " + id);
     console.log("isConnected: ", isConnected);
-    if (isConnected) {
+    if (isConnected && socket) {
       socket.emit("join-share", id, (response: string) => {
         console.log(response);
       });
@@ -47,55 +52,63 @@ export const useSocket = ({ password }: {password?: string}) => {
   }
 
   function sendPosition (position: PositionI) {
-    if (isConnected) socket.emit("position", position);
+    if (isConnected && socket) socket.emit("position", position);
   }
 
   function sendMessage (message: MessageI) {
-    if (isConnected) socket.emit("message", message);
+    if (isConnected && socket) socket.emit("message", message);
   }
 
   function sendAlarm (alarm: AlarmI) {
-    if (isConnected) socket.emit("alarm", alarm);
+    if (isConnected && socket) socket.emit("alarm", alarm);
   }
 
   useEffect(() => {
+    if (initialized.current) return;
+    initialized.current = true;
 
-    console.log("useEffect is in action");
+    console.log("Socket useEffect is in action");
 
-    socket.on("connect", () => {
+    socket?.on("connect", () => {
       console.log("Socket connected");
       setIsConnected(true);
     });
 
-    socket.on("connect_error", (error) => {
-      console.log(error.message);
+    socket?.on("connect_error", (error) => {
+      console.error("Socket connection error:", error.message);
       setError(error.message);
       setIsConnected(false);
     });
 
-    socket.on("disconnect", () => {
-      console.log("Socket about to get disconnected");
-    })
+    socket?.on("disconnect", () => {
+      console.log("Socket disconnected");
+      setIsConnected(false);
+    });
 
-    socket.on("location", (newPosition) => {
+    socket?.on("location", (newPosition: PositionI) => {
       setPosition(newPosition);
     });
 
-    socket.on("message", (newMessage) => {
-      setMessages(previous => [...previous, newMessage]);
+    socket?.on("message", (newMessage: MessageI) => {
+      setMessages((previous) => [...previous, newMessage]);
     });
 
-    socket.on("alarm", (newAlarm) => {
-      setAlarms(previous => [...previous, newAlarm]);
-    })
+    socket?.on("alarm", (newAlarm: AlarmI) => {
+      setAlarms((previous) => [...previous, newAlarm]);
+    });
+
 
     return () => {
-      console.log("Socket will get disconnected because component gets unmounted");
-      setIsConnected(false);
-      socket.disconnect();
-    }
-
-  },[]);
+      console.log("Socket will disconnect because component gets unmounted");
+      socket?.off("connect");
+      socket?.off("connect_error");
+      socket?.off("disconnect");
+      socket?.off("location");
+      socket?.off("message");
+      socket?.off("alarm");
+      socket?.disconnect();
+    };
+  }, []);
 
   return { isConnected, position, messages, alarms, error, sendPosition, sendMessage, sendAlarm, hostShare, joinShare, connectSocket };
 }

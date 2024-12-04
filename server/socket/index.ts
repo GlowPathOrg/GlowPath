@@ -6,6 +6,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import UserModel from "../models/User";
 import dotenv from 'dotenv';
 import bcrypt from "bcrypt";
+import mongoose from "mongoose";
 
 dotenv.config();
 
@@ -50,9 +51,11 @@ export const setupSocket = (app: Express) => {
 
     socket.on("host-share", async (id) => {
       if (!id) return console.log("no id");
-      const sanitizedId = id.replace(/[$/(){}]/g, "");
+      const sanitizedId = id.replace(/[$/(){}]/g, "").trim();
+      if (!mongoose.Types.ObjectId.isValid(sanitizedId)) {
+        return console.log("Invalid ObjectId format");
+      }
       const token = socket.handshake.auth.token;
-      if (!token) return console.log("no token");
       const JWT_SECRET = process.env.JWT_SECRET
       if (!JWT_SECRET) return console.log("no jwt secret");
       const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
@@ -61,23 +64,26 @@ export const setupSocket = (app: Express) => {
       if (!user) return console.log("no user");
       const share = await Share.findOne({ _id: sanitizedId, owner: user });
       if (!share) return console.log("no share");
-      socket.join(id);
-      console.log(socket.id + " joined room " + id);
+      socket.join(sanitizedId);
+      console.log(socket.id + " joined room " + sanitizedId);
       // TODO: send some kind of error to client when this fails https://socket.io/docs/v4/listening-to-events/
       });
 
     socket.on("join-share", async (id, cb) => {
-      console.log("Line 55");
+      console.log("socket on joinshare....");
       if (!id) return console.log("no id");
       const sanitizedId = id.replace(/[$/(){}]/g, "");
+      if (!mongoose.Types.ObjectId.isValid(sanitizedId)) {
+        return console.log("Invalid ObjectId format");
+      }
       const password = socket.handshake.auth.password;
       if (!password) return console.log("no password");
       const share = await Share.findOne({_id: sanitizedId});
       if (!share) return console.log("no share");
       const matchingPasswords = await bcrypt.compare(password, share.password);
       if (!matchingPasswords) return console.log("wrong password");
-      socket.join(id);
-      console.log(socket.id + " joined room " + id);
+      socket.join(sanitizedId);
+      console.log(socket.id + " joined room " + sanitizedId);
       // TODO: send some kind of error to client when this fails https://socket.io/docs/v4/listening-to-events/
       cb("This event was received and processed");
     });

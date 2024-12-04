@@ -3,6 +3,7 @@ import Share from "../models/Share";
 import RouteModel from "../models/Route";
 import bcrypt from "bcrypt";
 import { v4 as uuid } from 'uuid';
+import mongoose from "mongoose";
 
 // User requests to share their journey
 // - saves a new share to the database
@@ -23,7 +24,7 @@ export const createShare = async (req: Request, res: Response): Promise<void> =>
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     const newRoute = await RouteModel.create(route)
-    const newShare = await Share.create({owner: user, route: newRoute._id, password: hashedPassword});
+    const newShare = await Share.create({ owner: user, route: newRoute._id, password: hashedPassword});
     res.status(200).json({id: newShare._id, password}); // TODO: this needs to be checked to conform to frontend expectations
   } catch (error) {
     console.log(error);

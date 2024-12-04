@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export interface PositionI {
   timestamp: number | null;
@@ -18,12 +18,12 @@ const initialPosition = {
   heading: null,
   speed: null,
   error: ""
-}
+};
 
 export const usePosition = () => {
   const [position, setPosition] = useState<PositionI>(initialPosition);
-  const [watchId, setWatchId] = useState<number>(0);
   const [error, setError] = useState("");
+  const watchIdRef = useRef<number | null>(null); // Use a ref to store the watcher ID
 
   function handleSuccess (position: GeolocationPosition) {
     setPosition({
@@ -32,7 +32,7 @@ export const usePosition = () => {
       longitude: position.coords.longitude,
       accuracy: position.coords.accuracy,
       heading: position.coords.heading,
-      speed: position.coords.speed
+      speed: position.coords.speed,
     });
   }
 
@@ -45,19 +45,20 @@ export const usePosition = () => {
       const options = {
         enableHighAccuracy: true,
         maximumAge: 30000,
-        timeout: 600000
-      }
-      console.log("Initializing watcher on geolocation")
-      const id = navigator.geolocation.watchPosition(handleSuccess, handleError, options);
-      setWatchId(id);
+        timeout: 600000,
+      };
+      console.log("Initializing watcher on geolocation");
+      watchIdRef.current = navigator.geolocation.watchPosition(handleSuccess, handleError, options);
     } else {
       setError("Navigator doesn't support geolocation");
     }
     return () => {
       console.log("Clearing watcher on geolocation because component is about to unmount");
-      navigator.geolocation.clearWatch(watchId);
-    }
-  }, [])
-
-  return {...position, error} as PositionI;
-}
+      if (watchIdRef.current !== null) {
+        navigator.geolocation.clearWatch(watchIdRef.current);
+      }
+    };
+  }, []); // Dependencies remain empty since `watchIdRef` is a ref
+  console.log('my position', position.latitude)
+  return { ...position, error } as PositionI;
+};

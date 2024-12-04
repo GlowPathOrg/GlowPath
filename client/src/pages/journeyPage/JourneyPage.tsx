@@ -15,13 +15,9 @@ import { createShare } from "../../services/shareService";
 import { RouteI, RouteRequestI } from "../../Types/Route";
 import { fetchInfrastructureData, processInfrastructureData } from "../../services/overpassService";
 import mapThemes from "../../components/MapComponent/MapThemes";
-import { io } from "socket.io-client";
-import { getToken } from "../../utilities/token";
-const socketServer = import.meta.env.VITE_BACKEND_URL || "http://localhost:3002";
+import { useSocket } from "../../hooks/useSocket";
 
-const socket = io(socketServer, {
-  auth: { token: getToken() }
-});
+
 
 const JourneyPage: React.FC = () => {
   // React router hooks to access location state and navigate
@@ -54,7 +50,11 @@ const JourneyPage: React.FC = () => {
   const [policeStations, setPoliceStations] = useState<LatLngTuple[]>([]);
   const [hospitals, setHospitals] = useState<LatLngTuple[]>([]);
   const [mapTheme, setMapTheme] = useState<string>(initialTheme);
-  const [isConnected, setIsConnected] = useState(false);
+  const {
+    isConnected,
+    sendPosition,
+    hostShare,
+  } = useSocket({});
 
   useEffect(() => {
     if (latitude && longitude) {
@@ -94,6 +94,7 @@ const JourneyPage: React.FC = () => {
     console.log('SOS button activated on Journey Page!');
 
   };
+
   // Handle rerouting if the user deviates from the route
   const handleReroute = useCallback(async () => {
 
@@ -132,16 +133,12 @@ const JourneyPage: React.FC = () => {
   }, [latitude, longitude, currentRoute, transportMode])
 
   // Trigger rerouting when deviation is detected
-/*    useEffect(() => {
-    const rerouteIfNeeded = async () => {
-      if (userDeviationDetected) {
-        await handleReroute(); // Ensure this function is awaited if it's asynchronous
-      }
-    };
-
-    rerouteIfNeeded(); // Call the function within the useEffect
-
-  }, [userDeviationDetected, handleReroute]); */
+useEffect(() => {
+     const handleDeviation = () => {
+    if (userDeviationDetected) console.log('user deviation detected"')
+  }
+  handleDeviation();
+  }, [userDeviationDetected])
 
   // Announce turn-by-turn instructions using audio
   const announceTurn = (instruction: string) => {
@@ -164,6 +161,7 @@ const JourneyPage: React.FC = () => {
     try {
       console.log('Trying to share')
       const route: RouteI = {polyline: currentRoute, instructions: currentInstructions, summary: currentSummary};
+      console.log('about to create shre with route', route)
       const result = await createShare(route);
       console.log('Share returned from server: ', result);
       setShareId(result.data.id);
@@ -178,62 +176,23 @@ const JourneyPage: React.FC = () => {
     navigate("/");
   }
 
-  function hostShare (id: string) {
-    if (isConnected) socket.emit("host-share", id);
-  }
 
-  function sendPosition (position: PositionI, room: string) {
-    if (isConnected) socket.emit("position", position, room);
-  }
+
+
 
   useEffect(() => {
-    socket.on("connect", () => {
-      console.log("Socket connected with id " + socket.id);
-      if (socket.recovered) {
-        // any event missed during the disconnection period will be received now
-        console.log("Recovered session on client")
-      } else {
-        console.log("New session on client")
-        // new or unrecoverable session
-      }
-      if (shareId) {
-        hostShare(shareId);
-      }
-      setIsConnected(true);
-    });
-
-    socket.on("connect_error", (error) => {
-      console.log(error.message);
-      setIsConnected(false);
-    });
-
-    socket.on("disconnect", () => {
-      console.log("Socket about to get disconnected");
-    })
-
-    return () => {
-      socket.off("connect");
-      socket.off("connect_error");
-      socket.off("disconnect");
-      console.log("Removed all event listeners because component is about to dismount");
-    }
-  },[])
-
-  useEffect(() => {
-    console.log("ShareId or isConnected changed, trying to join room");
-    console.log("Trying to join room while isConnected is ", isConnected);
-    if (isConnected) {
-      console.log("Trying to connect to share " + shareId);
+    if (isConnected && shareId) {
       hostShare(shareId);
     }
-  },[isConnected, shareId]);
+  }, [isConnected, shareId, hostShare]);
 
   useEffect(() => {
     if (isConnected) {
       console.log("Trying to send position to share");
-      sendPosition(position, shareId);
+      const typedPosition: PositionI = position;
+      sendPosition(typedPosition);
     }
-  }, [position]);
+  }, [isConnected, position, sendPosition, shareId]);
 
   // Rendering
   return (
@@ -279,6 +238,9 @@ const JourneyPage: React.FC = () => {
         </button>
         < button className="feature-button" onClick={handleCancel}>
           Cancel
+        </button>
+        <button className="feature-button" onClick={handleReroute}>
+          Reroute
         </button>
         < div className="theme-selector" >
           <label htmlFor="map-theme" > Map Theme: </label>

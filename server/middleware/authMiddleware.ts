@@ -1,7 +1,8 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { Request, Response, NextFunction, } from "express";
-import UserModel from "../models/User";
+import UserModel from "../models/User.js";
 import dotenv from 'dotenv';
+import { UserI } from "../Types/User.js";
 
 
 dotenv.config();
@@ -16,8 +17,9 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
         const token = authHeaders.split(' ')[1];
         try {
             const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
-            const { id } = decoded;
-            const user = await UserModel.findOne({ _id: id });
+            const { _id } = decoded;
+            console.log('decoded after big change', decoded)
+            const user: UserI | null = await UserModel.findOne({ _id: _id });
             if (user) {
                 req.user = user;
                 next();

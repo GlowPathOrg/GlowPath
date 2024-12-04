@@ -83,7 +83,7 @@ export const editController = async (req: Request, res: Response): Promise<void 
         const updated = await UserModel.findOneAndUpdate(filter, update);
         if (updated) {
 
-            const token = jwt.sign({ id: updated._id, email: updated.email, firstName: updated.firstName, lastName: updated.lastName, telephone: updated.telephone }, jwtSecret, { expiresIn: '1d' });
+            const token = jwt.sign({ _id: updated._id, email: updated.email, firstName: updated.firstName, lastName: updated.lastName, telephone: updated.telephone }, jwtSecret, { expiresIn: '1d' });
             res.status(200).json({
                 token,
                 updated: {
@@ -141,7 +141,7 @@ export const loginController = async (req: Request, res: Response): Promise<void
                 res.status(401).json({ error: 'Invalid credentials' });
             }
 
-            const token = jwt.sign({ id: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName, telephone: user.telephone }, jwtSecret, { expiresIn: '1d' });
+            const token = jwt.sign({ _id: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName, telephone: user.telephone }, jwtSecret, { expiresIn: '1d' });
             res.status(200).json({
                 token,
                 user: {
