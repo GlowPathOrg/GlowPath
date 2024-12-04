@@ -59,7 +59,7 @@ const JourneyPage: React.FC = () => {
 
   useEffect(() => {
     connectSocket();
-  }, []);
+  }, [connectSocket]);
 
   useEffect(() => {
     if (latitude && longitude) {
@@ -166,8 +166,11 @@ useEffect(() => {
     try {
 
       const route: RouteI = {polyline: currentRoute, instructions: currentInstructions, summary: currentSummary};
+      console.log('sharing' , route)
       const result = await createShare(route);
+      console.log('shared', result, result.data.id)
       setShareId(result.data.id);
+
     } catch (err) {
       console.error("Error during sharing: ", err);
     }
@@ -197,7 +200,7 @@ useEffect(() => {
       console.log("Trying to send position to share");
       const typedPosition: PositionI = position;
       console.log('my typed position', typedPosition);
-      sendPosition(typedPosition);
+      sendPosition(typedPosition, shareId);
       console.log('this may have been sent.')
     }
   }, [isConnected, position, sendPosition, shareId]);

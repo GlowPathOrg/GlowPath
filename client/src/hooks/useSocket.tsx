@@ -52,8 +52,14 @@ export const useSocket = ({ password }: {password?: string}) => {
   }
 
   function sendPosition (position: PositionI) {
-    if (isConnected && socket) socket.emit("position", position);
-    console.log('emitted', position)
+    if (!position) {
+      console.warn("can't find position!");
+      return;
+    }
+    if (isConnected && socket) {
+      console.log("Sending position to room:", position);
+      socket.emit("position", position);
+    }
   }
 
   function sendMessage (message: MessageI) {
@@ -111,7 +117,8 @@ export const useSocket = ({ password }: {password?: string}) => {
       socket?.off("alarm");
       socket?.disconnect();
     };
-  }, [isConnected]);
+    // by no means add useConnect to dev dependencies! it messes everything up.
+  }, []);
 
   return { isConnected, position, messages, alarms, error, sendPosition, sendMessage, sendAlarm, hostShare, joinShare, connectSocket };
 }

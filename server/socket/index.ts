@@ -88,10 +88,10 @@ export const setupSocket = (app: Express) => {
       cb("This event was received and processed");
     });
 
-    socket.on("position", (position, room) => {
-      console.log("Got position and relay it to room " + room);
-      socket.to(room).emit("position", position);
-    })
+      socket.on("position", (position, room) => {
+        console.log("Got position and relay it to room " + room);
+        socket.to(room).emit("position", position);
+      })
 
   });
 
