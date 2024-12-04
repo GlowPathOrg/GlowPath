@@ -1,21 +1,8 @@
 import mongoose, { Document, Schema, Model } from 'mongoose';
 import bcrypt from 'bcrypt';
+import { UserI } from '../Types/User.js';
 
-/**
- * User interface extending Mongoose Document.
- */
-export interface UserI extends Document {
-    email: string;
-    password: string;
-    firstName: string;
-    lastName: string;
-    telephone?: string;
-    comparePassword (candidatePassword: string): Promise<boolean>;
-}
 
-/**
- * User Schema Definition.
- */
 const userSchema = new Schema<UserI>({
     email: {
         type: String,
@@ -50,9 +37,7 @@ const userSchema = new Schema<UserI>({
     },
 });
 
-/**
- * Hash password before saving the user.
- */
+
 userSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();
 
@@ -68,9 +53,8 @@ userSchema.pre('save', async function (next) {
     }
 });
 
-/**
- * Compare a candidate password with the hashed password.
- */
+
+
 userSchema.methods.comparePassword = async function (
     candidatePassword: string
 ): Promise<boolean> {
@@ -82,8 +66,7 @@ userSchema.methods.comparePassword = async function (
     }
 };
 
-/**
- * Export the User Model.
- */
+
+
 const UserModel: Model<UserI> = mongoose.model<UserI>('User', userSchema);
 export default UserModel;
