@@ -17,18 +17,18 @@ export const setupSocket = (app: Express) => {
     }
   });
 
- /*  io.use((socket, next) => {
+  /* io.use((socket, next) => {
     console.log("Logging socket: ", socket);
     next();
-  });
- */
+  }); */
 
-  /* io.engine.on("connection_error", (err) => {
+
+  io.engine.on("connection_error", (err) => {
     console.log(err.req);      // the request object
     console.log(err.code);     // the error code, for example 1
     console.log(err.message);  // the error message, for example "Session ID unknown"
     console.log(err.context);  // some additional error context
-  }); */
+  });
 
   io.on("connection", (socket) => {
     console.log("Connected to " + socket.id);
@@ -52,6 +52,7 @@ export const setupSocket = (app: Express) => {
       });
 
     socket.on("join-share", async (id, cb) => {
+      console.log("Line 55");
       if (!id) return console.log("no id");
       const sanitizedId = id.replace(/[$/(){}]/g, "");
       const password = socket.handshake.auth.password;
