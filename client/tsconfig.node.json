@@ -1,28 +1,24 @@
 {
   "compilerOptions": {
-    "target": "ES2020",  // Adjust to ES2020 or ES2021 (ES2023 may not be supported)
-    "lib": ["ES2020", "DOM"],   // Adjust to ES2020 or ES2021 based on your needs
-    "module": "ESNext",  // Keep as "ESNext" unless you need compatibility with older module systems
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+    "target": "ES2022",
+    "lib": ["ES2023"],
+    "module": "ESNext",
     "skipLibCheck": true,
 
-    /* Module Resolution */
-    "moduleResolution": "node",  // "Bundler" is not valid, change to "node"
-    "isolatedModules": true,     // Useful if you're working with isolated modules (e.g., React or Vite)
-    "noEmit": true,              // Prevents emitting files (useful when using bundlers like Vite)
+    /* Bundler mode */
+    "moduleResolution": "Bundler",
+    "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "noEmit": true,
 
-    /* Linting and Strict Checks */
+    /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-
-    /* For incremental builds (if you want this feature) */
-    "incremental": true,   // Enable incremental builds to track changes and optimize builds
-    "composite": true,     // Enable composite projects if needed
-    "allowSyntheticDefaultImports": true,
-
-
-
+    "noUncheckedSideEffectImports": true
   },
-  "include": ["vite.config.ts"]  // Include your Vite configuration
+  "include": ["vite.config.ts"]
 }
