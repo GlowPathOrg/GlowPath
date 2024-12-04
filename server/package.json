@@ -2,11 +2,10 @@
   "name": "server",
   "version": "1.0.0",
   "main": "dist/index.js",
-  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsx -r dotenv/config index.ts",
-    "start": "DEBUG=* node -r dotenv/config dist/index.js",
+    "start": "node -r dotenv/config dist/index.js",
     "build": "tsc",
     "heroku-postbuild": "npm run build"
   },
