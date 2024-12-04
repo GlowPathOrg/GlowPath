@@ -2,7 +2,7 @@
   "name": "glowpath-app",
   "version": "1.0.0",
   "description": "Glowpath server and client app",
-  "main": "server/index.js",
+  "main": "server/dist/index.js",
   "scripts": {
     "start": "npm --prefix server run start",
     "build": "npm --prefix server run build",
