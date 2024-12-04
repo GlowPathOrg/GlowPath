@@ -27,10 +27,7 @@ const App: React.FC = () => {
  <Router basename={import.meta.env.BASE_URL}>
       <div className="app">
         {/* Global Navigation */}
-        <header>
-          <h1>GlowPath!</h1>
-        </header>
-
+        
         {/* Routes */}
         <main>
           <Routes>

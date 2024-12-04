@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/SettingsPage.css"
-import SosButton from "../../pages/journeyPage/SosButton"
 
 const SettingsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -17,8 +16,7 @@ const SettingsPage: React.FC = () => {
   // State for default SOS message
   const [sosMessage, setSosMessage] = useState<string>("Help me, I am in danger!");
 
-  // State for theme (light or dark)
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+  
 
   // Load saved settings on mount
   useEffect(() => {
@@ -38,69 +36,14 @@ const SettingsPage: React.FC = () => {
     alert("Settings saved successfully!");
   };
 
-  // Apply theme dynamically by toggling a CSS class
-  const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-    document.documentElement.setAttribute("data-theme", newTheme);
-  };
+  
 
   // Handle toggling of SOS options
   const handleToggle = (option: keyof typeof sosSettings) => {
     setSosSettings((prev) => ({ ...prev, [option]: !prev[option] }));
   };
 
-  // Handle SOS Button functionality
-  const handleSosClick = async () => {
-    if (sosSettings.notifyContacts && sosSettings.emergencyContacts.length > 0) {
-      try {
-        // Send real API request
-        const response = await fetch("http://localhost:3002/notify-contacts", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contacts: sosSettings.emergencyContacts,
-            message: sosMessage,
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to send SMS notifications.");
-        }
-
-        const result = await response.json();
-        alert(`SOS successfully sent to: ${sosSettings.emergencyContacts.join(", ")}`);
-        console.log("API Response:", result);
-      } catch (error) {
-        console.error("Error sending SOS message:", error);
-        alert("Failed to send SOS message. Please try again.");
-      }
-    } else if (sosSettings.notifyContacts) {
-      alert("No emergency contacts found!");
-    }
-
-    if (sosSettings.notifyNearbyUsers) {
-      await notifyNearbyUsers();
-    }
-
-    if (sosSettings.callAuthorities) {
-      callAuthorities();
-    }
-  };
-
-  // Notify nearby users (Mock for now)
-  const notifyNearbyUsers = async () => {
-    console.log("Notifying nearby SafeWalk users...");
-    alert("Notification sent to nearby users.");
-    return Promise.resolve();
-  };
-
-  // Call local authorities
-  const callAuthorities = () => {
-    console.log("Calling local authorities...");
-    alert("Calling emergency services...");
-    window.open("tel:112"); // Replace with the appropriate emergency number
-  };
+  
 
   return (
     <div className="settings-page">
@@ -147,12 +90,13 @@ const SettingsPage: React.FC = () => {
           onClick={() => navigate("/contact-manager")}
           style={{
             padding: "10px 20px",
-            backgroundColor: "blue",
+            backgroundColor: "#2f2f2f",
             color: "white",
             border: "none",
             borderRadius: "5px",
             cursor: "pointer",
           }}
+          className="emergency"
         >
           Manage Contacts
         </button>
@@ -182,13 +126,7 @@ const SettingsPage: React.FC = () => {
       </section>
 
       {/* Appearance Section */}
-      <section>
-        <h2>Appearance</h2>
-        <button className="theme-toggle-button" onClick={toggleTheme}>
-          Switch to {theme === "light" ? "Dark" : "Light"} Mode
-        </button>
-      </section>
-
+      
       <button className="save-button" onClick={saveSettings}>
         Save Settings
       </button>

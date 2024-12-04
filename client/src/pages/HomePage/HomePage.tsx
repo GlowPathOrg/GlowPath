@@ -39,7 +39,7 @@ const HomePage: React.FC = () => {
               placeholder="Search here"
               readOnly
             />
-           <img src="/public/search.svg" alt="Search Icon" className="button-icon" />
+           <img src="/search.svg" alt="Search Icon" className="button-icon" />
           </div>
         </div>
       )}

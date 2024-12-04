@@ -19,25 +19,26 @@ svg {
 }
 
 .map-container {
-  height: 80vh;
+  height: 85vh;
   width: 100%;
   border: 2px solid #4A464D; 
   border-radius: 10px; 
   overflow: hidden;
 }
 
+/* Map layer styling */
 .leaflet-layer {
   filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
 }
 
-
+/* Zoom controls styling */
 .leaflet-control-zoom-in,
 .leaflet-control-zoom-out {
   filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
-  background-color: rgba(0, 0, 0, 0.7); 
-  color: white; 
+  background-color: rgba(0, 0, 0, 0.7); /* Optional: darken controls */
+  color: white; /* Optional: ensure text/icon visibility */
   border: none;
-  border-radius: 4px; 
+  border-radius: 4px; /* Smooth edges */
 }
 
 /* Attribution styling */
@@ -51,6 +52,7 @@ svg {
 }
 
 
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .glowing-polyline {
@@ -62,7 +64,7 @@ svg {
   }
 
   .map-container {
-    height: 60vh; 
+    height: 85vh; 
     width: 95vw; 
   }
 }
@@ -77,7 +79,7 @@ svg {
   }
 
   .map-container {
-    height: 50vh; 
+    height: 80vh; 
     width: 100vw; 
   }
 }

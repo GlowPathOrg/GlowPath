@@ -36,7 +36,7 @@ const JourneyPage: React.FC = () => {
     route: initialRoute = [],
     summary: initialSummary = { distance: 0, duration: 0 },
     instructions: initialInstructions = [],
-    theme: initialTheme = "standard",
+    theme: initialTheme = "dark",
     transportMode = "pedestrian",
     destinationCoords = null,
   } = location.state || {};
@@ -89,10 +89,14 @@ const JourneyPage: React.FC = () => {
     }
   }, [latitude, longitude, currentRoute]);
 
+
+
   const handleSOSActivated = () => {
     console.log('SOS button activated on Journey Page!');
 
   };
+
+
   // Handle rerouting if the user deviates from the route
   const handleReroute = useCallback(async () => {
 
