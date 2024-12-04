@@ -7,6 +7,7 @@ import shareRoutes from "./routes/shareRoutes.js";
 import { mongooseConnect, DBConnect } from "./models/index.js";
 import routeApiRouter from "./routes/routingRoutes.js";
 import routingRoutes from "./routes/routingRoutes.js";
+
 dotenv.config()
 const app = express();
 const SERVER_PORT = process.env.SERVER_PORT || 3002;
