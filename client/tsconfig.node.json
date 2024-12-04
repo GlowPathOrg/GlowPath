@@ -22,6 +22,7 @@
     "allowSyntheticDefaultImports": true,
 
 
+
   },
   "include": ["vite.config.ts"]  // Include your Vite configuration
 }
