@@ -177,7 +177,7 @@ useEffect(() => {
       const route: RouteI = {polyline: currentRoute, instructions: currentInstructions, summary: currentSummary};
       console.log('sharing' , route)
       const result = await createShare(route);
-      console.log(`UPDATED PAGE:  https://glowpathorg.github.io/GlowPath/observe/${result.data.id}?password=${result.data.password}`)
+      console.log(`UPDATED PAGE:  ${import.meta.env.BASE_URL}/observe/${result.data.id}?password=${result.data.password}`)
       setShareId(result.data.id);
       const data = {
         title: "Shared Location",

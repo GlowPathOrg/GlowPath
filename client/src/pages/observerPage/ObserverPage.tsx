@@ -10,7 +10,6 @@ const ObserverPage = () => {
   const [route, setRoute] = useState<RouteI>({polyline: [], instructions: [], summary: {duration: 0, length: 0}});
   const [searchParams] = useSearchParams();
   const { id } = useParams() || "";
- 
   const password = searchParams.get("password") || "";
 
   const { isConnected, connectSocket, position, error, joinShare } = useSocket({
@@ -18,7 +17,7 @@ const ObserverPage = () => {
   });
 
   // Fetch shared route on component load
-  useEffect(() => {
+ /*  useEffect(() => {
     const fetchRoute = async () => {
       if (!id || !password) return;
       try {
@@ -33,7 +32,7 @@ const ObserverPage = () => {
     };
 
     fetchRoute();
-  }, [id, password]);
+  }, [id, password]); */
 
   // Connect to WebSocket and join the share room
   useEffect(() => {
