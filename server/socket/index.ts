@@ -91,7 +91,7 @@ export const setupSocket = (app: Express) => {
 
         socket.data.room = sanitizedId;
         socket.join(sanitizedId);
-        console.log(`[${socket.id}] Joined room: ${sanitizedId}`);
+        console.log(`${socket.id} Joined room: ${sanitizedId}`);
         cb && cb("Successfully joined the room.");
       } catch (err) {
         console.error(`[${socket.id}] Error in join-share:`, err);
@@ -100,15 +100,20 @@ export const setupSocket = (app: Express) => {
     });
 
 
-    socket.on("position", (position) => {
+    socket.on("position", ({ position, route }) => {
       const room = socket.data.room;
       if (!room) {
         console.error(`[${socket.id}] No room associated. Cannot emit position.`);
         return;
       }
-      console.log(`[${socket.id}] Sending position to room ${room}:`, position);
-      socket.to(room).emit("position", position);
+
+      console.log(`[${socket.id}] Sending position and route to room ${room}:`, {
+        position,
+        route,
+      });
+      socket.to(room).emit("position", { position, route });
     });
+
 
     /**
      * Helper function to sanitize IDs
