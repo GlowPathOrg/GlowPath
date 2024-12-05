@@ -24,7 +24,8 @@ concurrency:
 
 #Allow repo secrets
 env:
-  VITE_HERE_API_KEY: ${{ secrets.VITE_HERE_API_KEY }}
+  VITE_BACKEND_URL: "https://glowpath-a7681fe09c29.herokuapp.com"
+  VITE_WEATHER_API_KEY: ${{ secrets.VITE_WEATHER_API_KEY }}
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:

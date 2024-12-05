@@ -1,0 +1,128 @@
+:root {
+    --background-color: #232323; /* Dark background */
+    --text-color: #ffffff; /* White text */
+    --highlight-color: #ff0066; /* Pink highlights */
+    --button-background: #2f2f2f; /* Button background */
+    --button-hover: #4a464d; /* Lighter hover effect */
+    --input-background: #2b2b2b; /* Input background */
+    --input-border: #4a464d; /* Input border */
+    --input-text-color: #ffffff; /* Input text color */
+    --card-background: #2b2b2b; /* Card background */
+    --danger-color: #ff4d4d; /* Red for danger actions */
+  }
+  
+
+  
+  .contact-manager-page {
+    padding: 20px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .contact-manager-page h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+    color: var(--highlight-color);
+  }
+  
+ 
+  .contact-input-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  
+  .contact-input-container input {
+    padding: 10px;
+    width: 300px;
+    margin-right: 10px;
+    background-color: var(--input-background);
+    border: 1px solid var(--input-border);
+    border-radius: 5px;
+    color: var(--input-text-color);
+    transition: background-color 0.3s ease, border 0.3s ease, color 0.3s ease;
+  }
+  
+  .contact-input-container input::placeholder {
+    color: #aaa;
+  }
+  
+  .contact-input-container button {
+    padding: 10px 20px;
+    background-color: var(--highlight-color);
+    color: var(--text-color);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .contact-input-container button:hover {
+    background-color: #ff3399;
+    transform: scale(1.05);
+  }
+  
+  
+  .contact-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .contact-list-item {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--card-background);
+    border: 1px solid var(--input-border);
+    padding: 10px;
+    border-radius: 5px;
+    width: 100%;
+    max-width: 400px;
+    color: var(--text-color);
+    transition: background-color 0.3s ease, border 0.3s ease;
+  }
+  
+  .contact-list-item button {
+    padding: 5px 10px;
+    background-color: var(--danger-color);
+    color: var(--text-color);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .contact-list-item button:hover {
+    background-color: #ff6666;
+    transform: scale(1.05);
+  }
+  
+  
+  .back-button {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: var(--button-background);
+    color: var(--text-color);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    text-align: center;
+  }
+  
+  .back-button:hover {
+    background-color: var(--button-hover);
+    transform: scale(1.05);
+  }
