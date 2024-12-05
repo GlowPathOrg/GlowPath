@@ -182,7 +182,7 @@ useEffect(() => {
       const data = {
         title: "Shared Location",
         text: "Please follow the link to access the shared location",
-        url: import.meta.env.BASE_URL + "/share/" + result.data.id + "?password=" + result.data.password
+        url: import.meta.env.BASE_URL + "/observe/" + result.data.id + "?password=" + result.data.password
       };
       if ("share" in navigator) {
         await navigator.share(data);
