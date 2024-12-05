@@ -100,7 +100,7 @@ export const setupSocket = (app: Express) => {
     });
 
 
-    socket.on("position", ({ position, route }) => {
+    socket.on("position", (position) => {
       const room = socket.data.room;
       if (!room) {
         console.error(`[${socket.id}] No room associated. Cannot emit position.`);
@@ -108,10 +108,9 @@ export const setupSocket = (app: Express) => {
       }
 
       console.log(`[${socket.id}] Sending position and route to room ${room}:`, {
-        position,
-        route,
+        position
       });
-      socket.to(room).emit("position", { position, route });
+      socket.to(room).emit("position", position);
     });
 
 
