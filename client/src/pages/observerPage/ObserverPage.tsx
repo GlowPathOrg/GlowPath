@@ -10,7 +10,7 @@ const ObserverPage = () => {
   const [route, setRoute] = useState<RouteI>({polyline: [], instructions: [], summary: {duration: 0, length: 0}});
   const [searchParams] = useSearchParams();
   const { id } = useParams() || "";
-  const { id } = useParams() || "";
+ 
   const password = searchParams.get("password") || "";
 
   const { isConnected, connectSocket, position, error, joinShare } = useSocket({
