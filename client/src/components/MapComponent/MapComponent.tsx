@@ -17,6 +17,7 @@ import FitBounds from "./FitBounds";
 import { InstructionsI, SummaryI } from "../../Types/Route";
 import SosButton from "../../pages/journeyPage/SosButton";
 
+
 export interface MapComponentProps {
   latitude: number | null; // User's latitude
   longitude: number | null; // User's longitude
@@ -122,7 +123,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
           <Polyline
             key={`sidewalk-${index}`}
             positions={sidewalk.geometry.map(({ lat, lon }) => latLng(lat, lon))}
-            color="green"
+            color="pink"
           />
         ))}
 

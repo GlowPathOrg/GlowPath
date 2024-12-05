@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import MapComponent from "../../components/MapComponent/MapComponent";
 import ProgressBar from "./ProgressBar";
-import SosButton from "./SosButton";
+
 import AlarmButton from "./AlarmButton";
 import WeatherInfo from "./WeatherInfo";
 import { PositionI, usePosition } from "../../hooks/usePosition";
@@ -19,6 +19,8 @@ import { useSocket } from "../../hooks/useSocket";
 import { TbNavigationCancel } from "react-icons/tb";
 import Footer from "../../components/Footer"
 import { MdEmergencyShare } from "react-icons/md";
+import { MdOutlineAltRoute } from "react-icons/md";
+
 
 
 
@@ -101,10 +103,7 @@ const JourneyPage: React.FC = () => {
 
 
 
-  const handleSOSActivated = () => {
-    console.log('SOS button activated on Journey Page!');
-
-  };
+  
 
   // Handle rerouting if the user deviates from the route
   const handleReroute = useCallback(async () => {
@@ -260,7 +259,7 @@ useEffect(() => {
       < ProgressBar progress={rerouted ? 75 : 50} />
 
       <div className="features-container" >
-        <SosButton onSOSActivated={handleSOSActivated} />
+       
         < AlarmButton />
         <MdEmergencyShare
           onClick={handleShare}
@@ -299,7 +298,12 @@ useEffect(() => {
             }
           </select>
         </div>
-        <button onClick={handleReroute}>REROUTE!</button>
+        <MdOutlineAltRoute className="reroute" onClick={handleReroute} style={{
+          fontSize: "40px",
+          color: "#EBEBEB",
+          cursor: "pointer",
+          transition: "transform 0.2s ease",
+        }} title="Cancel Journey" />
       </div>
 
       < WeatherInfo />
