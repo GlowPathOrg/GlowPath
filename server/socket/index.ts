@@ -14,10 +14,10 @@ export const setupSocket = (app: Express) => {
   const server = createServer(app);
   const io = new Server(server, {
     cors: {
-      origin: [
+      origin: "*"/* [
         "http://localhost:5173", // Local development
-        "https://glowpathorg.github.io/GlowPath/", // Live link
-      ],
+        "https://glowpathorg.github.io/GlowPath", // Live link
+      ], */
     },
     connectionStateRecovery: {
       maxDisconnectionDuration: 2 * 60 * 1000,
@@ -37,6 +37,7 @@ export const setupSocket = (app: Express) => {
     } else {
       console.log("New session for socket:", socket.id);
     }
+
 
     socket.on("host-share", async (id) => {
       try {
@@ -61,7 +62,7 @@ export const setupSocket = (app: Express) => {
           console.error(`[${socket.id}] Unauthorized.`);
           return;
         }
-
+        // saving room id - this was why it wasn't connecting to the front end
         socket.data.room = sanitizedId;
         socket.join(sanitizedId);
         console.log(`[${socket.id}] Hosted and joined room: ${sanitizedId}`);
@@ -69,6 +70,7 @@ export const setupSocket = (app: Express) => {
         console.error(`[${socket.id}] Error in host-share:`, err);
       }
     });
+
 
     socket.on("join-share", async (id, cb) => {
       try {
@@ -89,7 +91,7 @@ export const setupSocket = (app: Express) => {
 
         socket.data.room = sanitizedId;
         socket.join(sanitizedId);
-        console.log(`[${socket.id}] Joined room: ${sanitizedId}`);
+        console.log(`${socket.id} Joined room: ${sanitizedId}`);
         cb && cb("Successfully joined the room.");
       } catch (err) {
         console.error(`[${socket.id}] Error in join-share:`, err);
@@ -97,15 +99,21 @@ export const setupSocket = (app: Express) => {
       }
     });
 
-    socket.on("position", (position) => {
+
+    socket.on("position", ({ position, route }) => {
       const room = socket.data.room;
       if (!room) {
         console.error(`[${socket.id}] No room associated. Cannot emit position.`);
         return;
       }
-      console.log(`[${socket.id}] Sending position to room ${room}:`, position);
-      socket.to(room).emit("position", position);
+
+      console.log(`[${socket.id}] Sending position and route to room ${room}:`, {
+        position,
+        route,
+      });
+      socket.to(room).emit("position", { position, route });
     });
+
 
     /**
      * Helper function to sanitize IDs
@@ -118,4 +126,3 @@ export const setupSocket = (app: Express) => {
 
   return server;
 };
-

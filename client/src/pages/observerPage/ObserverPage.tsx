@@ -10,29 +10,41 @@ const ObserverPage = () => {
   const [route, setRoute] = useState<RouteI>({polyline: [], instructions: [], summary: {duration: 0, length: 0}});
   const [searchParams] = useSearchParams();
   const { id } = useParams() || "";
+  const { id } = useParams() || "";
   const password = searchParams.get("password") || "";
 
+  const { isConnected, connectSocket, position, error, joinShare } = useSocket({
+    password,
+  });
 
-  const {
-    isConnected,
-    connectSocket,
-    position,
-    error,
-    joinShare,
-  } = useSocket({ password });
+  // Fetch shared route on component load
+  useEffect(() => {
+    const fetchRoute = async () => {
+      if (!id || !password) return;
+      try {
+        const result: PartialShare = await accessShare(id as string, password);
+        if (result?.data?.route) {
+          console.log("Fetched route from API:", result.data.route);
+          setRoute(result.data.route);
+        }
+      } catch (err) {
+        console.error("Error fetching route:", err);
+      }
+    };
 
-  useEffect(() => { if (!position) { console.log('not receiving position yet') } else console.log('position in observer page is ', position.latitude) }, [position])
+    fetchRoute();
+  }, [id, password]);
 
+  // Connect to WebSocket and join the share room
   useEffect(() => {
     connectSocket();
     if (id) joinShare(id);
   }, [connectSocket, id, joinShare]);
 
+  // Log WebSocket connection status and position updates
   useEffect(() => {
-    if (id && isConnected) {
-      console.log("You are connected and have an id!" + id);
-
-      //  joinShare(id);
+    if (isConnected) {
+      console.log(`Connected to WebSocket with ID: ${id}`);
     }
   }, [id, isConnected]);
 
@@ -65,7 +77,6 @@ const ObserverPage = () => {
         ) : (
           "Waiting for position updates..."
         )}
-
       </p>
      {position && route ? (
       <>
@@ -90,6 +101,6 @@ const ObserverPage = () => {
 }
     </div>
   );
-}
+};
 
-export default ObserverPage;
+export default ObserverPage

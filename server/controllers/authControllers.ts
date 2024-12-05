@@ -113,7 +113,7 @@ export const editController = async (req: Request, res: Response): Promise<void 
     }
     catch (error) {
 
-        res.status(500).json({ error: `Server error in register controller:` + error })
+        res.status(500).json({ error: `Server error in edit controller:` + error })
 
     }
 }

@@ -1,6 +1,6 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { Request, Response, NextFunction, } from "express";
-import UserModel from "../models/User.js";
+import UserModel from "../models/UserModel.js";
 import dotenv from 'dotenv';
 import { UserI } from "../Types/User.js";
 
