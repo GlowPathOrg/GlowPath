@@ -1,4 +1,4 @@
-###GlowPath
+##GlowPath
 GlowPath is a progressive web application designed to enhance user safety by allowing real-time location sharing with trusted contacts and enabling instant alerts to contacts or authorities via an SOS button.
 
 
