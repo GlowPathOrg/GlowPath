@@ -1,5 +1,5 @@
 .glowing-polyline {
-  stroke:pink; 
+  stroke:rgb(255, 192, 203); 
   stroke-width: 4px; 
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -12,7 +12,7 @@ svg {
 }
 
 .glow {
-  stroke: pink;
+  stroke: rgb(255, 192, 203);
   stroke-width: 10px;
   stroke-linecap: round;
   stroke-linejoin: round;

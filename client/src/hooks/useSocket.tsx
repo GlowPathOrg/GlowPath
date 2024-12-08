@@ -49,9 +49,11 @@ export const useSocket = ({ password }: { password?: string }) => {
     }
   }
 
+ 
   function sendPosition (position: PositionI) {
     if (!position) {
       console.warn("No position to send!");
+
       return;
     }
 

@@ -4,247 +4,182 @@ import { useLoginStatus } from "../../hooks/userLogin";
 import { editProfile } from "../../services/authService";
 
 const InfoComponent: React.FC = () => {
-    const { userData, handleLogin } = useLoginStatus();
-    const [editMode, setEditMode] = useState(false);
-    const [showModal, setShowModal] = useState(false);
-   const [reenteredPassword, setReenteredPassword] = useState("");
-    const [errorMessage, setErrorMessage] = useState("");
-    const [fieldBeingEdited, setFieldBeingEdited] = useState<string | null>(null);
-    const [formData, setFormData] = useState({
-        firstName: userData?.firstName || "",
-        lastName: userData?.lastName || "",
-        email: userData?.email || "",
-        password: userData?.password || "",
-        telephone: userData?.telephone || "",
+  const { userData, handleLogin } = useLoginStatus();
+  const [editMode, setEditMode] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [reenteredPassword, setReenteredPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [formData, setFormData] = useState({
+    firstName: userData?.firstName || "",
+    lastName: userData?.lastName || "",
+    email: userData?.email || "",
+    password: "",
+    telephone: userData?.telephone || "",
+  });
+
+  useEffect(() => {
+    // Load user data from local storage or userData
+    const storedUserData = localStorage.getItem("userData");
+    if (storedUserData) {
+      setFormData(JSON.parse(storedUserData));
+    } else if (userData) {
+      setFormData({
+        firstName: userData.firstName || "",
+        lastName: userData.lastName || "",
+        email: userData.email || "",
+        password: "",
+        telephone: userData.telephone || "",
+      });
+    }
+  }, [userData]);
+
+  const toggleEditMode = () => {
+    setEditMode(!editMode);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
     });
+  };
 
-    useEffect(() => {
-        if (userData) {
-            setFormData({
-                firstName: userData.firstName || "",
-                lastName: userData.lastName || "",
-                email: userData.email || "",
-                password: userData.password || "",
-                telephone: userData.telephone || "",
-            });
-        }
-    }, [userData]);
+  const handleSaveField = async (fieldName: string) => {
+    try {
+      const payload = {
+        [fieldName]: formData[fieldName as keyof typeof formData],
+        _id: userData?._id || "",
+      };
 
-    const toggleEditMode = () => {
-        setEditMode(!editMode);
-    };
+      // If editing password, show the modal
+      if (fieldName === "password") {
+        setShowModal(true);
+        return;
+      }
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value,
-        });
-    };
+      const response = await editProfile(payload, handleLogin);
+      if (response) {
+        console.log("Profile updated successfully!");
+        const updatedUserData = {
+          ...formData,
+          [fieldName]: formData[fieldName as keyof typeof formData],
+        };
+        localStorage.setItem("userData", JSON.stringify(updatedUserData));
+        setFormData(updatedUserData);
+        setEditMode(false);
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      setErrorMessage("Failed to update profile. Please try again.");
+    }
+  };
 
-    const handleSaveField = (fieldName: string) => {
-        setFieldBeingEdited(fieldName);
+  const handleReenteredPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setReenteredPassword(e.target.value);
+  };
 
-        if (fieldName === "password") {
-            // Show the modal only for password changes
-            setShowModal(true);
-        } else {
-            // Directly submit data for other fields
-            submitData(fieldName);
-        }
-    };
+  const submitPasswordChange = async () => {
+    try {
+      const payload = {
+        password: reenteredPassword,
+        _id: userData?._id || "",
+      };
 
-    const handleReenteredPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setReenteredPassword(e.target.value);
-    };
+      const response = await editProfile(payload, handleLogin);
+      if (response) {
+        console.log("Password updated successfully!");
+        localStorage.setItem("userData", JSON.stringify({ ...formData, password: "" }));
+        setFormData({ ...formData, password: "" });
+        setShowModal(false);
+      }
+    } catch (error) {
+      console.error("Error updating password:", error);
+      setErrorMessage("Failed to update password. Please try again.");
+    }
+    setReenteredPassword("");
+  };
 
-    const submitData = async (fieldName: string) => {
-        if (!userData) return;
+  const handleCancel = () => {
+    // Reset form data to the original state
+    const storedUserData = localStorage.getItem("userData");
+    if (storedUserData) {
+      setFormData(JSON.parse(storedUserData));
+    }
+    setEditMode(false);
+  };
 
-        try {
-            const payload: {
-                [key in keyof typeof formData]?: string;
-            } & { _id: string } = {
-                [fieldName]: formData[fieldName as keyof typeof formData],
-                _id: userData._id,
-
-            };
-
-            if (fieldName === "password") {
-                payload.password = reenteredPassword;
-            }
-
-            await editProfile(payload, handleLogin);
-
-            console.log("Profile updated successfully!");
-            setShowModal(false);
-            setFieldBeingEdited(null);
-            setEditMode(false);
-            setErrorMessage('')
-        } catch (error) {
-            console.error("Error updating profile:", error);
-            setErrorMessage("Failed to update profile. Please try again.");
-        }
-
-        setReenteredPassword("");
-    };
-
-    return (
-        <div className="settings-comp">
-            {!editMode ? (
-                <>
-                    <table className="info-table">
-                        <tbody>
-                            <tr>
-                                <td><strong>First Name:</strong></td>
-                                <td>{userData && userData.firstName}</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Last Name:</strong></td>
-                                <td>{userData && userData.lastName}</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Email:</strong></td>
-                                <td>{userData && userData.email}</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Password:</strong></td>
-                                <td>{userData && userData.password}</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Phone:</strong></td>
-                                <td>{userData && userData.telephone}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <button className="edit-info-button" onClick={toggleEditMode}>
-                        Edit Information
-                    </button>
-                </>
-            ) : (
-                <div className="info-form">
-                    {/* First Name Field */}
-                    <div className="form-group">
-                        <label htmlFor="firstName"><strong>First Name:</strong></label>
-                        <input
-                            type="text"
-                            id="firstName"
-                            name="firstName"
-                            value={formData.firstName}
-                            onChange={handleInputChange}
-                        />
-                        <button
-                            className="save-info-button"
-                            type="button"
-                            onClick={() => handleSaveField("firstName")}
-                        >
-                            Save First Name
-                        </button>
-                    </div>
-
-                    {/* Last Name Field */}
-                    <div className="form-group">
-                        <label htmlFor="lastName"><strong>Last Name:</strong></label>
-                        <input
-                            type="text"
-                            id="lastName"
-                            name="lastName"
-                            value={formData.lastName}
-                            onChange={handleInputChange}
-                        />
-                        <button
-                            className="save-info-button"
-                            type="button"
-                            onClick={() => handleSaveField("lastName")}
-                        >
-                            Save Last Name
-                        </button>
-                    </div>
-
-                    {/* Email Field */}
-                    <div className="form-group">
-                        <label htmlFor="email"><strong>Email:</strong></label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleInputChange}
-                        />
-                        <button
-                            className="save-info-button"
-                            type="button"
-                            onClick={() => handleSaveField("email")}
-                        >
-                            Save Email
-                        </button>
-                    </div>
-
-                    {/* Password Field */}
-                    <div className="form-group">
-                        <label htmlFor="password"><strong>Password:</strong></label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleInputChange}
-                        />
-                        <button
-                            className="save-info-button"
-                            type="button"
-                            onClick={() => handleSaveField("password")}
-                        >
-                            Save Password
-                        </button>
-                    </div>
-
-                    {/* Phone Field */}
-                    <div className="form-group">
-                        <label htmlFor="telephone"><strong>Phone:</strong></label>
-                        <input
-                            type="tel"
-                            id="telephone"
-                            name="telephone"
-                            value={formData.telephone}
-                            onChange={handleInputChange}
-                        />
-                        <button
-                            className="save-info-button"
-                            type="button"
-                            onClick={() => handleSaveField("telephone")}
-                        >
-                            Save Phone
-                        </button>
-                    </div>
-                        <button onClick={() => setEditMode(false)}>
-                            Cancel
-                        </button>
-                </div>
-            )}
-            {showModal && (
-                <div className="modal-backdrop">
-                    <div className="modal">
-                        <h3>Confirm Your Password</h3>
-                        <p>Please re-enter your password to confirm changes:</p>
-                        <input
-                            type="password"
-                            value={reenteredPassword}
-                            onChange={handleReenteredPasswordChange}
-                            placeholder="Re-enter password"
-                        />
-                        {errorMessage && <p className="error">{errorMessage}</p>}
-                        <button className="confirm-button" onClick={() => submitData(fieldBeingEdited!)}>
-                            Confirm
-                        </button>
-                        <button className="cancel-button" onClick={() => setShowModal(false)}>
-                            Cancel
-                        </button>
-                    </div>
-                </div>
-            )}
-           </div>
-    );
+  return (
+    <div className="settings-comp">
+      {!editMode ? (
+        <>
+          <table className="info-table">
+            <tbody>
+              <tr>
+                <td><strong>First Name:</strong></td>
+                <td>{formData.firstName}</td>
+              </tr>
+              <tr>
+                <td><strong>Last Name:</strong></td>
+                <td>{formData.lastName}</td>
+              </tr>
+              <tr>
+                <td><strong>Email:</strong></td>
+                <td>{formData.email}</td>
+              </tr>
+              <tr>
+                <td><strong>Phone:</strong></td>
+                <td>{formData.telephone}</td>
+              </tr>
+            </tbody>
+          </table>
+          <button className="edit-info-button" onClick={toggleEditMode}>
+            Edit Information
+          </button>
+        </>
+      ) : (
+        <div className="info-form">
+          {["firstName", "lastName", "email", "telephone"].map((field) => (
+            <div key={field} className="form-group">
+              <label htmlFor={field}><strong>{field.charAt(0).toUpperCase() + field.slice(1)}:</strong></label>
+              <input
+                type="text"
+                id={field}
+                name={field}
+                value={formData[field as keyof typeof formData]}
+                onChange={handleInputChange}
+              />
+              <button onClick={() => handleSaveField(field)}>Save</button>
+            </div>
+          ))}
+          <button className="cancel-button" onClick={handleCancel}>
+            Cancel
+          </button>
+        </div>
+      )}
+      {showModal && (
+        <div className="modal-backdrop">
+          <div className="modal">
+            <h3>Confirm Your Password</h3>
+            <p>Please re-enter your password to confirm changes:</p>
+            <input
+              type="password"
+              value={reenteredPassword}
+              onChange={handleReenteredPasswordChange}
+              placeholder="Re-enter password"
+            />
+            {errorMessage && <p className="error">{errorMessage}</p>}
+            <button className="confirm-button" onClick={submitPasswordChange}>
+              Confirm
+            </button>
+            <button className="cancel-button" onClick={() => setShowModal(false)}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default InfoComponent;

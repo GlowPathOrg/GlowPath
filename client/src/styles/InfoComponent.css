@@ -86,3 +86,258 @@
 .theme-toggle-button:hover {
     background-color: black;
 }
+
+/* Info Form Styling */
+.info-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* Form Group */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.form-group input {
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+}
+
+/* Buttons */
+button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+  transform: scale(1.03);
+}
+
+.cancel-button {
+  background-color: #dc3545;
+}
+
+.cancel-button:hover {
+  background-color: #c82333;
+}
+
+/* Modal Styling */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+}
+
+.modal h3 {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.modal p {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 1rem;
+}
+
+.modal input {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+}
+
+.modal input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+}
+
+.modal .confirm-button {
+  background-color: #28a745;
+}
+
+.modal .confirm-button:hover {
+  background-color: #218838;
+}
+
+/* Info Form Styling */
+.info-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background-color: #232323; /* Black background */
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  
+  /* Form Group */
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .form-group label {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #f5f5f5; /* Light grey text */
+  }
+  
+  .form-group input {
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: 1px solid #4a464d; /* Dark grey border */
+    border-radius: 5px;
+    background-color: #2c2c2c; /* Darker grey input background */
+    color: #f5f5f5; /* Light grey text */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .form-group input:focus {
+    outline: none;
+    border-color: #ff3c99; /* Pink highlight */
+    box-shadow: 0 0 4px rgba(255, 60, 153, 0.5); /* Subtle pink glow */
+  }
+  
+  /* Buttons */
+  button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #f5f5f5; /* Light grey text */
+    background-color: #4a464d; /* Grey button background */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  button:hover {
+    background-color: #ff3c99; /* Pink hover */
+    transform: scale(1.03);
+  }
+  
+  .cancel-button {
+    background-color: #6c757d; /* Grey cancel button */
+  }
+  
+  .cancel-button:hover {
+    background-color: #5a6268; /* Darker grey */
+  }
+  
+  /* Modal Styling */
+  .modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8); /* Darker backdrop */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal {
+    background-color: #2c2c2c; /* Dark grey modal background */
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  .modal h3 {
+    font-size: 1.5rem;
+    color: #f5f5f5; /* Light grey text */
+    margin-bottom: 1rem;
+  }
+  
+  .modal p {
+    font-size: 1rem;
+    color: #dcdcdc; /* Grey text */
+    margin-bottom: 1rem;
+  }
+  
+  .modal input {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: 1px solid #4a464d; /* Dark grey border */
+    border-radius: 5px;
+    background-color: #2c2c2c; /* Dark grey background */
+    color: #f5f5f5; /* Light grey text */
+    margin-bottom: 1rem;
+  }
+  
+  .modal input:focus {
+    outline: none;
+    border-color: #ff3c99; /* Pink highlight */
+    box-shadow: 0 0 4px rgba(255, 60, 153, 0.5); /* Pink glow */
+  }
+  
+  .modal .confirm-button {
+    background-color: #4a464d; /* Grey confirm button */
+  }
+  
+  .modal .confirm-button:hover {
+    background-color: #ff3c99; /* Pink hover */
+  }
