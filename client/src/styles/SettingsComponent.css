@@ -1,0 +1,161 @@
+/* General page styles */
+.settings-page {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .settings-page h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2rem;
+  }
+  
+  .settings-page section {
+    margin-bottom: 30px;
+    padding: 15px;
+    border: 1px solid var(--button-background);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Section headings */
+  .settings-page h2 {
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+    text-align: center;
+    border-bottom: 2px solid var(--button-background);
+    padding-bottom: 5px;
+  }
+  
+  /* Inputs and labels */
+  .settings-page label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  
+  .settings-page input[type="checkbox"] {
+    margin-right: 10px;
+    transform: scale(1.2);
+    cursor: pointer;
+  }
+  
+  /* Emergency contacts */
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  ul li {
+    margin: 5px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  ul li button {
+    padding: 5px 10px;
+    font-size: 0.9rem;
+    background-color: var(--button-background);
+    color: var(--button-color);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  ul li button:hover {
+    opacity: 0.8;
+  }
+  
+  /* SOS Button styles */
+  .sos-button {
+    display: block;
+    margin: 20px auto;
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--text-color);
+    background-color: red;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+  }
+  
+  .sos-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Theme Toggle Button */
+  .theme-toggle-button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    background-color: var(--button-background);
+    color: var(--button-color);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .theme-toggle-button:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+  
+  /* Root variables for themes */
+  :root {
+    --background-color: #ffffff;
+    --text-color: #000000;
+    --button-background: #e0e0e0;
+    --button-color: #000000;
+  }
+  
+  [data-theme='dark'] {
+    --background-color: #121212;
+    --text-color: #ffffff;
+    --button-background: #333333;
+    --button-color: #ffffff;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .settings-page h1 {
+      font-size: 1.8rem;
+    }
+  
+    .settings-page h2 {
+      font-size: 1.3rem;
+    }
+  
+    ul li button {
+      padding: 5px;
+    }
+  
+    .sos-button {
+      padding: 10px 20px;
+      font-size: 1rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .settings-page {
+      padding: 10px;
+    }
+  
+    .settings-page h1 {
+      font-size: 1.5rem;
+    }
+  
+    .sos-button {
+      font-size: 0.9rem;
+    }
+  }
