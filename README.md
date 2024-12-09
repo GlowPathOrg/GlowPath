@@ -77,9 +77,9 @@ Contributions, issues, and feature requests are welcome!
 Feel free to check the issues page or submit a pull request.
 
 ## Authors:
-Hadil Ben Koura [linkedIn](www.linkedin.com/in/hadil-benkoura)
-Mellissa Cessna
-Jonas Rinderlin
+- Hadil Ben Koura - linkedIn:www.linkedin.com/in/hadil-benkoura
+- Mellissa Cessna
+- Jonas Rinderlin
 
 Enjoy using GlowPath, and stay safe! 🚶‍♂️🛡️
 
