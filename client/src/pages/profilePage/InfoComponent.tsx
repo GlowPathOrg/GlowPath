@@ -1,34 +1,34 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "../../styles/InfoComponent.css";
-import { useLoginStatus } from "../../hooks/userLogin";
+import { AuthContext } from "../../contexts/UserContext";
 import { editProfile } from "../../services/authService";
 
 const InfoComponent: React.FC = () => {
-    const { userData, handleLogin } = useLoginStatus();
+    const { user, handleLogin } = useContext(AuthContext);
     const [editMode, setEditMode] = useState(false);
     const [showModal, setShowModal] = useState(false);
    const [reenteredPassword, setReenteredPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const [fieldBeingEdited, setFieldBeingEdited] = useState<string | null>(null);
     const [formData, setFormData] = useState({
-        firstName: userData?.firstName || "",
-        lastName: userData?.lastName || "",
-        email: userData?.email || "",
-        password: userData?.password || "",
-        telephone: userData?.telephone || "",
+        firstName: user?.firstName || "",
+        lastName: user?.lastName || "",
+        email: user?.email || "",
+        password: user?.password || "",
+        telephone: user?.telephone || "",
     });
 
     useEffect(() => {
-        if (userData) {
+        if (user) {
             setFormData({
-                firstName: userData.firstName || "",
-                lastName: userData.lastName || "",
-                email: userData.email || "",
-                password: userData.password || "",
-                telephone: userData.telephone || "",
+                firstName: user.firstName || "",
+                lastName: user.lastName || "",
+                email: user.email || "",
+                password: user.password || "",
+                telephone: user.telephone || "",
             });
         }
-    }, [userData]);
+    }, [user]);
 
     const toggleEditMode = () => {
         setEditMode(!editMode);
@@ -59,14 +59,14 @@ const InfoComponent: React.FC = () => {
     };
 
     const submitData = async (fieldName: string) => {
-        if (!userData) return;
+        if (!user) return;
 
         try {
             const payload: {
                 [key in keyof typeof formData]?: string;
             } & { _id: string } = {
                 [fieldName]: formData[fieldName as keyof typeof formData],
-                _id: userData._id,
+                _id: user._id,
 
             };
 
@@ -97,23 +97,23 @@ const InfoComponent: React.FC = () => {
                         <tbody>
                             <tr>
                                 <td><strong>First Name:</strong></td>
-                                <td>{userData && userData.firstName}</td>
+                                <td>{user && user.firstName}</td>
                             </tr>
                             <tr>
                                 <td><strong>Last Name:</strong></td>
-                                <td>{userData && userData.lastName}</td>
+                                <td>{user && user.lastName}</td>
                             </tr>
                             <tr>
                                 <td><strong>Email:</strong></td>
-                                <td>{userData && userData.email}</td>
+                                <td>{user && user.email}</td>
                             </tr>
                             <tr>
                                 <td><strong>Password:</strong></td>
-                                <td>{userData && userData.password}</td>
+                                <td>{user && user.password}</td>
                             </tr>
                             <tr>
                                 <td><strong>Phone:</strong></td>
-                                <td>{userData && userData.telephone}</td>
+                                <td>{user && user.telephone}</td>
                             </tr>
                         </tbody>
                     </table>

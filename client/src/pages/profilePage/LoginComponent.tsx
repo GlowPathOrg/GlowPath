@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { login } from "../../services/authService";
-import { useLoginStatus } from "../../hooks/userLogin";
+import { AuthContext } from "../../contexts/UserContext";
 import "../../styles/RegisterComponent.css"; // Reuse the same styles
 
 interface LoginComponentProps {
@@ -11,7 +11,7 @@ const LoginPage: React.FC<LoginComponentProps> = ({ setViewOption }) => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [message, setMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const { handleLogin } = useLoginStatus();
+  const { handleLogin } = useContext(AuthContext)
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [event.target.name]: event.target.value });

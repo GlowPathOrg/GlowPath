@@ -1,9 +1,9 @@
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useContext, useState } from "react";
 import { register } from "../../services/authService";
 import '../../styles/RegisterComponent.css';
 import 'react-phone-number-input/style.css';
 import PhoneInput from "react-phone-number-input/input";
-import { useLoginStatus } from "../../hooks/userLogin";
+import { AuthContext } from "../../contexts/UserContext";
 
 
 
@@ -24,7 +24,7 @@ const RegisterComponent: React.FC<RegisterComponentProps>
   });
   const [message, setMessage] = useState("");
   const [value, setValue] = useState<string | undefined>();
-  const {handleLogin} = useLoginStatus();
+  const {handleLogin} = useContext(AuthContext)
 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

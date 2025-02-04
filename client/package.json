@@ -7,8 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview --base /GlowPath/",
-    "this": "vite-node src/services/amenitiesService.tsx"
+    "preview": "vite preview --base /GlowPath/"
   },
   "dependencies": {
     "@here/flexpolyline": "^0.1.0",

@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import SettingsComponent from "./SettingsComp";
-import { useLoginStatus } from "../../hooks/userLogin";
+import { AuthContext } from "../../contexts/UserContext";
 import RegisterComponent from "./RegisterComponent";
 import "../../styles/profilePage.css";
 import "../../styles/Footer.css";
@@ -10,13 +10,13 @@ import InfoComponent from "./InfoComponent";
 
 const ProfilePage = () => {
   const [viewOption, setViewOption] = useState("");
-  const { isAuthorized, userData } = useLoginStatus();
+  const { isAuthorized, user } = useContext(AuthContext)
 
   useEffect(() => {
-    if (isAuthorized === true && userData) {
+    if (isAuthorized === true && user) {
       setViewOption("settings");
     }
-  }, [isAuthorized, userData]);
+  }, [isAuthorized, user]);
 
   const handleLogout = () => {
     setViewOption("login");
@@ -33,7 +33,7 @@ const ProfilePage = () => {
       </div>
 
       <div className="main-content">
-        <h2>Welcome, {userData?.firstName}!</h2>
+        <h2>Welcome, {user?.firstName}!</h2>
 
         <div className="container">
           {viewOption === "settings" &&  <SettingsComponent />}
