@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import "../../styles/InfoComponent.css";
 import { AuthContext } from "../../contexts/UserContext";
-import { editProfile } from "../../services/authService";
+import { editProfileService } from "../../services/authService";
 
 const InfoComponent: React.FC = () => {
-    const { user, handleLogin } = useContext(AuthContext);
+    const { user, setUser, editUserContext} = useContext(AuthContext);
     const [editMode, setEditMode] = useState(false);
     const [showModal, setShowModal] = useState(false);
    const [reenteredPassword, setReenteredPassword] = useState("");
@@ -59,7 +59,10 @@ const InfoComponent: React.FC = () => {
     };
 
     const submitData = async (fieldName: string) => {
-        if (!user) return;
+
+        if (!user) {
+            console.log('no user');
+            return};
 
         try {
             const payload: {
@@ -74,13 +77,21 @@ const InfoComponent: React.FC = () => {
                 payload.password = reenteredPassword;
             }
 
-            await editProfile(payload, handleLogin);
+            const response = await editProfileService(payload);
+            console.log(response);
+            if (response && response.data.updated) {
+                editUserContext(response.data.updated)
+                setUser(response.data.updated);
+                console.log("Profile updated successfully!");
+                setShowModal(false);
+                setFieldBeingEdited(null);
+                setEditMode(false);
+                setErrorMessage('')
+            }
+            else {
+                console.log('weird response', response)
+            }
 
-            console.log("Profile updated successfully!");
-            setShowModal(false);
-            setFieldBeingEdited(null);
-            setEditMode(false);
-            setErrorMessage('')
         } catch (error) {
             console.error("Error updating profile:", error);
             setErrorMessage("Failed to update profile. Please try again.");

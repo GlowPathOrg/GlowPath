@@ -1,13 +1,18 @@
-import React, { createContext, useEffect, useState } from 'react';
-import { UserI } from '../Types/User';
-
+import React, { createContext,  useEffect,  useState } from 'react';
+import { RegisterDataI, UserI } from '../Types/User';
+import { registerService } from "../services/authService";
+import useLocalStorage from '../hooks/useLocalStorage';
 
 interface AppContextValue {
     user: UserI | null;
     setUser: React.Dispatch<React.SetStateAction<UserI | null>>;
     isAuthorized: boolean;
-    handleLogin: (token: string, userResponse: UserI) => void;
-    handleLogout: () => void;
+    handleLoginContext: (token: string, userResponse: UserI) => void;
+    handleLogoutContext: () => void;
+    editUserContext: (updatedUser: UserI) => void;
+    handleRegisterContext: (userResponse: UserI) => void;
+
+
 
 /*     tripHistory: SummaryI[] | null;
     setTripHistory: React.Dispatch<React.SetStateAction<SummaryI[] | null>>;
@@ -18,10 +23,12 @@ interface AppContextValue {
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext<AppContextValue>({
-    isAuthorized: false,
-    handleLogin: () => { },
-    handleLogout: () => { },
     user: null,
+    isAuthorized: false,
+    handleLoginContext: () => { },
+    handleLogoutContext: () => { },
+    handleRegisterContext: () => {},
+    editUserContext: () => {},
     setUser: () => { },
 /*     tripHistory: null,
     setTripHistory: () => {},
@@ -32,26 +39,53 @@ export const AuthContext = createContext<AppContextValue>({
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [isAuthorized, setIsAuthorized] = useState<boolean>(!!localStorage.getItem("token"));
-    const [user, setUser] = useState<UserI | null>(null);
+    const [user, setUser] = useLocalStorage<UserI | null>("userData", null);
 
-    const handleLogin = (token: string, userResponse: UserI) => {
-        setIsAuthorized(true);
-        const thisUser = userResponse;
+    const handleLoginContext = (token: string, user: UserI) => {
 
 
+                setIsAuthorized(true);
+                localStorage.setItem("token", token);
+                localStorage.setItem("userData", JSON.stringify(user));
+                setUser(user);
 
-        localStorage.setItem("token", token);
-        localStorage.setItem("userData", JSON.stringify(userResponse));
-        setUser(thisUser);
+
+
+
+
+
+    };
+    const handleRegisterContext = async (userData: RegisterDataI) => {
+        try {
+            const response = await registerService(userData);
+            console.log(response);
+            if (response?.data.token && response.data.updated) {
+                setIsAuthorized(true);
+                const thisUser = response.data.updated;
+                localStorage.setItem("token", response.data.token);
+                localStorage.setItem("userData", JSON.stringify(thisUser));
+                setUser(thisUser);
+            }
+        }
+        catch (error) {
+            console.log(error);
+        }
+
+
 
     };
 
-    const handleLogout = () => {
+    const handleLogoutContext = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("userData");
         setIsAuthorized(false);
         setUser(null);
     };
+
+    const editUserContext = (updatedUser: UserI) => {
+        setUser(updatedUser);
+    };
+
 
 
     useEffect(() => {
@@ -64,11 +98,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
             setUser(null);
         }
-    }, []);
+    }, [setUser]);
 
 
     return (
-        <AuthContext.Provider value={{ isAuthorized, user, setUser,  handleLogin, handleLogout }}>
+        <AuthContext.Provider value={{ isAuthorized, user, setUser,  handleLoginContext, handleLogoutContext, handleRegisterContext, editUserContext }}>
             {children}
         </AuthContext.Provider>
     );

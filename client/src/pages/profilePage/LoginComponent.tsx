@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
-import { login } from "../../services/authService";
-import { AuthContext } from "../../contexts/UserContext";
+import { loginService } from "../../services/authService";
 import "../../styles/RegisterComponent.css"; // Reuse the same styles
+import { AuthContext } from "../../contexts/UserContext";
 
 interface LoginComponentProps {
   setViewOption: (view: string) => void;
@@ -11,7 +11,8 @@ const LoginPage: React.FC<LoginComponentProps> = ({ setViewOption }) => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [message, setMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const { handleLogin } = useContext(AuthContext)
+  const {handleLoginContext} = useContext(AuthContext)
+
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
@@ -22,8 +23,9 @@ const LoginPage: React.FC<LoginComponentProps> = ({ setViewOption }) => {
     setMessage(null);
     setErrorMessage(null);
     try {
-      const response = await login(formData, handleLogin);
-      if (response.data.token) {
+      const response = await loginService(formData);
+      if (response.data.token && response.data.user) {
+        handleLoginContext(response.data.token, response.data.user)
         setMessage("Login successful!");
         setTimeout(() => 1);
         setViewOption("settings");

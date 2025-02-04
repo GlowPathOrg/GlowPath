@@ -10,7 +10,7 @@ import InfoComponent from "./InfoComponent";
 
 const ProfilePage = () => {
   const [viewOption, setViewOption] = useState("");
-  const { isAuthorized, user } = useContext(AuthContext)
+  const { isAuthorized, user, handleLogoutContext } = useContext(AuthContext)
 
   useEffect(() => {
     if (isAuthorized === true && user) {
@@ -18,7 +18,8 @@ const ProfilePage = () => {
     }
   }, [isAuthorized, user]);
 
-  const handleLogout = () => {
+  const logout = () => {
+    handleLogoutContext();
     setViewOption("login");
   };
 
@@ -29,7 +30,7 @@ const ProfilePage = () => {
         <button className="menu-button" onClick={() => setViewOption("info")}>My Information</button>
        {/*  <button className="menu-button" onClick={() => setViewOption("contacts")}>Contacts</button>
         <button className="menu-button" onClick={() => setViewOption("help")}>Help</button>
-        */} <button className="menu-button" onClick={() => handleLogout()}>Log Out</button>
+        */} <button className="menu-button" onClick={() => logout()}>Log Out</button>
       </div>
 
       <div className="main-content">
