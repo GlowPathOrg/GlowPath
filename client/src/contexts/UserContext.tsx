@@ -107,14 +107,3 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         </AuthContext.Provider>
     );
 };
-/*
-
-/*   const userHistory: HistoryI[] | undefined = res.history;
-  if (userHistory !== undefined) {
-      const todayHistory: HistoryI = userHistory.filter(h => h.daylist_id === date)[0];
-      if (todayHistory && todayHistory.guessedWords) {
-          // todayHistory.guessedWords is likely an array of objects, which may or may not match your WordObj type
-          // Adjust as necessary to match your expected structure.
-          setGuessedWords(todayHistory.guessedWords);
-      }
-  } */

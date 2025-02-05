@@ -28,7 +28,7 @@ const InfoComponent: React.FC = () => {
                 telephone: user.telephone || "",
             });
         }
-    }, [user]);
+    }, [user, setUser]);
 
     const toggleEditMode = () => {
         setEditMode(!editMode);
@@ -79,9 +79,9 @@ const InfoComponent: React.FC = () => {
 
             const response = await editProfileService(payload);
             console.log(response);
-            if (response && response.data.updated) {
-                editUserContext(response.data.updated)
-                setUser(response.data.updated);
+            if (response && response.data.user) {
+                editUserContext(response.data.user)
+                setUser(response.data.user);
                 console.log("Profile updated successfully!");
                 setShowModal(false);
                 setFieldBeingEdited(null);
