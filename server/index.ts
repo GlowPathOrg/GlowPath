@@ -17,6 +17,7 @@ const PORT = process.env.PORT || 3002;
 const whitelist = [
   'https://glowpathorg.github.io', // prod
   'http://localhost:5173', // dev
+  'http://localhost:4173', // pre prod
 ];
 console.log('server whitelist: ', whitelist)
 const corsOptions: CorsOptions = {
