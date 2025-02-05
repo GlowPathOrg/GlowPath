@@ -4,7 +4,8 @@ import { LatLngExpression } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../../styles/HomeMap.css'; // Add custom styles if needed
 import { usePosition } from '../../hooks/usePosition'; // Custom hook for live location
-
+import L from "leaflet";
+import SosButton from "../journeyPage/SosButton"
 const HomeMap: React.FC = () => {
   const { latitude, longitude, error: geolocationError } = usePosition(); // Get user's live location
   const [currentPosition, setCurrentPosition] = useState<LatLngExpression | null>(null);
@@ -23,13 +24,19 @@ const HomeMap: React.FC = () => {
           center={currentPosition}
           zoom={15}
           scrollWheelZoom={false}
-          style={{ height: '80vh', width: '100%' }}
+          style={{ height: '85vh', width: '100%' }}
         >
+              <SosButton/>
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          <Marker position={currentPosition}>
+          <Marker position={currentPosition}
+          icon={L.icon({
+            iconUrl: "https://img.icons8.com/?size=100&id=ziC1TV1ikKi9&format=png&color=FFFFFF",
+            iconSize: [35, 35],
+            iconAnchor: [15, 15],
+          })}>
             <Popup>You are here!</Popup>
           </Marker>
         </MapContainer>

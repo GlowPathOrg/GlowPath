@@ -5,11 +5,83 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <script src="/socket.io/socket.io.js"></script>
-   <script>
-      const socket = io();
-   </script>
 </head>
 <body>
-  <h1>Socket.io client</h1>
+  <h1>Socket.io client sender</h1>
+  <button id="host">Host</button>
+  <button id="join">Join</button>
+  <script>
+    const hostButton = document.querySelector("#host");
+    hostButton.addEventListener("click", async () => {
+      const headers = new Headers()
+      headers.append('Content-type', 'application/json')
+      const res = await fetch("http://localhost:3002/auth/login", {
+        method: "POST",
+        body: JSON.stringify({email: "test@test.test", password: "test1234"}),
+        headers
+      });
+      const { token } = await res.json();
+      console.log("Token: ", token)
+
+      headers.append('Authorization', 'Bearer ' + token)
+      const result = await fetch("http://localhost:3002/share", {
+        method: "POST",
+        body: JSON.stringify({route: {polyline: [[1,2],[3,4]], instructions: [{
+        action: 'depart',
+        duration: 42,
+        length: 33,
+        instruction: 'Head southeast. Go for 33 m.',
+        offset: 0
+      },
+      {
+        action: 'turn',
+        duration: 198,
+        length: 189,
+        instruction: 'Turn left onto Kolberger Straße. Go for 189 m.',
+        offset: 1,
+        direction: 'left',
+        severity: 'quite'
+      }], summary: {
+      duration: 427,
+      length: 399,
+      baseDuration: 427
+    }}}),
+        headers
+      });
+      const share = await result.json();
+      console.log("Sender received share info: ", share);
+
+      const socket = io({ auth: { token } });
+
+      socket.on("connect", () => {
+        console.log("Sender connected to server");
+      })
+      socket.emit("host-share", share.id);
+    })
+
+    const joinButton = document.querySelector("#join");
+    joinButton.addEventListener("click", async () => {
+      const id = "674e1e8d80ca8289c3f76c86";
+      const password = "64798bcc-be5d-41ec-bd36-78b2018aa717";
+      const headers = new Headers()
+      headers.append('Content-type', 'application/json')
+      const result = await fetch("http://localhost:3002/share/" + id, {
+        method: "POST",
+        body: JSON.stringify({ password }),
+        headers
+      });
+      const share = await result.json();
+      console.log("Receiver received share info: ", share);
+
+      const socket = io({ auth: { password } });
+
+      socket.on("connect", () => {
+        console.log("Receiver connected to server");
+      })
+      socket.emit("join-share", share.id, (result) => {
+        console.log(result);
+      });
+    })
+ </script>
 </body>
 </html>

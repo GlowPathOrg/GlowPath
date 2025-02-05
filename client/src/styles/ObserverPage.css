@@ -1,0 +1,28 @@
+.observer-sharer {
+  margin: 2rem;
+}
+
+.observer-sharer span {
+  font-weight: bold;
+}
+
+.observer-wait {
+  margin: 2rem;
+}
+
+.observer-error {
+  margin: 2rem;
+  color: red;
+}
+
+.geofence-status {
+  display: none;
+}
+
+.instructions {
+  display: none;
+}
+
+.summary {
+  margin: 1rem;
+}
