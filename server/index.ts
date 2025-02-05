@@ -38,7 +38,7 @@ const corsOptions: CorsOptions = {
 app.use(cors(corsOptions));
 
 // Explicitly handle preflight requests (OPTIONS)
-app.options('*', cors(corsOptions));
+// app.options('*', cors(corsOptions));
 //websockets content
 app.use(express.json());
 const server = setupSocket(app); // This is needed to setup socket.io
