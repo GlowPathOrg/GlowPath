@@ -4,7 +4,7 @@ import { RegisterDataI, LoginDataI, UserI } from "../Types/User";
 
 
 // CHANGE BACK TO HEROKU FOR DEPLOYMENT
-const AUTH_URL = "http://localhost:3002" + '/auth';
+const AUTH_URL = "https://glowpath-a7681fe09c29.herokuapp.com" + '/auth';
 // Get the stored token from localStorage
 export const getToken = (): string | null => {
   return localStorage.getItem("token");
