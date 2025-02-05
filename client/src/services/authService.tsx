@@ -3,8 +3,7 @@ import { RegisterDataI, LoginDataI, UserI } from "../Types/User";
 
 
 
-// i could not get env to work - have it here
-// Base URL for the backend API
+// CHANGE BACK TO HEROKU FOR DEPLOYMENT
 const AUTH_URL = "https://glowpath-a7681fe09c29.herokuapp.com" + '/auth';
 // Get the stored token from localStorage
 export const getToken = (): string | null => {
@@ -14,12 +13,12 @@ export const getToken = (): string | null => {
 export interface AuthResponse {
   token?: string;
   message?: string;
+  updated?: UserI;
   user?: UserI;
 }
 
 
-export const register = async (userData: RegisterDataI, handleLogin: (token: string, userData: UserI) => void
-): Promise<AxiosResponse<AuthResponse> | undefined> => {
+export const registerService = async (userData: RegisterDataI): Promise<AxiosResponse<AuthResponse> | undefined> => {
   try {
     const response = await axios.post<AuthResponse>(`${AUTH_URL}/register`, userData, {
       withCredentials: true,
@@ -28,13 +27,6 @@ export const register = async (userData: RegisterDataI, handleLogin: (token: str
       }
     });
     if (response && response.data.token) {
-      localStorage.setItem("token", response.data.token);
-      if (response.data.user) {
-        const user: UserI = response.data.user
-        handleLogin(response.data.token, user);
-
-      }
-
       return response
     };
 
@@ -47,9 +39,9 @@ export const register = async (userData: RegisterDataI, handleLogin: (token: str
 }
 
 
-export const login = async (userData: LoginDataI, handleLogin: (token: string, userData: UserI) => void
-): Promise<AxiosResponse<AuthResponse>> => {
+export const loginService = async (userData: LoginDataI): Promise<AxiosResponse<AuthResponse>> => {
   try {
+
     const response = await axios.post<AuthResponse>(`${AUTH_URL}/login`, userData, {
     withCredentials: true,
     headers: {
@@ -57,9 +49,6 @@ export const login = async (userData: LoginDataI, handleLogin: (token: string, u
       }
     });
 
-    if (response.data.token && response.data.user) {
-    handleLogin(response.data.token, response.data.user);
-    }
     return response
 
   }
@@ -69,12 +58,10 @@ export const login = async (userData: LoginDataI, handleLogin: (token: string, u
   }
 };
 
-export const editProfile = async (
+export const editProfileService = async (
   userEdit: {
-    [key in keyof typeof FormData]?: string;
-  } & { _id: string },
-  handleLogin: (token: string, userData: UserI) => void
-): Promise<AxiosResponse<AuthResponse> | undefined> => {
+    [key: string]: string;
+  } & { _id: string }): Promise<AxiosResponse<AuthResponse> | undefined> => {
   try {
     const token = getToken();
 
@@ -87,13 +74,9 @@ export const editProfile = async (
         'Authorization': `Bearer ${token}`,
       }
     });
-
-    if (response.data.token && response.data.user) {
-      handleLogin(response.data.token, response.data.user);
-    }
     return response;
   } catch (error) {
-    console.log('error loading profile', error);
+    console.log('error editing profile', error);
     throw error;
   }
 };

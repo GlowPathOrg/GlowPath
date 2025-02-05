@@ -170,13 +170,26 @@ useEffect(() => {
 
   async function handleShare () {
     try {
-
+      if (shareId) {
+        alert("Active share already in progress");
+        return;
+      }
       const route: RouteI = {polyline: currentRoute, instructions: currentInstructions, summary: currentSummary};
       console.log('sharing' , route)
       const result = await createShare(route);
-      console.log(`UPDATED PAGE:  https://glowpathorg.github.io/GlowPath/observe/${result.data.id}?password=${result.data.password}`)
+      const url = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "") + "/observe/" + result.data.id + "?password=" + result.data.password;
+      console.log(`UPDATED PAGE:  ${url}`)
       setShareId(result.data.id);
-
+      const data = {
+        title: "Shared Location",
+        text: "Please follow the link to access the shared location",
+        url
+      };
+      if ("share" in navigator) {
+        await navigator.share(data);
+      } else {
+        alert("data");
+      }
     } catch (err) {
       console.error("Error during sharing: ", err);
     }

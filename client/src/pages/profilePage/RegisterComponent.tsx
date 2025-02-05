@@ -1,9 +1,9 @@
 import React, { FormEvent, useState } from "react";
-import { register } from "../../services/authService";
+import { registerService } from "../../services/authService";
 import '../../styles/RegisterComponent.css';
 import 'react-phone-number-input/style.css';
 import PhoneInput from "react-phone-number-input/input";
-import { useLoginStatus } from "../../hooks/userLogin";
+
 
 
 
@@ -24,7 +24,7 @@ const RegisterComponent: React.FC<RegisterComponentProps>
   });
   const [message, setMessage] = useState("");
   const [value, setValue] = useState<string | undefined>();
-  const {handleLogin} = useLoginStatus();
+
 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,7 +44,7 @@ const RegisterComponent: React.FC<RegisterComponentProps>
     return;
   }
     try {
-      await register(formData, handleLogin);
+      await registerService(formData);
       setMessage("Registration successful!");
       setTimeout(() => 1);
       setViewOption('settings')

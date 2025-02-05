@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import SettingsComponent from "./SettingsComp";
-import { useLoginStatus } from "../../hooks/userLogin";
+import { AuthContext } from "../../contexts/UserContext";
 import RegisterComponent from "./RegisterComponent";
 import "../../styles/profilePage.css";
 import "../../styles/Footer.css";
@@ -10,15 +10,16 @@ import InfoComponent from "./InfoComponent";
 
 const ProfilePage = () => {
   const [viewOption, setViewOption] = useState("");
-  const { isAuthorized, userData } = useLoginStatus();
+  const { isAuthorized, user, handleLogoutContext } = useContext(AuthContext)
 
   useEffect(() => {
-    if (isAuthorized === true && userData) {
+    if (isAuthorized === true && user) {
       setViewOption("settings");
     }
-  }, [isAuthorized, userData]);
+  }, [isAuthorized, user]);
 
-  const handleLogout = () => {
+  const logout = () => {
+    handleLogoutContext();
     setViewOption("login");
   };
 
@@ -29,11 +30,11 @@ const ProfilePage = () => {
         <button className="menu-button" onClick={() => setViewOption("info")}>My Information</button>
        {/*  <button className="menu-button" onClick={() => setViewOption("contacts")}>Contacts</button>
         <button className="menu-button" onClick={() => setViewOption("help")}>Help</button>
-        */} <button className="menu-button" onClick={() => handleLogout()}>Log Out</button>
+        */} <button className="menu-button" onClick={() => logout()}>Log Out</button>
       </div>
 
       <div className="main-content">
-        <h2>Welcome, {userData?.firstName}!</h2>
+        <h2>Welcome, {user?.firstName}!</h2>
 
         <div className="container">
           {viewOption === "settings" &&  <SettingsComponent />}

@@ -62,8 +62,9 @@ export const registerController = async (req: Request, res: Response): Promise<v
 export const editController = async (req: Request, res: Response): Promise<void | void> => {
     try {
         const toEdit: { [x: string]: string; password: string; _id: string } = req.body;
-        console.log('to edit: ', toEdit)
+
         const fieldToUpdate = Object.keys(toEdit).find(key => key !== 'password' && key !== '_id');
+
         if (!fieldToUpdate) {
             res.status(400);
             throw new Error('could not read field to update')
@@ -74,21 +75,25 @@ export const editController = async (req: Request, res: Response): Promise<void 
             res.status(400);
             throw new Error('no user found')
         }
+     /*    console.log('after comparing passwords:', toEdit.password, potentialUser.password);
 
         const isMatch = await bcrypt.compare(toEdit.password, potentialUser.password);
+
         if (!isMatch) {
+
             res.status(401);
             throw new Error('passwords did not match. could not edit information')
-        }
-
+        } */
         const update = { [fieldToUpdate]: toEdit[fieldToUpdate] };
-        const updated = await UserModel.findOneAndUpdate(filter, update);
-        if (updated) {
 
+        const updated = await UserModel.findOneAndUpdate(filter, update);
+
+        if (updated) {
+            console.log('updated')
             const token = jwt.sign({ _id: updated._id, email: updated.email, firstName: updated.firstName, lastName: updated.lastName, telephone: updated.telephone }, jwtSecret, { expiresIn: '1d' });
             res.status(200).json({
                 token,
-                updated: {
+                user: {
                     _id: updated._id,
                     email: updated.email,
                     firstName: updated.firstName,

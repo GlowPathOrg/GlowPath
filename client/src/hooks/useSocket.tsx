@@ -2,7 +2,6 @@ import { io, Socket } from "socket.io-client";
 import { useState, useEffect, useRef } from 'react';
 import { getToken } from "../utilities/token";
 import { PositionI } from "./usePosition";
-import { RouteI } from "../Types/Route";
 const socketServer = import.meta.env.VITE_BACKEND_URL || "https://glowpath-a7681fe09c29.herokuapp.com";
 
 interface MessageI {
@@ -50,15 +49,15 @@ export const useSocket = ({ password }: { password?: string }) => {
     }
   }
 
-  function sendPosition (data: { position: PositionI; route: RouteI }) {
-    if (!data.position) {
+  function sendPosition (position: PositionI) {
+    if (!position) {
       console.warn("No position to send!");
       return;
     }
 
     if (isConnected && socket) {
-      console.log("Sending position and route to the server:", data);
-      socket.emit("position", data);
+      console.log("Sending position to the server: ", position);
+      socket.emit("position", position);
     }
   }
 

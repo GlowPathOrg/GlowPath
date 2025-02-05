@@ -1,24 +1,15 @@
-import { useEffect, useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
-import { useSocket } from "../../hooks/useSocket.js";
-import { latLng } from "leaflet";
-import MapComponent from "../../components/MapComponent/MapComponent.js";
-import { accessShare } from "../../services/shareService.js";
-import { RouteI } from "../../Types/Route.js";
-import { UserI } from "../../Types/User.js";
-
-interface PartialShare {
-  data: {
-    _id?: string;
-    id?: string;
-    owner: UserI;
-    route: RouteI;
-    password: string;
-  };
-}
+import { useEffect, useState } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
+import { useSocket } from '../../hooks/useSocket.js';
+import { latLng } from 'leaflet';
+import MapComponent from '../../components/MapComponent/MapComponent.js';
+import { accessShare } from '../../services/shareService.js';
+import { RouteI } from '../../Types/Route.js';
+import "../../styles/ObserverPage.css";
 
 const ObserverPage = () => {
-  const [route, setRoute] = useState<RouteI | null>(null);
+  const [route, setRoute] = useState<RouteI>({polyline: [], instructions: [], summary: {duration: 0, length: 0}});
+  const [sharerName, setSharerName] = useState("");
   const [searchParams] = useSearchParams();
   const { id } = useParams() || "";
   const password = searchParams.get("password") || "";
@@ -28,7 +19,7 @@ const ObserverPage = () => {
   });
 
   // Fetch shared route on component load
-  useEffect(() => {
+ /*  useEffect(() => {
     const fetchRoute = async () => {
       if (!id || !password) return;
       try {
@@ -43,7 +34,7 @@ const ObserverPage = () => {
     };
 
     fetchRoute();
-  }, [id, password]);
+  }, [id, password]); */
 
   // Connect to WebSocket and join the share room
   useEffect(() => {
@@ -56,53 +47,49 @@ const ObserverPage = () => {
     if (isConnected) {
       console.log(`Connected to WebSocket with ID: ${id}`);
     }
-  }, [isConnected, id]);
+  }, [id, isConnected]);
+
+  async function getShareOnLoad () {
+    const result: any = await accessShare(id as string, password);
+    if (result.data) {
+      setRoute(result.data.route);
+      setSharerName(result.data.owner.firstName);
+      console.log("Set route to result of API request");
+      console.log(result.data);
+    }
+  }
 
   useEffect(() => {
-    if (position) {
-      console.log("Updated position received:", position);
+    if (id && password) {
+      getShareOnLoad();
     }
-  }, [position]);
+  },[])
 
   return (
     <div>
-      <h1>Observer Page</h1>
-      <p>Status: {isConnected ? "Connected" : "Disconnected"}</p>
-      {error && <p className="error">Error: {error}</p>}
-      <p>
-        Current Position:{" "}
-        {position ? (
-          <>
-            Latitude: {position.latitude}, Longitude: {position.longitude}
-          </>
-        ) : (
-          "Waiting for position updates..."
-        )}
-      </p>
-
-      {position && route ? (
+      <div className="observer-sharer"><span>{sharerName}</span> has shared their position with you:</div>
+      {error && <div className="observer-error">Error: {error}</div>}
+     {position && route ? (
+      <>
         <MapComponent
           latitude={position.latitude}
           longitude={position.longitude}
           heading={position.heading}
           geolocationError={null}
-          route={route.polyline}
-          summary={route.summary}
-          instructions={route.instructions}
+          route={route?.polyline}
+          summary={route?.summary}
+          instructions={route?.instructions}
           litStreets={[]}
           sidewalks={[]}
           policeStations={[]}
           hospitals={[]}
-          originCoords={latLng(route.polyline[0][0], route.polyline[0][1])}
-          destinationCoords={latLng(
-            route.polyline[route.polyline.length - 1][0],
-            route.polyline[route.polyline.length - 1][1]
-          )}
-          theme="standard"
-        />
-      ) : (
-        <p>No position or route available.</p>
-      )}
+          originCoords={latLng(route?.polyline[0][0], route?.polyline[0][1])}
+          destinationCoords={latLng(route?.polyline[route.polyline.length - 1][0], route?.polyline[route.polyline.length - 1][1])}
+          theme={"standard"}
+          />
+      </>
+) : <div className="observer-wait">Waiting to receive position...</div>
+}
     </div>
   );
 };
