@@ -10,13 +10,14 @@ import InfoComponent from "./InfoComponent";
 
 const ProfilePage = () => {
   const [viewOption, setViewOption] = useState("");
-  const { isAuthorized, user, handleLogoutContext } = useContext(AuthContext)
+  const { isAuthorized, user, setUser, handleLogoutContext } = useContext(AuthContext)
 
   useEffect(() => {
     if (isAuthorized === true && user) {
       setViewOption("settings");
+
     }
-  }, [isAuthorized, user]);
+  }, [isAuthorized, user, setUser]);
 
   const logout = () => {
     handleLogoutContext();

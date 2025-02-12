@@ -23,22 +23,29 @@ console.log('server whitelist: ', whitelist)
 const corsOptions: CorsOptions = {
   origin: function (origin, callback) {
     console.log('Incoming request origin:', origin);
-    if (!origin || whitelist.includes(origin)) {
-      callback(null, true);
+
+    if (!origin) {
+      console.warn('No origin in request. Allowing by default.');
+      return callback(null, true);
+    }
+
+    if (whitelist.includes(origin)) {
+      console.log('CORS Allowed for:', origin);
+      return callback(null, true);
     } else {
       console.error('Blocked by CORS:', origin);
-      callback(new Error(origin + ' is not included in CORS policy.'));
+      return callback(new Error(origin + ' is not included in CORS policy.'));
     }
   },
   methods: 'GET,POST,OPTIONS',
   allowedHeaders: 'Content-Type, Authorization',
-  credentials: true,
+  credentials: true, // 🔥 Important
 };
 
 app.use(cors(corsOptions));
 
-// Explicitly handle preflight requests (OPTIONS)
-// app.options('*', cors(corsOptions));
+app.options('*', cors(corsOptions));
+
 //websockets content
 app.use(express.json());
 const server = setupSocket(app); // This is needed to setup socket.io
