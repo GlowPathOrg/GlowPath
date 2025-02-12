@@ -14,7 +14,7 @@ const InfoComponent: React.FC = () => {
         firstName: user?.firstName || "",
         lastName: user?.lastName || "",
         email: user?.email || "",
-        password: user?.password || "",
+        password: "**********",
         telephone: user?.telephone || "",
     });
 
@@ -24,7 +24,7 @@ const InfoComponent: React.FC = () => {
                 firstName: user.firstName || "",
                 lastName: user.lastName || "",
                 email: user.email || "",
-                password: user.password || "",
+                password: "**********",
                 telephone: user.telephone || "",
             });
         }
@@ -46,10 +46,8 @@ const InfoComponent: React.FC = () => {
         setFieldBeingEdited(fieldName);
 
         if (fieldName === "password") {
-            // Show the modal only for password changes
             setShowModal(true);
         } else {
-            // Directly submit data for other fields
             submitData(fieldName);
         }
     };
@@ -77,7 +75,7 @@ const InfoComponent: React.FC = () => {
                 payload.password = reenteredPassword;
             }
 
-            const response = await editProfileService(payload);
+            const response = await editProfileService(payload, setUser);
             console.log(response);
             if (response && response.data.user) {
                 editUserContext(response.data.user)
@@ -89,7 +87,7 @@ const InfoComponent: React.FC = () => {
                 setErrorMessage('')
             }
             else {
-                console.log('weird response', response)
+                console.log('Response in edit component:', response)
             }
 
         } catch (error) {

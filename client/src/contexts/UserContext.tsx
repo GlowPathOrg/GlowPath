@@ -98,7 +98,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
             setUser(null);
         }
-    }, [setUser, user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
 
     return (
