@@ -15,9 +15,9 @@ export const settingsSchema = new mongoose.Schema<SettingsI>({
 
 }, { timestamps: true });
 
-const Share = mongoose.model<SettingsI>("Share", settingsSchema);
+const Settings = mongoose.model<SettingsI>("Settings", settingsSchema);
 
-export default Share;
+export default Settings;
 
 /* export interface SettingsI {
   notifyNearby: boolean,

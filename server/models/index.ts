@@ -26,7 +26,7 @@ export const DBConnect = async () => {
                 strict: true,
                 deprecationErrors: true,
             },
-            tls: true, // Enable secure connection
+            tls: process.env.NODE_ENV === 'production' ? true : false, // Enable secure connection
             connectTimeoutMS: 30000, // 30 seconds timeout for initial connection
         });
 
@@ -48,7 +48,7 @@ export const getCollection = (dbName: string, collectionName: string) => {
     if (!client) {
         throw new Error("MongoClient is not initialized. Call DBConnect first.");
     }
-    return client.db(dbName).collection(collectionName);
+    return client.db('glowpath').collection(collectionName);
 };
 
 /**
@@ -58,7 +58,7 @@ export const getCollection = (dbName: string, collectionName: string) => {
 export const mongooseConnect = async () => {
     try {
         await mongoose.connect(uri, {
-            dbName: 'Glowpath',
+            dbName: 'glowpath',
             serverSelectionTimeoutMS: 30000, // 30 seconds timeout
         });
         console.log("Successfully connected to MongoDB via Mongoose.");

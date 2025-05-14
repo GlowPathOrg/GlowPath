@@ -55,7 +55,7 @@ const ObserverPage = () => {
     const result: AxiosResponse<ShareI> = await accessShare(id as string, password);
     if (result.data) {
       setRoute(result.data.route);
-      setSharerName(result.data.owner.firstName);
+      setSharerName(result.data.owner);
       console.log("Set route to result of API request");
       console.log(result.data);
     }
