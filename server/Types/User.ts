@@ -1,5 +1,6 @@
 import { Document } from "mongoose";
 import { SummaryI } from "./Route.js";
+import { ShareI } from "./Share.js";
 
 // User Interface extends Document so that its type has access to mongodb methods.
 //changed
@@ -13,7 +14,7 @@ export interface UserI extends Document {
     messages?: [];
     places?: [];
     contacts?: [];
-    tripHistory?: [];
+    shareHistory?: ShareI[];
     settings: [];
     comparePassword: (candidatePassword: string) => Promise<boolean>;
 }

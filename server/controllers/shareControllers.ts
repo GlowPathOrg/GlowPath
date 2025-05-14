@@ -4,6 +4,8 @@ import RouteModel from "../models/Route.js";
 import bcrypt from "bcrypt";
 import { v4 as uuid } from 'uuid';
 import mongoose from "mongoose";
+import { format } from 'date-fns';
+const now = format(new Date(), "yyyy_MM_dd");
 
 // User requests to share their journey
 // - saves a new share to the database
@@ -24,7 +26,7 @@ export const createShare = async (req: Request, res: Response): Promise<void> =>
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     const newRoute = await RouteModel.create(route)
-    const newShare = await Share.create({ _id: new mongoose.Types.ObjectId(), owner: user, route: newRoute._id, password: hashedPassword});
+    const newShare = await Share.create({ _id: new mongoose.Types.ObjectId(), owner: user, route: newRoute._id, password: hashedPassword, date: now});
     console.log(`https://glowpathorg.github.io/GlowPath/observe/${newShare._id}?password=${password}`)
     res.status(200).json({id: newShare._id, password}); // TODO: this needs to be checked to conform to frontend expectations
   } catch (error) {

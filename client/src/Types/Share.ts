@@ -6,4 +6,5 @@ export interface ShareI {
     owner: UserI;
     route: RouteI;
     password: string;
+    date: string;
 }

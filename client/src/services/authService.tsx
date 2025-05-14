@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { RegisterDataI, LoginDataI, UserI } from "../Types/User";
+import { AuthResponse } from "../Types/Express";
 
 
 // CHANGE BACK TO HEROKU FOR DEPLOYMENT
@@ -9,12 +10,7 @@ export const getToken = (): string | null => {
   return localStorage.getItem("token");
 };
 
-export interface AuthResponse {
-  token?: string;
-  message?: string;
-  updated?: UserI;
-  user?: UserI;
-}
+
 
 
 export const registerService = async (userData: RegisterDataI): Promise<AxiosResponse<AuthResponse> | undefined> => {

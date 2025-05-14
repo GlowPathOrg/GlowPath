@@ -6,6 +6,8 @@ import MapComponent from '../../components/MapComponent/MapComponent.js';
 import { accessShare } from '../../services/shareService.js';
 import { RouteI } from '../../Types/Route.js';
 import "../../styles/ObserverPage.css";
+import { ShareI } from '../../Types/Share.js';
+import { AxiosResponse } from 'axios';
 
 const ObserverPage = () => {
   const [route, setRoute] = useState<RouteI>({polyline: [], instructions: [], summary: {duration: 0, length: 0}});
@@ -50,7 +52,7 @@ const ObserverPage = () => {
   }, [id, isConnected]);
 
   async function getShareOnLoad () {
-    const result: any = await accessShare(id as string, password);
+    const result: AxiosResponse<ShareI> = await accessShare(id as string, password);
     if (result.data) {
       setRoute(result.data.route);
       setSharerName(result.data.owner.firstName);
@@ -63,6 +65,7 @@ const ObserverPage = () => {
     if (id && password) {
       getShareOnLoad();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 
   return (
