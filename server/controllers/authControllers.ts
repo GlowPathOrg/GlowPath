@@ -18,6 +18,7 @@ const generateToken = (user: any) => {
 };
 
 export const registerController = async (req: Request, res: Response): Promise<void> => {
+    console.log('in register controller, message received!')
     const { email, password, firstName, lastName, telephone } = req.body;
 
         if (!email || !password || !firstName || !lastName) {
@@ -27,13 +28,14 @@ export const registerController = async (req: Request, res: Response): Promise<v
             throw new Error(`Password doesn't meet strength requirements`)
         }
         const existingUser = await UserModel.findOne({ email });
+        console.log('existing user?')
         if (existingUser) {
             res.status(400)
             throw new Error('User already exists');
             ;
         };
 
-        const user = new UserModel({ email, password, firstName, lastName, telephone });
+        const user = new UserModel({ email, password, firstName, lastName, telephone, });
         await user.save();
         const token = jwt.sign(
             {
@@ -46,7 +48,8 @@ export const registerController = async (req: Request, res: Response): Promise<v
                 messages: [],
                 places: [],
                 contacts: [],
-                tripHistory: []
+                shareHistory: [],
+                settings: [],
             },
             jwtSecret,
             { expiresIn: '48h' }
@@ -103,7 +106,8 @@ export const editController = async (req: Request, res: Response): Promise<void 
                     messages: [],
                     places: [],
                     contacts: [],
-                    tripHistory: []
+                    shareHistory: [],
+                    settings: []
                 }
             });
 

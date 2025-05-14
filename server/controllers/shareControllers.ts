@@ -1,15 +1,25 @@
 import { Request, Response } from "express";
-import Share from "../models/Share.js";
-import RouteModel from "../models/Route.js";
+
+import RouteModel, { RouteI } from "../models/Route.js";
 import bcrypt from "bcrypt";
 import { v4 as uuid } from 'uuid';
 import mongoose from "mongoose";
 import { format } from 'date-fns';
+import Share from "../models/Settings.js";
+import { UserI } from "../models/UserModel.js";
 const now = format(new Date(), "yyyy_MM_dd");
 
 // User requests to share their journey
 // - saves a new share to the database
 // - responds with the share id
+declare global {
+  namespace Express {
+    interface Request {
+      user?: UserI;
+      route?: RouteI;
+    }
+  }
+}
 export const createShare = async (req: Request, res: Response): Promise<void> => {
   try {
     const { route } = req.body;

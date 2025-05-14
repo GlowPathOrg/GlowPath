@@ -1,9 +1,31 @@
 import mongoose, { Document, Schema, Model } from 'mongoose';
 import bcrypt from 'bcrypt';
-import { UserI } from '../Types/User.js';
+
+import {  SummaryI, SummarySchema } from './Route.js';
+import { SettingsI, settingsSchema } from './Settings.js';
 
 
-const userSchema = new Schema<UserI>({
+
+
+// User Interface extends Document so that its type has access to mongodb methods.
+//changed
+export interface UserI {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    telephone?: string;
+    places?: [][];
+    tripHistory: SummaryI,
+    settings: SettingsI[];
+}
+
+interface UserDocument extends UserI, Document {
+    comparePassword (candidatePassword: string): Promise<boolean>;
+}
+
+
+const userSchema = new Schema<UserDocument>({
     email: {
         type: String,
         required: [true, "Email is required"],
@@ -35,6 +57,18 @@ const userSchema = new Schema<UserI>({
             message: "Invalid telephone format",
         },
     },
+    places: {
+        type: [[]],
+        required: false
+    },
+    tripHistory: {
+        type: [SummarySchema],
+        required: [true, "tripHistory is required"]
+    },
+    settings: {
+        type: [settingsSchema],
+        required: [true, "Settings is required"]
+    }
 });
 
 
@@ -48,7 +82,7 @@ userSchema.pre('save', async function (next) {
     } catch (error) {
         console.error("Error hashing password:", error);
         if (error instanceof Error) {
-    next(error);
+            next(error);
         }
     }
 });
@@ -68,5 +102,5 @@ userSchema.methods.comparePassword = async function (
 
 
 
-const UserModel: Model<UserI> = mongoose.model<UserI>('User', userSchema);
+const UserModel: Model<UserDocument> = mongoose.model<UserDocument>('User', userSchema);
 export default UserModel;
