@@ -1,8 +1,9 @@
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useContext, useState } from "react";
 import { registerService } from "../../services/authService";
 import '../../styles/RegisterComponent.css';
 import 'react-phone-number-input/style.css';
 import PhoneInput from "react-phone-number-input/input";
+import { AuthContext } from "../../contexts/UserContext";
 
 
 
@@ -24,6 +25,7 @@ const RegisterComponent: React.FC<RegisterComponentProps>
   });
   const [message, setMessage] = useState("");
   const [value, setValue] = useState<string | undefined>();
+  const {handleLoginContext} = useContext(AuthContext)
 
 
 
@@ -44,10 +46,15 @@ const RegisterComponent: React.FC<RegisterComponentProps>
     return;
   }
     try {
-      await registerService(formData);
-      setMessage("Registration successful!");
-      setTimeout(() => 1);
-      setViewOption('settings')
+      const response = await registerService(formData);
+      console.log(response)
+      if (response?.data.token && response.data.user) {
+        handleLoginContext(response.data.token, response.data.user)
+        setMessage("Registration successful!");
+        setTimeout(() => 1);
+        setViewOption('settings')
+      }
+
     } catch (error) {
       setMessage("Error registering. Please try again. " + error);
     }

@@ -10,7 +10,7 @@ import { ShareI } from '../../Types/Share.js';
 import { AxiosResponse } from 'axios';
 
 const ObserverPage = () => {
-  const [route, setRoute] = useState<RouteI>({polyline: [], instructions: [], summary: {duration: 0, length: 0}});
+  const [route, setRoute] = useState<RouteI>({polyline: [], instructions: [], summary: {duration: 0, length: 0, date: ""}});
   const [sharerName, setSharerName] = useState("");
   const [searchParams] = useSearchParams();
   const { id } = useParams() || "";
@@ -55,7 +55,7 @@ const ObserverPage = () => {
     const result: AxiosResponse<ShareI> = await accessShare(id as string, password);
     if (result.data) {
       setRoute(result.data.route);
-      setSharerName(result.data.owner);
+      setSharerName(result.data.owner.firstName);
       console.log("Set route to result of API request");
       console.log(result.data);
     }
@@ -79,7 +79,7 @@ const ObserverPage = () => {
           longitude={position.longitude}
           heading={position.heading}
           geolocationError={null}
-          route={route?.polyline}
+          polyline={route.polyline}
           summary={route?.summary}
           instructions={route?.instructions}
           litStreets={[]}

@@ -28,14 +28,14 @@ export const registerController = async (req: Request, res: Response): Promise<v
             throw new Error(`Password doesn't meet strength requirements`)
         }
         const existingUser = await UserModel.findOne({ email });
-        console.log('existing user?')
+
         if (existingUser) {
             res.status(400)
             throw new Error('User already exists');
             ;
         };
 
-        const user = new UserModel({ email, password, firstName, lastName, telephone, });
+        const user = new UserModel({ email, password, firstName, lastName, telephone});
         await user.save();
         const token = jwt.sign(
             {
@@ -45,11 +45,9 @@ export const registerController = async (req: Request, res: Response): Promise<v
                 lastName: user.lastName,
                 telephone: user.telephone,
                 password: '*****',
-                messages: [],
                 places: [],
-                contacts: [],
-                shareHistory: [],
-                settings: [],
+                tripHistory: [],
+                settings: {},
             },
             jwtSecret,
             { expiresIn: '48h' }
@@ -57,7 +55,8 @@ export const registerController = async (req: Request, res: Response): Promise<v
         console.log(`user ${user.firstName} ${user.lastName} registered`)
         res.status(201).json({
             message: `${user.email} was successfully registered`,
-            token
+            token,
+            user
         });
 
     }
@@ -93,7 +92,7 @@ export const editController = async (req: Request, res: Response): Promise<void 
 
         if (updated) {
             console.log('updated')
-            const token = jwt.sign({ _id: updated._id, email: updated.email, firstName: updated.firstName, lastName: updated.lastName, telephone: updated.telephone }, jwtSecret, { expiresIn: '1d' });
+            const token = jwt.sign({ _id: updated._id, email: updated.email, firstName: updated.firstName, lastName: updated.lastName, telephone: updated.telephone, settings: updated.settings, tripHistory: updated.tripHistory, places: updated.places }, jwtSecret, { expiresIn: '1d' });
             res.status(200).json({
                 token,
                 user: {
@@ -103,11 +102,9 @@ export const editController = async (req: Request, res: Response): Promise<void 
                     lastName: updated.lastName,
                     telephone: updated.telephone,
                     password: '*******',
-                    messages: [],
                     places: [],
-                    contacts: [],
-                    shareHistory: [],
-                    settings: []
+                    tripHistory: updated.tripHistory,
+                    settings: updated.settings
                 }
             });
 
@@ -136,8 +133,9 @@ export const loginController = async (req: Request, res: Response): Promise<void
         }
         const user = await UserModel.findOne({ email });
         if (!user) {
-            res.status(401);
-            throw new Error('No user found');
+            res.status(401).json({error: "User not found"});
+            return;
+
 
         }
         if (!process.env.JWT_SECRET) {
@@ -150,6 +148,7 @@ export const loginController = async (req: Request, res: Response): Promise<void
             const isMatch = await bcrypt.compare(password, user.password);
             if (!isMatch) {
                 res.status(401).json({ error: 'Invalid credentials' });
+                return;
             }
 
             const token = jwt.sign({ _id: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName, telephone: user.telephone }, jwtSecret, { expiresIn: '1d' });

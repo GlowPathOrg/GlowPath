@@ -14,15 +14,15 @@ import "leaflet/dist/leaflet.css";
 import "../../styles/MapComponent.css";
 import mapThemes, { getDefaultTheme, isValidTheme } from "./MapThemes";
 import FitBounds from "./FitBounds";
-import { InstructionsI, SummaryI } from "../../Types/Route";
+import { InstructionsI,  SummaryI } from "../../Types/Route";
 import SosButton from "../../pages/journeyPage/SosButton";
 
 export interface MapComponentProps {
   latitude: number | null; // User's latitude
   longitude: number | null; // User's longitude
   geolocationError: string | null; // Geolocation error message
-  route: LatLngTuple[]; // Route polyline coordinates
-  summary: SummaryI | null; // Route summary
+  polyline: LatLngTuple[]; // Route polyline coordinates
+  summary: SummaryI  | null;// Route summary
   instructions: InstructionsI[]; // Turn-by-turn instructions
   originCoords: LatLng | null; // Origin coordinates
   destinationCoords: LatLng | null; // Destination coordinates
@@ -39,9 +39,9 @@ const MapComponent: React.FC<MapComponentProps> = ({
   latitude,
   longitude,
   geolocationError,
-  route,
   summary,
   instructions,
+  polyline,
   originCoords,
   destinationCoords,
   theme,
@@ -195,8 +195,8 @@ const MapComponent: React.FC<MapComponentProps> = ({
         )}
 
         {/* Route Polyline */}
-        {route.length > 0 && (
-          <Polyline positions={route} pathOptions={{ className: "glowing-polyline" }} />
+        {polyline.length > 0 && (
+          <Polyline positions={polyline} pathOptions={{ className: "glowing-polyline" }} />
         )}
 
 
@@ -228,7 +228,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
       {/* Route Summary */}
       <div className="summary">
         <h3>Route Summary</h3>
-        {summary ? (
+        {summary && summary.length && summary.duration? (
           <div>
             <p>
               <strong>Distance:</strong> {summary.length / 1000} km

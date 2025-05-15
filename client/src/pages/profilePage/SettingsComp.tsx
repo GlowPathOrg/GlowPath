@@ -1,132 +1,106 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import "../../styles/SettingsPage.css"
+import "../../styles/SettingsPage.css";
+import { useUser } from "../../hooks/useUser";
+import { SettingsI } from "../../Types/User";
+
 
 const SettingsPage: React.FC = () => {
-  const navigate = useNavigate();
+  const defaultSettings: SettingsI = {
+    notifyNearby: true,
+    notifyAuthorities: true,
+    allowNotifications: true,
+    defaultSos: "Please contact me, I might be in danger.",
+    theme: "dark"
+  };
+  const { user, updateSettings } = useUser();
+  const settings = user?.settings ?? defaultSettings;
 
-  // State for SOS settings
-  const [sosSettings, setSosSettings] = useState({
-    notifyContacts: true,
-    notifyNearbyUsers: true,
-    callAuthorities: true,
-    emergencyContacts: [] as string[], // List of emergency contacts
-  });
+  const [uiNotifyNearby, setUiNotifyNearby] = useState(true);
+  const [uiNotifyAuthorities, setUiNotifyAuthorities] = useState(true);
+  const [uiAllowNotifications, setUiAllowNotifications] = useState(true);
+  const [uiSosMessage, setUiSosMessage] = useState("Help me, I am in danger!");
+  const [uiTheme, setUiTheme] = useState<string>("dark");
 
-  // State for default SOS message
-  const [sosMessage, setSosMessage] = useState<string>("Help me, I am in danger!");
-
-
-
-  // Load saved settings on mount
+  // Load settings from hook
   useEffect(() => {
-    const savedSettings = JSON.parse(localStorage.getItem("settings") || "{}");
-    if (savedSettings) {
-      setSosSettings((prev) => ({ ...prev, ...savedSettings }));
-      setSosMessage(savedSettings.sosMessage || "Help me, I am in danger!");
-      document.documentElement.setAttribute("data-theme", savedSettings.theme || "light");
-    }
-  }, []);
+    setUiNotifyNearby(settings.notifyNearby);
+    setUiNotifyAuthorities(settings.notifyAuthorities);
+    setUiAllowNotifications(settings.allowNotifications);
+    setUiSosMessage(settings.defaultSos);
+    setUiTheme(settings.theme || "dark");
+  }, [settings]);
 
-  // Save settings to localStorage
-  const saveSettings = () => {
-    const settingsToSave = { ...sosSettings, sosMessage };
-    localStorage.setItem("settings", JSON.stringify(settingsToSave));
-    alert("Settings saved successfully!");
+  // Apply theme to document body
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", uiTheme);
+  }, [uiTheme]);
+
+  const toggleTheme = () => {
+    setUiTheme((prev) => (prev === "dark" ? "light" : "dark"));
   };
 
+  const handleSave = async () => {
+    const newSettings = {
+      notifyNearby: uiNotifyNearby,
+      notifyAuthorities: uiNotifyAuthorities,
+      allowNotifications: uiAllowNotifications,
+      defaultSos: uiSosMessage,
+      theme: uiTheme,
+    };
 
-
-  // Handle toggling of SOS options
-  const handleToggle = (option: keyof typeof sosSettings) => {
-    setSosSettings((prev) => ({ ...prev, [option]: !prev[option] }));
+    await updateSettings(newSettings);
+    alert("Settings saved!");
   };
-
-
 
   return (
     <div className="settings-page">
       <h1>Settings</h1>
-      {/* SOS Options */}
+
       <section>
         <h2>SOS Button Options</h2>
-        <div>
-          <label>
-            <input
-              type="checkbox"
-              checked={sosSettings.notifyContacts}
-              onChange={() => handleToggle("notifyContacts")}
-            />
-            Notify Emergency Contacts
-          </label>
-        </div>
-        <div>
-          <label>
-            <input
-              type="checkbox"
-              checked={sosSettings.notifyNearbyUsers}
-              onChange={() => handleToggle("notifyNearbyUsers")}
-            />
-            Notify Nearby Users
-          </label>
-        </div>
-        <div>
-          <label>
-            <input
-              type="checkbox"
-              checked={sosSettings.callAuthorities}
-              onChange={() => handleToggle("callAuthorities")}
-            />
-            Call Local Authorities
-          </label>
-        </div>
+        <label>
+          <input
+            type="checkbox"
+            checked={uiNotifyNearby}
+            onChange={() => setUiNotifyNearby(!uiNotifyNearby)}
+          />
+          Notify Users Nearby
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={uiNotifyAuthorities}
+            onChange={() => setUiNotifyAuthorities(!uiNotifyAuthorities)}
+          />
+          Notify Authorities
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={uiAllowNotifications}
+            onChange={() => setUiAllowNotifications(!uiAllowNotifications)}
+          />
+          Allow SOS notifications from other users
+        </label>
       </section>
 
-      {/* Emergency Contacts */}
-      <section>
-        <h2>Emergency Contacts</h2>
-        <button
-          onClick={() => navigate("/contact-manager")}
-          style={{
-            padding: "10px 20px",
-            backgroundColor: "#2f2f2f",
-            color: "white",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
-          className="emergency"
-        >
-          Manage Contacts
-        </button>
-        <ul>
-          {sosSettings.emergencyContacts.map((contact, idx) => (
-            <li key={idx}>{contact}</li>
-          ))}
-        </ul>
-      </section>
-
-      {/* Default SOS Message */}
       <section>
         <h2>Default SOS Message</h2>
         <textarea
-          value={sosMessage}
-          onChange={(e) => setSosMessage(e.target.value)}
+          value={uiSosMessage}
+          onChange={(e) => setUiSosMessage(e.target.value)}
           placeholder="Enter your SOS message here"
-          style={{
-            width: "100%",
-            height: "80px",
-            marginTop: "10px",
-            padding: "10px",
-            borderRadius: "5px",
-            border: "1px solid #ccc",
-          }}
         />
       </section>
 
-      {/* Appearance Section */}
+      <section>
+        <h2>Theme</h2>
+        <button className="theme-toggle-button" onClick={toggleTheme}>
+          Switch to {uiTheme === "dark" ? "Light" : "Dark"} Mode
+        </button>
+      </section>
 
-      <button className="save-button" onClick={saveSettings}>
+      <button className="save-button" onClick={handleSave}>
         Save Settings
       </button>
     </div>

@@ -1,6 +1,8 @@
 import axios, { AxiosResponse } from "axios";
-import { RegisterDataI, LoginDataI, UserI } from "../Types/User";
+import { RegisterDataI, LoginDataI, UserI, SettingsI } from "../Types/User";
 import { AuthResponse } from "../Types/Express";
+import { LatLng } from "leaflet";
+import { SummaryI } from "../Types/Route";
 const base_URL = import.meta.env.VITE_BACKEND_URL
 if (!base_URL) {
   console.error('NO URL FOUND')
@@ -26,11 +28,7 @@ export const registerService = async (userData: RegisterDataI): Promise<AxiosRes
         'Content-Type': 'application/json'
       }
     });
-    console.log('response is, ', response)
-    if (response && response.data.token) {
-
-      return response
-    };
+    return response
 
 
   }
@@ -62,7 +60,7 @@ export const loginService = async (userData: LoginDataI): Promise<AxiosResponse<
 
 export const editProfileService = async (
   userEdit: {
-    [key: string]: string;
+    [key: string]: string | SettingsI | undefined | LatLng[] | SummaryI[];
   } & { _id: string },
   setUser: (user: UserI) => void
 ): Promise<AxiosResponse<AuthResponse> | undefined> => {

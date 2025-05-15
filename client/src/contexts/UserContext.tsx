@@ -46,8 +46,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
                 setIsAuthorized(true);
                 localStorage.setItem("token", token);
-                localStorage.setItem("userData", JSON.stringify(user));
                 setUser(user);
+
 
 
 
@@ -84,6 +84,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const editUserContext = (updatedUser: UserI) => {
         setUser(updatedUser);
+        localStorage.setItem("userData", JSON.stringify(updatedUser));
     };
 
 

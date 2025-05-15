@@ -24,9 +24,10 @@ export interface InstructionsI{
 
 export interface SummaryI {
     _id?: string;
-    duration: number;
-    length: number;
+    duration?: number;
+    length?: number;
     baseDuration?: number;
+    date: string;
 }
 
 

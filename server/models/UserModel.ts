@@ -16,8 +16,8 @@ export interface UserI {
     lastName: string;
     telephone?: string;
     places?: [][];
-    tripHistory: SummaryI,
-    settings: SettingsI[];
+    tripHistory: SummaryI[],
+    settings: SettingsI;
 }
 
 interface UserDocument extends UserI, Document {
@@ -66,8 +66,8 @@ const userSchema = new Schema<UserDocument>({
         required: [true, "tripHistory is required"]
     },
     settings: {
-        type: [settingsSchema],
-        required: [true, "Settings is required"]
+        type: settingsSchema,
+        default: () => ({})
     }
 });
 

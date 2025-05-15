@@ -19,6 +19,8 @@ export interface SummaryI {
     duration?: number;
     length?: number;
     baseDuration?: number;
+    date: string;
+    destination: string;
 }
 
 
@@ -77,7 +79,7 @@ export const RouteSchema = new Schema({
         type: Array,
         required: true },
     instructions: [NavigationSchema],
-    summary: SummarySchema,
+    summary: [SummarySchema],
 
 });
 
