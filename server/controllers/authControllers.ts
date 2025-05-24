@@ -18,7 +18,7 @@ const generateToken = (user: any) => {
 };
 
 export const registerController = async (req: Request, res: Response): Promise<void> => {
-    console.log('in register controller, message received!')
+    console.log(`[authController]`)
     const { email, password, firstName, lastName, telephone } = req.body;
 
         if (!email || !password || !firstName || !lastName) {
