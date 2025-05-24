@@ -24,6 +24,12 @@ const corsOptions: CorsOptions = {
   origin: function (origin, callback) {
     console.log('Incoming request origin:', origin);
 
+    app.use((req, res, next) => {
+      res.on('finish', () => {
+        console.log('Response headers:', res.getHeaders());
+      });
+      next();
+    });
     if (!origin) {
       console.warn('No origin in request. Allowing by default.');
       return callback(null, true);
