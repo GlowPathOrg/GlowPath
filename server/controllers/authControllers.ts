@@ -34,7 +34,7 @@ export const registerController = async (req: Request, res: Response): Promise<v
             throw new Error('User already exists');
             ;
         };
-
+    console.log(`[registerController] line 37`)
         const user = new UserModel({ email, password, firstName, lastName, telephone});
         await user.save();
         const token = jwt.sign(

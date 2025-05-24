@@ -21,7 +21,7 @@ export const getToken = (): string | null => {
 
 export const registerService = async (userData: RegisterDataI): Promise<AxiosResponse<AuthResponse> | undefined> => {
   try {
-    console.log('Auth_URL is', `${AUTH_URL}/register`, 'user data is', userData)
+    console.log('[registerService] Auth_URL is', `${AUTH_URL}/register`, 'user data is', userData)
     const response = await axios.post<AuthResponse>(`${AUTH_URL}/register`, userData, {
       withCredentials: true,
       headers: {
