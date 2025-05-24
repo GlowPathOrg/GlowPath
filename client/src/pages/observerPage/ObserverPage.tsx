@@ -6,9 +6,11 @@ import MapComponent from '../../components/MapComponent/MapComponent.js';
 import { accessShare } from '../../services/shareService.js';
 import { RouteI } from '../../Types/Route.js';
 import "../../styles/ObserverPage.css";
+import { ShareI } from '../../Types/Share.js';
+import { AxiosResponse } from 'axios';
 
 const ObserverPage = () => {
-  const [route, setRoute] = useState<RouteI>({polyline: [], instructions: [], summary: {duration: 0, length: 0}});
+  const [route, setRoute] = useState<RouteI>({polyline: [], instructions: [], summary: {duration: 0, length: 0, date: ""}});
   const [sharerName, setSharerName] = useState("");
   const [searchParams] = useSearchParams();
   const { id } = useParams() || "";
@@ -50,7 +52,7 @@ const ObserverPage = () => {
   }, [id, isConnected]);
 
   async function getShareOnLoad () {
-    const result: any = await accessShare(id as string, password);
+    const result: AxiosResponse<ShareI> = await accessShare(id as string, password);
     if (result.data) {
       setRoute(result.data.route);
       setSharerName(result.data.owner.firstName);
@@ -63,6 +65,7 @@ const ObserverPage = () => {
     if (id && password) {
       getShareOnLoad();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 
   return (
@@ -76,7 +79,7 @@ const ObserverPage = () => {
           longitude={position.longitude}
           heading={position.heading}
           geolocationError={null}
-          route={route?.polyline}
+          polyline={route.polyline}
           summary={route?.summary}
           instructions={route?.instructions}
           litStreets={[]}

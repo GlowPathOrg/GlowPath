@@ -3,19 +3,44 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Polyline, useMap } from "react-leaflet";
 import "../styles/NavigationPage.css";
 import Footer from "../components/Footer"
+import { useUser } from "../hooks/useUser";
+import { format } from "date-fns";
+import { SummaryI } from "../Types/Route";
+
 
 const NavigationPage: React.FC = () => {
+
   const location = useLocation();
   const navigate = useNavigate();
-
+  // adding user
+  const { user, updateUser } = useUser();
   // Destructure state from the previous navigation or default values
   const {
-    route = [], // Array of coordinates for the route
-    summary = { distance: 0, duration: 0 }, // Distance and duration of the route
-    instructions = [], // Turn-by-turn instructions
-    theme = "standard", // Selected map theme
-    transportMode = "pedestrian", // Transport mode (e.g., pedestrian)
+    route, // Array of coordinates for the route
+    summary, // Distance and duration of the route
+    instructions, // Turn-by-turn instructions
+    theme, // Selected map theme
+    transportMode, // Transport mode (e.g., pedestrian)
   } = location.state || {};
+
+  useEffect(() => {
+    if (user && summary && summary.length && summary.duration) {
+      const updatedTrip: SummaryI = {
+        ...summary,
+        date: format(new Date(), "yyyy_MM_dd"),
+
+      };
+
+      const updatedTripHistory = [...(user.tripHistory), updatedTrip];
+
+      updateUser({
+        _id: user._id,
+        tripHistory: updatedTripHistory,
+      });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
 
   const [currentInstruction, setCurrentInstruction] = useState<string>(""); // Current turn-by-turn instruction
   console.log(currentInstruction)

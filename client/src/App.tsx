@@ -8,7 +8,6 @@ import ProfilePage from './pages/profilePage/ProfilePage';
 import NavigationPage from './pages/NaviagtionPage';
 import ObserverPage from './pages/observerPage/ObserverPage';
 import VisualisationsPage from './pages/VisualisationsPage';
-import SettingsPage from './pages/SettingsPage'
 import ContactManagerPage from './pages/ContactManagerPage';
 import "./index.css"
 
@@ -27,7 +26,7 @@ const App: React.FC = () => {
  <Router basename={import.meta.env.BASE_URL}>
       <div className="app">
         {/* Global Navigation */}
-        
+
         {/* Routes */}
         <main>
           <Routes>
@@ -36,7 +35,7 @@ const App: React.FC = () => {
             <Route path="/where-to" element={<WhereToPage />} />
 
               <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/settings" element={<SettingsPage />} />
+
 
               <Route path="/contact-manager" element={<ContactManagerPage />} />
             <Route path="/navigation" element={<NavigationPage />} />

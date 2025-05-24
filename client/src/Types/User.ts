@@ -2,6 +2,14 @@ import { LatLng } from "leaflet";
 import { SummaryI } from "./Route";
 
 // User Interface extends Document so that its type has access to mongodb methods.
+export interface SettingsI {
+    notifyNearby: boolean,
+    notifyAuthorities: boolean,
+    allowNotifications: boolean,
+    defaultSos: string,
+    theme: string,
+
+}
 
 export interface LoginDataI {
     email: string;
@@ -15,18 +23,11 @@ export interface RegisterDataI extends LoginDataI {
 }
 export interface UserI extends RegisterDataI{
     _id: string;
-    messages?: unknown[];
     places?: LatLng[];
-    contacts?: unknown[];
-    tripHistory?: SummaryI[]
+    tripHistory: SummaryI[],
+    settings: SettingsI;
 }
 
-export interface ContactI {
-    email: string;
-    trusted: boolean;
-    emergency: boolean;
-    favorite: boolean;
-    telephone?: string;
-}
+
 
 

@@ -1,33 +1,34 @@
 import axios, { AxiosResponse } from "axios";
-import { RegisterDataI, LoginDataI, UserI } from "../Types/User";
+import { RegisterDataI, LoginDataI, UserI, SettingsI } from "../Types/User";
+import { AuthResponse } from "../Types/Express";
+import { LatLng } from "leaflet";
+import { SummaryI } from "../Types/Route";
+const base_URL = import.meta.env.VITE_BACKEND_URL
+if (!base_URL) {
+  console.error('NO URL FOUND')
+}
 
 
 // CHANGE BACK TO HEROKU FOR DEPLOYMENT
-const AUTH_URL = "https://glowpath-a7681fe09c29.herokuapp.com" + '/auth';
+const AUTH_URL = base_URL + '/auth';
 // Get the stored token from localStorage
 export const getToken = (): string | null => {
   return localStorage.getItem("token");
 };
 
-export interface AuthResponse {
-  token?: string;
-  message?: string;
-  updated?: UserI;
-  user?: UserI;
-}
+
 
 
 export const registerService = async (userData: RegisterDataI): Promise<AxiosResponse<AuthResponse> | undefined> => {
   try {
+    console.log('Auth_URL is', `${AUTH_URL}/register`, 'user data is', userData)
     const response = await axios.post<AuthResponse>(`${AUTH_URL}/register`, userData, {
       withCredentials: true,
       headers: {
         'Content-Type': 'application/json'
       }
     });
-    if (response && response.data.token) {
-      return response
-    };
+    return response
 
 
   }
@@ -59,7 +60,7 @@ export const loginService = async (userData: LoginDataI): Promise<AxiosResponse<
 
 export const editProfileService = async (
   userEdit: {
-    [key: string]: string;
+    [key: string]: string | SettingsI | undefined | LatLng[] | SummaryI[];
   } & { _id: string },
   setUser: (user: UserI) => void
 ): Promise<AxiosResponse<AuthResponse> | undefined> => {

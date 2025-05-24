@@ -8,7 +8,12 @@ import { decode } from "@here/flexpolyline";
 import MapComponent from "../components/MapComponent/MapComponent";
 import { InstructionsI, RouteRequestI, SummaryI } from "../Types/Route";
 import "../styles/WhereToPage.css"
+import { format } from "date-fns";
+
+
+
 const WhereToPage: React.FC = () => {
+
   const navigate = useNavigate();
   const { latitude, longitude, error: geoError } = usePosition();
   const [originCoords, setOriginCoords] = useState<{ lat: number; lon: number } | null>(null);
@@ -19,6 +24,7 @@ const WhereToPage: React.FC = () => {
   const [instructions, setInstructions] = useState<InstructionsI[]>([]);
   const [transportMode, setTransportMode] = useState<"pedestrian" | "publicTransport" | "bicycle" | "car">("pedestrian");
   const [error, setError] = useState<string | null>(null);
+
 
   const heading = 0; // Default heading
 
@@ -64,7 +70,11 @@ const WhereToPage: React.FC = () => {
       const routeCoordinates: LatLngTuple[] = decoded.polyline.map(([lat, lon]) => [lat, lon]);
 
       setRoute(routeCoordinates);
-      setSummary({ length: routeSummary.length, duration: routeSummary.duration });
+      setSummary({
+        length: routeSummary.length,
+        duration: routeSummary.duration,
+        date: format(new Date(), "yyyy_MM_dd"),
+      });
       setInstructions(routeInstructions);
 
       // Update search history
@@ -77,14 +87,18 @@ const WhereToPage: React.FC = () => {
           originCoords: latLng(originCoords.lat, originCoords.lon),
           destinationCoords: latLng(destinationCoords.lat, destinationCoords.lon),
           route: routeCoordinates,
-          summary: { length: routeSummary.length, duration: routeSummary.duration },
+          summary: {
+            length: routeSummary.length,
+            duration: routeSummary.duration,
+            date: format(new Date(), "yyyy_MM_dd"),
+          },
           instructions: routeInstructions,
           litStreets: litStreets.map(({ lat, lon }: { lat: number; lon: number }) => [lat, lon] as LatLngTuple),
           sidewalks,
           policeStations: policeStations.map(({ lat, lon }: { lat: number; lon: number }) => [lat, lon] as LatLngTuple),
           hospitals: hospitals.map(({ lat, lon }: { lat: number; lon: number }) => [lat, lon] as LatLngTuple),
           theme: "standard", // Default theme passed; can be changed in JourneyPage
-          destinationName: destination, 
+          destinationName: destination,
         },
       });
     } catch (err) {
@@ -104,7 +118,7 @@ const WhereToPage: React.FC = () => {
 
   return (
     <div className="where-to-page">
-      
+
       {/* Destination Input */}
       <div>
         <input
@@ -160,7 +174,7 @@ const WhereToPage: React.FC = () => {
           longitude={longitude}
           heading={heading}
           geolocationError={geoError || null}
-          route={route}
+          polyline={route}
           summary={summary}
           instructions={instructions}
           originCoords={latLng(originCoords!.lat, originCoords!.lon)}

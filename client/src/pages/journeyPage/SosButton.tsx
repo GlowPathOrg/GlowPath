@@ -5,6 +5,12 @@ interface SOSButtonProps {
   onSOSActivated?: () => void; // Optional callback for additional logic when SOS is activated
 }
 
+const base_URL = import.meta.env.VITE_BACKEND_URL
+if (!base_URL) {
+  console.error('NO URL FOUND')
+}
+
+
 const SOSButton: React.FC<SOSButtonProps> = ({ onSOSActivated }) => {
   const [showContactSelector, setShowContactSelector] = useState<boolean>(false);
   const [selectedContact, setSelectedContact] = useState<string | null>(null);
@@ -52,7 +58,7 @@ const SOSButton: React.FC<SOSButtonProps> = ({ onSOSActivated }) => {
 
   const notifyEmergencyContacts = async (contacts: string[], message: string) => {
     try {
-      const response = await fetch("https://glowpath-a7681fe09c29.herokuapp.com/notify-contacts", {
+      const response = await fetch(`${base_URL}/notify-contacts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -1,9 +1,10 @@
 import dotenv from 'dotenv';
 import axios from 'axios';
-import { RouteI, RouteRequestI } from '../Types/Route.js';
 import { Request, Response } from 'express';
+import { RouteI } from '../models/Route';
 
 dotenv.config();
+
 
 // fetch a route from the HERE API
 export const routeController = async(req: Request, res: Response): Promise<void> => {

@@ -14,7 +14,11 @@ export const fetchRoute = async (
   const [destinationLat, destinationLon] = destination;
 
   // Changed from api url to backend url
-  const url = import.meta.env.VITE_BACKEND_URL || "https://glowpath-a7681fe09c29.herokuapp.com";
+  const url = import.meta.env.VITE_BACKEND_URL
+  if (!url) {
+    console.error('NO URL FOUND')
+  }
+
   try {
     // Log the parameters being sent to the API for debugging purposes
     /* console.log('Request Parameters:', {

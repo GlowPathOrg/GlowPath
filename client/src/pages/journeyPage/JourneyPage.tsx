@@ -42,7 +42,7 @@ const JourneyPage: React.FC = () => {
   } = location.state || {};
 
   // All state variables used
-  const [currentRoute, setCurrentRoute] = useState<LatLngTuple[]>(initialRoute); // Active route
+  const [currentPolyline, setcurrentPolyline] = useState<LatLngTuple[]>(initialRoute); // Active route
   const [currentSummary, setCurrentSummary] = useState(initialSummary); // Route summary
   const [currentInstructions, setCurrentInstructions] = useState(initialInstructions); // Instructions
   const [userDeviationDetected, setUserDeviationDetected] = useState(false); // Track route deviation
@@ -63,6 +63,7 @@ const JourneyPage: React.FC = () => {
   useEffect(() => {
     connectSocket();
     // don't include in dev dependencies!
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -86,18 +87,18 @@ const JourneyPage: React.FC = () => {
   const handleThemeChange = (newTheme: string) => setMapTheme(newTheme);
   // Detect if the user deviates from the route
   useEffect(() => {
-    if (latitude && longitude && currentRoute.length > 0) {
+    if (latitude && longitude && currentPolyline.length > 0) {
       const userLocation = latLng(latitude, longitude);
 
       // Check if the user is close to any point on the route
-      const isOnRoute = currentRoute.some(([lat, lon]: LatLngTuple) => {
+      const isOnRoute = currentPolyline.some(([lat, lon]: LatLngTuple) => {
         const point = latLng(lat, lon);
         return userLocation.distanceTo(point) <= 50; // Deviation threshold in meters
       });
 
       setUserDeviationDetected(!isOnRoute); // Update deviation state
     }
-  }, [latitude, longitude, currentRoute]);
+  }, [latitude, longitude, currentPolyline]);
 
 
 
@@ -109,11 +110,11 @@ const JourneyPage: React.FC = () => {
   // Handle rerouting if the user deviates from the route
   const handleReroute = useCallback(async () => {
 
-    if (!latitude || !longitude || currentRoute.length === 0) return;
+    if (!latitude || !longitude || currentPolyline.length === 0) return;
 
     try {
       // Get the last point in the route as the destination
-      const destination = currentRoute[currentRoute.length - 1];
+      const destination = currentPolyline[currentPolyline.length - 1];
       const [destLat, destLon] = destination;
 
       const request: RouteRequestI = {
@@ -132,7 +133,7 @@ const JourneyPage: React.FC = () => {
       const decoded = decode(polyline);
       if (decoded && Array.isArray(decoded.polyline)) {
         const newRoute: LatLngTuple[] = decoded.polyline.map(([lat, lon]) => [lat, lon] as LatLngTuple);
-        setCurrentRoute(newRoute); // Update the route
+        setcurrentPolyline(newRoute); // Update the route
         setCurrentSummary(summary); // Update summary
         setCurrentInstructions(instructions); // Update instructions
         setRerouted(true); // Mark rerouting as done
@@ -141,7 +142,7 @@ const JourneyPage: React.FC = () => {
       console.error("Error during rerouting:", error); // Log rerouting errors
     }
 
-  }, [latitude, longitude, currentRoute, transportMode])
+  }, [latitude, longitude, currentPolyline, transportMode])
 
   // Trigger rerouting when deviation is detected
 useEffect(() => {
@@ -174,7 +175,7 @@ useEffect(() => {
         alert("Active share already in progress");
         return;
       }
-      const route: RouteI = {polyline: currentRoute, instructions: currentInstructions, summary: currentSummary};
+      const route: RouteI = {polyline: currentPolyline, instructions: currentInstructions, summary: currentSummary};
       console.log('sharing' , route)
       const result = await createShare(route);
       const url = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "") + "/observe/" + result.data.id + "?password=" + result.data.password;
@@ -228,24 +229,24 @@ useEffect(() => {
   return (
     <div className="journey-page" >
       {
-        currentRoute.length > 0 ? (
+        currentPolyline.length > 0 ? (
           <MapComponent
             latitude={latitude}
             longitude={longitude}
             heading={heading}
             geolocationError={geoError || null
             }
-            route={currentRoute}
+            polyline={currentPolyline}
             summary={currentSummary}
             instructions={currentInstructions}
-            originCoords={latLng(currentRoute[0][0], currentRoute[0][1])}
+            originCoords={latLng(currentPolyline[0][0], currentPolyline[0][1])}
             litStreets={litStreets}
             sidewalks={sidewalks}
             policeStations={policeStations}
             hospitals={hospitals}
             destinationCoords={
               destinationCoords ||
-              latLng(currentRoute[currentRoute.length - 1][0], currentRoute[currentRoute.length - 1][1])
+              latLng(currentPolyline[currentPolyline.length - 1][0], currentPolyline[currentPolyline.length - 1][1])
             }
             theme={mapTheme}
           />

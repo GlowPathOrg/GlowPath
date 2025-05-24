@@ -1,7 +1,6 @@
-// this is for the contacts and sos function and not for anything else for now 
 import { useState, useEffect } from "react";
 
-const useLocalStorage = <T,>(key: string, initialValue: T): [T, React.Dispatch<React.SetStateAction<T>>] => {
+const useLocalStorage = <T,> (key: string, initialValue: T): [T, React.Dispatch<React.SetStateAction<T>>] => {
   const [storedValue, setStoredValue] = useState<T>(() => {
     try {
       const item = localStorage.getItem(key);
@@ -19,6 +18,22 @@ const useLocalStorage = <T,>(key: string, initialValue: T): [T, React.Dispatch<R
       console.error("Error saving to localStorage:", error);
     }
   }, [key, storedValue]);
+
+
+  useEffect(() => {
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === key && event.newValue) {
+        try {
+          setStoredValue(JSON.parse(event.newValue));
+        } catch (e) {
+          console.error("Error parsing storage update", e);
+        }
+      }
+    };
+
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, [key]);
 
   return [storedValue, setStoredValue];
 };

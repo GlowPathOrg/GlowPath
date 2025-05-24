@@ -1,10 +1,11 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, {  useEffect, useState } from "react";
 import "../../styles/InfoComponent.css";
-import { AuthContext } from "../../contexts/UserContext";
-import { editProfileService } from "../../services/authService";
+import { useUser } from "../../hooks/useUser";
 
 const InfoComponent: React.FC = () => {
-    const { user, setUser, editUserContext} = useContext(AuthContext);
+    const { user, updateUser } = useUser();
+
+
     const [editMode, setEditMode] = useState(false);
     const [showModal, setShowModal] = useState(false);
    const [reenteredPassword, setReenteredPassword] = useState("");
@@ -28,7 +29,7 @@ const InfoComponent: React.FC = () => {
                 telephone: user.telephone || "",
             });
         }
-    }, [user, setUser]);
+    }, [user]);
 
     const toggleEditMode = () => {
         setEditMode(!editMode);
@@ -73,22 +74,13 @@ const InfoComponent: React.FC = () => {
 
             if (fieldName === "password") {
                 payload.password = reenteredPassword;
+                await updateUser({ password: reenteredPassword });
             }
 
-            const response = await editProfileService(payload, setUser);
-            console.log(response);
-            if (response && response.data.user) {
-                editUserContext(response.data.user)
-                setUser(response.data.user);
-                console.log("Profile updated successfully!");
-                setShowModal(false);
-                setFieldBeingEdited(null);
-                setEditMode(false);
-                setErrorMessage('')
-            }
-            else {
-                console.log('Response in edit component:', response)
-            }
+            await updateUser({ firstName: formData.firstName });
+
+            console.log('updateUser complete');
+
 
         } catch (error) {
             console.error("Error updating profile:", error);
