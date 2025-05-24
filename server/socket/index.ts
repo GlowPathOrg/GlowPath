@@ -14,10 +14,10 @@ export const setupSocket = (app: Express) => {
   const server = createServer(app);
   const io = new Server(server, {
     cors: {
-      origin: "*"/* [
+      origin:  [
         "http://localhost:5173", // Local development
         "https://glowpathorg.github.io/GlowPath", // Live link
-      ], */
+      ],
     },
     connectionStateRecovery: {
       maxDisconnectionDuration: 2 * 60 * 1000,
