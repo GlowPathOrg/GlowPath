@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npm --prefix server run start",
     "build": "npm --prefix server run build",
-    "heroku-postbuild": "npm run build",
+    "-postbuild": "npm run build",
     "dev": "npm --prefix server run dev"
   },
   "dependencies": {

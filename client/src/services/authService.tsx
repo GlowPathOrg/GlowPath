@@ -9,7 +9,7 @@ if (!base_URL) {
 }
 
 
-// CHANGE BACK TO HEROKU FOR DEPLOYMENT
+
 const AUTH_URL = base_URL + '/auth';
 // Get the stored token from localStorage
 export const getToken = (): string | null => {
