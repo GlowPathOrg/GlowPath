@@ -60,15 +60,13 @@ export const loginService = async (userData: LoginDataI): Promise<AxiosResponse<
 
 export const editProfileService = async (
   userEdit: {
-    [key: string]: string | SettingsI | undefined | LatLng[] | SummaryI[];
+    [key: string]: string | SettingsI | undefined | LatLng[] | SummaryI[] | string[];
   } & { _id: string },
   setUser: (user: UserI) => void
 ): Promise<AxiosResponse<AuthResponse> | undefined> => {
 
   try {
     const token = getToken();
-
-    console.log('sending to edit: ', userEdit);
 
     const response = await axios.post<AuthResponse>(`${AUTH_URL}/edit`, userEdit, {
       withCredentials: true,
@@ -78,17 +76,42 @@ export const editProfileService = async (
       }
     });
     if (response?.data.updated) {
-      console.log("Updated user: ", response.data.updated);
+      console.log("Updated user: ", response.data);
 
       // ✅ Update context and localStorage
       setUser(response.data.updated);
-      localStorage.setItem("userData", JSON.stringify(response.data.updated));
     }
 
     return response;
 
   } catch (error) {
     console.log('error editing profile', error);
+    throw error;
+  }
+};
+
+export const fetchUserProfile = async (): Promise<UserI> => {
+  const token = getToken()
+  try {
+    if (!token) {
+      throw new Error("No auth token provided");
+    }
+
+    const response: AxiosResponse<{ user: UserI }> = await axios.get(`${AUTH_URL}/profile`, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      }
+    });
+
+    if (response?.data?.user) {
+      return response.data.user;
+    } else {
+      throw new Error("Failed to fetch user profile: no user data in response");
+    }
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
     throw error;
   }
 };

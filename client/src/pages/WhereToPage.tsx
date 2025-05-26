@@ -30,7 +30,7 @@
     const [favoritePlaces, setFavoritePlaces] = useState<string[]>([]);
     const [activeTab, setActiveTab] = useState<"history" | "favorites">("history");
 
-    const { user } = useUser();
+    const { user, updateUser } = useUser();
 
 
 
@@ -60,11 +60,25 @@
         updatedFavorites = favoritePlaces.filter((item) => item !== place);
       } else {
         updatedFavorites = [...favoritePlaces, place];
+
       }
       setFavoritePlaces(updatedFavorites);
       localStorage.setItem("favoritePlaces", JSON.stringify(updatedFavorites));
+      submitFavorite(updatedFavorites)
     };
 
+    const submitFavorite = async(newPlaces: string[]) => {
+      if (!user) {
+        console.warn(`[submitFavorite]: no user found`)
+        return;
+      }
+      try {
+        await updateUser({places: newPlaces})
+      }
+      catch (e) {
+        console.error(`[submitFavorite]: Server error: ${e}`)
+      }
+    }
 
     const handleSearch = async () => {
       if (!originCoords) {
@@ -82,6 +96,7 @@
         const routeResponse = await fetchRoute(
           routeRequest
         );
+
 
 
         const {

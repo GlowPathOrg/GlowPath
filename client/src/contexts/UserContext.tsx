@@ -1,7 +1,6 @@
-import React, { createContext,  useEffect,  useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import { RegisterDataI, UserI } from '../Types/User';
-import { registerService } from "../services/authService";
-import useLocalStorage from '../hooks/useLocalStorage';
+import { registerService, fetchUserProfile } from "../services/authService"; // you'll need to implement this
 
 interface AppContextValue {
     user: UserI | null;
@@ -9,102 +8,70 @@ interface AppContextValue {
     isAuthorized: boolean;
     handleLoginContext: (token: string, userResponse: UserI) => void;
     handleLogoutContext: () => void;
-    editUserContext: (updatedUser: UserI) => void;
     handleRegisterContext: (userResponse: UserI) => void;
-
-
-
-/*     tripHistory: SummaryI[] | null;
-    setTripHistory: React.Dispatch<React.SetStateAction<SummaryI[] | null>>;
-    settings: SettingsI | null;
-    setSettings: React.Dispatch<React.SetStateAction<SettingsI>>; */
-
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext<AppContextValue>({
     user: null,
     isAuthorized: false,
     handleLoginContext: () => { },
     handleLogoutContext: () => { },
-    handleRegisterContext: () => {},
-    editUserContext: () => {},
+    handleRegisterContext: () => { },
     setUser: () => { },
-/*     tripHistory: null,
-    setTripHistory: () => {},
-    settings: null,
-    setSettings: () => {} */
-
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [isAuthorized, setIsAuthorized] = useState<boolean>(!!localStorage.getItem("token"));
-    const [user, setUser] = useLocalStorage<UserI | null>("userData", null);
+    const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
+    const [user, setUser] = useState<UserI | null>(null);
 
     const handleLoginContext = (token: string, user: UserI) => {
-
-
-                setIsAuthorized(true);
-                localStorage.setItem("token", token);
-                setUser(user);
-
-
-
-
-
-
-
+        setIsAuthorized(true);
+        localStorage.setItem("token", token);
+        setUser(user);
     };
+
     const handleRegisterContext = async (userData: RegisterDataI) => {
         try {
             const response = await registerService(userData);
-            console.log(response);
             if (response?.data.token && response.data.updated) {
                 setIsAuthorized(true);
-                const thisUser = response.data.updated;
                 localStorage.setItem("token", response.data.token);
-                localStorage.setItem("userData", JSON.stringify(thisUser));
-                setUser(thisUser);
+                setUser(response.data.updated);
             }
-        }
-        catch (error) {
+        } catch (error) {
             console.log(error);
         }
-
-
-
     };
 
     const handleLogoutContext = () => {
         localStorage.removeItem("token");
-        localStorage.removeItem("userData");
         setIsAuthorized(false);
         setUser(null);
     };
 
-    const editUserContext = (updatedUser: UserI) => {
-        setUser(updatedUser);
-        localStorage.setItem("userData", JSON.stringify(updatedUser));
-    };
-
-
-
     useEffect(() => {
-        const decoded = localStorage.getItem('token');
-        setIsAuthorized(!!decoded);
-        if (decoded) {
-            const storedUserData = localStorage.getItem("userData");
-            setUser(storedUserData ? JSON.parse(storedUserData): null);
+        const token = localStorage.getItem('token');
+        if (token) {
+            setIsAuthorized(true);
+            (async () => {
+                try {
+                    const fetchedUser = await fetchUserProfile(token);
+                    setUser(fetchedUser);
+                } catch (err) {
+                    console.error("Failed to fetch user profile:", err);
+                    setIsAuthorized(false);
+                    setUser(null);
+                }
+            })();
         } else {
-
+            setIsAuthorized(false);
             setUser(null);
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
 
     return (
-        <AuthContext.Provider value={{ isAuthorized, user, setUser,  handleLoginContext, handleLogoutContext, handleRegisterContext, editUserContext }}>
+        <AuthContext.Provider value={{ isAuthorized, user, setUser, handleLoginContext, handleLogoutContext, handleRegisterContext }}>
             {children}
         </AuthContext.Provider>
     );

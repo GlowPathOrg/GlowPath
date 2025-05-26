@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -13,6 +13,7 @@ import {
 import { Line, Bar } from "react-chartjs-2";
 import "../styles/ Visualisations.css";
 import Footer from "../components/Footer";
+import { useUser } from "../hooks/useUser";
 
 ChartJS.register(
   CategoryScale,
@@ -27,9 +28,9 @@ ChartJS.register(
 
 const mockData = {
   myPlaces: [
-    { name: "Home", address: "123 Main St" },
-    { name: "Work", address: "456 Office Rd" },
-    { name: "Gym", address: "789 Fitness Ave" },
+     "123 Main St",
+    "456 Office Rd",
+    "789 Fitness Ave",
   ],
   averageRouteLength: {
     timestamps: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
@@ -56,6 +57,8 @@ const mockData = {
 };
 
 const Visualisations: React.FC = () => {
+  const { user } = useUser();
+  const [myPlaces, setMyPlaces] = useState(mockData.myPlaces)
   const commonChartOptions = {
     maintainAspectRatio: false,
     responsive: true,
@@ -66,6 +69,16 @@ const Visualisations: React.FC = () => {
     },
   };
 
+  useEffect(()=>{
+    if (!user || !user?.places || user.places.length === 0) {
+      console.warn('no user...using mock data')
+      setMyPlaces(mockData.myPlaces)
+    }
+    else {
+      console.log(user.places.length)
+      setMyPlaces(user.places)
+    }
+  }, [user])
   return (
     <div className="visualisations-page">
       <h1>Visualisations</h1>
@@ -74,9 +87,9 @@ const Visualisations: React.FC = () => {
       <section className="section">
         <h2>My Places</h2>
         <ul>
-          {mockData.myPlaces.map((place, idx) => (
+          {myPlaces.map((place: string, idx) => (
             <li key={idx}>
-              <strong>{place.name}</strong>: {place.address}
+              {place}
             </li>
           ))}
         </ul>

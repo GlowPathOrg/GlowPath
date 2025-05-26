@@ -21,45 +21,45 @@ export const registerController = async (req: Request, res: Response): Promise<v
     console.log('in register controller, message received!')
     const { email, password, firstName, lastName, telephone } = req.body;
 
-        if (!email || !password || !firstName || !lastName) {
-            throw new Error(`Name, email, password are all required`)
-        }
-        if (password.length < 8 /* || !/[A-Z]/.test(password) || !/[0-9]/.test(password) */) {
-            throw new Error(`Password doesn't meet strength requirements`)
-        }
-        const existingUser = await UserModel.findOne({ email });
-
-        if (existingUser) {
-            res.status(400)
-            throw new Error('User already exists');
-            ;
-        };
-
-        const user = new UserModel({ email, password, firstName, lastName, telephone});
-        await user.save();
-        const token = jwt.sign(
-            {
-                _id: user._id,
-                email: user.email,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                telephone: user.telephone,
-                password: '*****',
-                places: [],
-                tripHistory: [],
-                settings: {},
-            },
-            jwtSecret,
-            { expiresIn: '48h' }
-        );
-        console.log(`user ${user.firstName} ${user.lastName} registered`)
-        res.status(201).json({
-            message: `${user.email} was successfully registered`,
-            token,
-            user
-        });
-
+    if (!email || !password || !firstName || !lastName) {
+        throw new Error(`Name, email, password are all required`)
     }
+    if (password.length < 8 /* || !/[A-Z]/.test(password) || !/[0-9]/.test(password) */) {
+        throw new Error(`Password doesn't meet strength requirements`)
+    }
+    const existingUser = await UserModel.findOne({ email });
+
+    if (existingUser) {
+        res.status(400)
+        throw new Error('User already exists');
+        ;
+    };
+
+    const user = new UserModel({ email, password, firstName, lastName, telephone });
+    await user.save();
+    const token = jwt.sign(
+        {
+            _id: user._id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            telephone: user.telephone,
+            password: '*****',
+            places: [],
+            tripHistory: [],
+            settings: {},
+        },
+        jwtSecret,
+        { expiresIn: '48h' }
+    );
+    console.log(`user ${user.firstName} ${user.lastName} registered`)
+    res.status(201).json({
+        message: `${user.email} was successfully registered`,
+        token,
+        user
+    });
+
+}
 
 export const editController = async (req: Request, res: Response): Promise<void | void> => {
     try {
@@ -77,15 +77,15 @@ export const editController = async (req: Request, res: Response): Promise<void 
             res.status(400);
             throw new Error('no user found')
         }
-     /*    console.log('after comparing passwords:', toEdit.password, potentialUser.password);
+        /*    console.log('after comparing passwords:', toEdit.password, potentialUser.password);
 
-        const isMatch = await bcrypt.compare(toEdit.password, potentialUser.password);
+           const isMatch = await bcrypt.compare(toEdit.password, potentialUser.password);
 
-        if (!isMatch) {
+           if (!isMatch) {
 
-            res.status(401);
-            throw new Error('passwords did not match. could not edit information')
-        } */
+               res.status(401);
+               throw new Error('passwords did not match. could not edit information')
+           } */
         const update = { [fieldToUpdate]: toEdit[fieldToUpdate] };
 
         const updated = await UserModel.findOneAndUpdate(filter, update);
@@ -133,7 +133,7 @@ export const loginController = async (req: Request, res: Response): Promise<void
         }
         const user = await UserModel.findOne({ email });
         if (!user) {
-            res.status(401).json({error: "User not found"});
+            res.status(401).json({ error: "User not found" });
             return;
 
 
@@ -172,5 +172,24 @@ export const loginController = async (req: Request, res: Response): Promise<void
     catch (error) {
         console.error('Error during login:', error);
         res.status(500).json({ error: 'Server error' });
+    }
+}
+
+export const fetchController = async (req: Request, res: Response): Promise<void | void> => {
+    try {
+        const { user } = req.body;
+        if (!user) {
+            res.status(400)
+            throw new Error('[fetchController]: No user data sent')
+        }
+        const filter = { _id: user._id }
+        const toReturn = await UserModel.findOne(filter)
+        if (toReturn) {
+            res.status(200).json(toReturn)
+        }
+    }
+
+    catch {
+
     }
 }
