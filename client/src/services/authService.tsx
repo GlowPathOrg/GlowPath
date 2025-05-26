@@ -10,7 +10,7 @@ if (!base_URL) {
 
 
 
-const AUTH_URL = base_URL + '/auth';
+const AUTH_URL = base_URL.replace(/\/$/, '') + '/auth';
 // Get the stored token from localStorage
 export const getToken = (): string | null => {
   return localStorage.getItem("token");
