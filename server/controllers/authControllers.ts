@@ -77,15 +77,7 @@ export const editController = async (req: Request, res: Response): Promise<void 
             res.status(400);
             throw new Error('no user found')
         }
-     /*    console.log('after comparing passwords:', toEdit.password, potentialUser.password);
 
-        const isMatch = await bcrypt.compare(toEdit.password, potentialUser.password);
-
-        if (!isMatch) {
-
-            res.status(401);
-            throw new Error('passwords did not match. could not edit information')
-        } */
         const update = { [fieldToUpdate]: toEdit[fieldToUpdate] };
 
         const updated = await UserModel.findOneAndUpdate(filter, update);

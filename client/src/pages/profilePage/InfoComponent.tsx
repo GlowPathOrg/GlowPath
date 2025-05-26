@@ -110,7 +110,7 @@ const InfoComponent: React.FC = () => {
                             </tr>
                             <tr>
                                 <td><strong>Password:</strong></td>
-                                <td>{user && user.password}</td>
+                                <td>********</td>
                             </tr>
                             <tr>
                                 <td><strong>Phone:</strong></td>
