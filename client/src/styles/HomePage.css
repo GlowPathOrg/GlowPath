@@ -1,7 +1,8 @@
-
-.home-page {
+.main {
   position: relative;
+  width: 100vw;
   height: 100vh;
+  background-color: #232323;
   overflow: hidden;
 }
 
@@ -11,96 +12,100 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 70%; /* Adjust map height to leave space below */
-  z-index: 1; /*  map is behind other elements */
+  height: 100%;
+  z-index: 1; /* Keep it behind other elements */
 }
 
-/* Search section below the map */
-.search-section {
-  position: absolute;
-  bottom: 20%;
+.tray {
+  position: fixed; /* Keep it at the bottom above the footer */
+  bottom: 3rem; /* Position it above the footer (match footer height) */
   left: 0;
-  width: 100%;
-  padding: 20px;
-  background: transparent;
-  display: flex;
-  justify-content: center;
-  z-index: 2; /* Ensure it is above the map */
-}
-
-
-.search-bar {
-  background: #fff;
-  border-radius: 20px;
+  right: 0;
+  background-image: linear-gradient(to bottom, #4A464D, #2F2E30);
+  border-top-left-radius: 1.4rem;
+  border-top-right-radius: 1.4rem;
+  padding: 1rem;
   display: flex;
   align-items: center;
-  padding: 10px;
-  width: 80%;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  gap: 0.5rem;
+  z-index: 10;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
+  
 }
 
-.search-bar input {
-  flex: 1;
-  border: none;
-  outline: none;
-  font-size: 1rem;
-}
-
-.microphone-icon {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-}
-
-/* Full-page overlay for expanded search */
-.full-page-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: #222; /* Background color for the expanded view */
-  z-index: 4; /* to ensure it covers the map and search bar */
+.search-bar {
   display: flex;
-  flex-direction: column;
-}
-
-
-.back-button {
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 1.5rem;
-  margin: 10px;
-  cursor: pointer;
-}
-
-/* Expanded search container */
-.expanded-search {
-  flex: 1;
-  padding: 20px;
-  color: #fff;
-  overflow-y: auto; /* for scrolling if content overflows */
-}
-
-
-.footer-bar {
-  position: absolute;
-  bottom: 0;
+  align-items: center;
+  background-color: #232323;
+  padding: 0.5rem 0.8rem;
+  border-radius: 0.7rem;
   width: 100%;
-  background: #333;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.25);
+}
+.search-icon {
+  width: 1.5rem; 
+  height: 1.5rem;
+  margin-right: 0.5rem; 
+}
+
+.searchbox {
+  flex: 1; /* Take up available space */
+  border: none;
+  background-color: transparent;
+  color: white;
+  font-family: inherit;
+  font-size: 1rem;
+  padding-right: 0.5rem; 
+}
+
+.searchbox::placeholder {
+  color: #999; 
+}
+
+
+.searchbox:focus-visible,
+.searchbox:focus,
+.searchbox:active {
+  outline: none; /* Remove focus outline */
+}
+
+.button-icon {
+  width: 1.5rem; 
+  height: 1.5rem;
+  margin-left: 0.5rem; 
+}
+
+
+/* Footer navigation buttons */
+.footer-bar {
+  position: fixed; 
+  bottom: 0; /* Align it to the bottom of the screen */
+  left: 0;
+  right: 0;
+  height: 3rem;
+  background-color: #232323; 
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 10px 0;
-  z-index: 2; /* to ensure it appears above the map */
+  z-index: 10; /* it's above the map */
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
+  
 }
 
 .footer-icon {
+  font-size: 1.5rem;
   background: none;
   border: none;
-  color: #fff;
-  font-size: 1.5rem;
+  color: white;
   cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.footer-icon:hover {
+  opacity: 1;
+}
+
+.footer-icon:active {
+  transform: scale(0.95); /* click effect */
 }

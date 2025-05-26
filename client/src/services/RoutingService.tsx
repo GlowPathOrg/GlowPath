@@ -1,25 +1,22 @@
-import axios from 'axios';
-
-// fetch a route from the HERE API
+import axios from "axios";
+import { decode } from "@here/flexpolyline";
+import {
+  fetchInfrastructureData,
+  processInfrastructureData,
+} from "../services/overpassService";
+import { RouteRequestI } from '../Types/Route';
 export const fetchRoute = async (
-  origin: [number, number], // Origin coordinates as [latitude, longitude]
-  destination: [number, number], // Destination coordinates as [latitude, longitude]
-  transportMode: 'pedestrian' | 'publicTransport' | 'bicycle' | 'car' // Transport mode for the route
+  RouteReqItem: RouteRequestI
 ) => {
+  const { transportMode, destination, origin } = RouteReqItem;
   // Destructure origin and destination coordinates for API parameters
   const [originLat, originLon] = origin;
   const [destinationLat, destinationLon] = destination;
 
-  // HERE Routing API url
-  const url = 'https://router.hereapi.com/v8/routes';
-
-  // API key loaded from .env
-  const apiKey = import.meta.env.VITE_HERE_API_KEY;
-
-  // Check if the API key is available (for debugging if needed)
-  if (!apiKey) {
-    console.error('API Key is undefined. Please check your environment configuration.');
-    throw new Error('API Key is missing');
+  // Changed from api url to backend url
+  const url = import.meta.env.VITE_BACKEND_URL
+  if (!url) {
+    console.error('NO URL FOUND')
   }
 
   try {
@@ -33,45 +30,80 @@ export const fetchRoute = async (
     }); */
 
     // Send a GET request to the HERE API with the specified parameters
-    const response = await axios.get(url, {
-      params: {
-        apiKey, 
-        transportMode, 
-        origin: `${originLat},${originLon}`, // Origin location as a string
-        destination: `${destinationLat},${destinationLon}`, // Destination location as a string
-        return: 'polyline,summary,instructions,actions', // API response fields requested
-      },
-    });
+    const params: RouteRequestI = {
+      transportMode,
+      origin: `${originLat},${originLon}`, // Origin location as a string
+      destination: `${destinationLat},${destinationLon}`, // Destination location as a string
+      return: 'polyline,summary,instructions,actions',
+    }
 
+    const response = await axios.get(`${url}/route/fetch`, { params });
+    const route = response.data;
+    console.log('here is data', route)
     // Check if the API response contains routes
-    if (response.data.routes && response.data.routes.length > 0) {
-      const route = response.data.routes[0].sections[0]; // Extract the first route section this might be changed later
-      console.log('Route Summary:', route.summary);
-      // Return the polyline, summary, and instructions for the route
-      console.log('Actions:', route.actions);
+    if (route) {
+           const decodedPolyline = decode(route.polyline).polyline;
+
+      const latitudes = decodedPolyline.map(([lat]) => lat);
+      const longitudes = decodedPolyline.map(([, lon]) => lon);
+      const southWest: [number, number] = [
+        Math.min(...latitudes),
+        Math.min(...longitudes),
+      ];
+      const northEast: [number, number] = [
+        Math.max(...latitudes),
+        Math.max(...longitudes),
+      ];
+
+      const rawInfrastructureData = await fetchInfrastructureData(
+        southWest,
+        northEast
+      );
+
+      const {
+        litStreets = [],
+        sidewalks = [],
+        policeStations = [],
+        hospitals = [],
+      } = processInfrastructureData(rawInfrastructureData);
+
+      // Dummy safety data for demonstration purposes
+      const safetyData = decodedPolyline.map(([lat, lon]) => ({
+        lat,
+        lon,
+        level: Math.random() * 10, // Random safety level between 0 and 10
+    }));
+
       return {
-        polyline: route.polyline, // Encoded polyline for the route
-        summary: route.summary, // Summary details like duration and distance
-        instructions: route.actions || [], // Turn-by-turn instructions
+        polyline: route.polyline,
+        summary: route.summary,
+        instructions: route.actions || [],
+        litStreets,
+        sidewalks,
+        policeStations,
+        hospitals,
+        safetyData, // Include safety data
       };
     } else {
-      
-      throw new Error('No route found in the API response');
+      throw new Error("No route found in the API response");
     }
   } catch (error) {
-    
-    console.error('Request failed. Ensure that your API key is valid and the parameters are correct.');
-    throw error; 
+
+    console.error('Request failed:' + error);
+    throw error;
   }
 };
 
 //added Fri night:
 // Fetch a rerouted path (same logic as fetchRoute, but named explicitly for clarity)
-export const fetchReroute = async (
-  currentPosition: [number, number], // Current position of the user
-  destination: [number, number], // Destination coordinates
-  transportMode: 'pedestrian' | 'publicTransport' | 'bicycle' // Transport mode for rerouting
-) => {
+export const fetchReroute = async (ReRouteReqItem: RouteRequestI, currentPosition: number[]) => {
+
+  const { transportMode, destination } = ReRouteReqItem;
+  const newRequest = {
+    origin: currentPosition,
+    destination: destination,
+    transportMode: transportMode
+  }
   console.log('Rerouting from:', currentPosition, 'to:', destination, 'using mode:', transportMode);
-  return await fetchRoute(currentPosition, destination, transportMode);
+  return await fetchRoute(newRequest);
 };

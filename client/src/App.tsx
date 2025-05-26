@@ -4,10 +4,14 @@ import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import JourneyPage from './pages/journeyPage/JourneyPage';
 import WhereToPage from './pages/WhereToPage';
 import HomePage from './pages/HomePage/HomePage';
-import SettingsPage from './pages/SettingsPage'
+import ProfilePage from './pages/profilePage/ProfilePage';
 import NavigationPage from './pages/NaviagtionPage';
-
 import ObserverPage from './pages/observerPage/ObserverPage';
+import VisualisationsPage from './pages/VisualisationsPage';
+import ContactManagerPage from './pages/ContactManagerPage';
+import "./index.css"
+
+//import ChatPage from './pages/ChatPage';
 
 
 
@@ -22,9 +26,6 @@ const App: React.FC = () => {
  <Router basename={import.meta.env.BASE_URL}>
       <div className="app">
         {/* Global Navigation */}
-        <header>
-          <h1>GlowPath!</h1>
-        </header>
 
         {/* Routes */}
         <main>
@@ -32,13 +33,18 @@ const App: React.FC = () => {
             <Route path="/" element={< HomePage/>} />
             <Route path="/journey" element={<JourneyPage />} />
             <Route path="/where-to" element={<WhereToPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
+
+              <Route path="/profile" element={<ProfilePage />} />
+
+
+              <Route path="/contact-manager" element={<ContactManagerPage />} />
             <Route path="/navigation" element={<NavigationPage />} />
-          
+            <Route path="/visualisations" element={<VisualisationsPage />} />
             <Route path="/observe/:id" element={<ObserverPage />} />
+
            {/*  <Route path="/history" element={<HistoryPage />} />
-            <Route path="/chat" element={<ChatPage />} />
-            <Route path="/visualizations" element={<VisualizationsPage />} /> */}
+             <Route path="/chat" element={<ChatPage />} />
+            */}
           </Routes>
         </main>
 

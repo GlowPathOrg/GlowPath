@@ -1,12 +1,35 @@
 .live-location-map {
-    height: 80vh;
-    width: 100%;
-    position: relative;
+  height: 85vh;
+  width: 100%;
+  position: relative;
+}
+
+.live-location-map p {
+  text-align: center;
+  font-size: 16px;
+  color: #666;
+  margin-top: 20px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .live-location-map {
+    height: 70vh; 
   }
-  
+
   .live-location-map p {
-    text-align: center;
-    font-size: 16px;
-    color: #666;
-    margin-top: 20px;
+    font-size: 14px; 
+    margin-top: 15px; 
   }
+}
+
+@media (max-width: 480px) {
+  .live-location-map {
+    height: 60vh; 
+  }
+
+  .live-location-map p {
+    font-size: 12px; 
+    margin-top: 10px; 
+  }
+}

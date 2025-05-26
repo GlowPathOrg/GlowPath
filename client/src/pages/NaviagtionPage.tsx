@@ -2,22 +2,48 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Polyline, useMap } from "react-leaflet";
 import "../styles/NavigationPage.css";
+import Footer from "../components/Footer"
+import { useUser } from "../hooks/useUser";
+import { format } from "date-fns";
+import { SummaryI } from "../Types/Route";
+
 
 const NavigationPage: React.FC = () => {
+
   const location = useLocation();
   const navigate = useNavigate();
-
+  // adding user
+  const { user, updateUser } = useUser();
   // Destructure state from the previous navigation or default values
   const {
-    route = [], // Array of coordinates for the route
-    summary = { distance: 0, duration: 0 }, // Distance and duration of the route
-    instructions = [], // Turn-by-turn instructions
-    theme = "standard", // Selected map theme
-    transportMode = "pedestrian", // Transport mode (e.g., pedestrian)
+    route, // Array of coordinates for the route
+    summary, // Distance and duration of the route
+    instructions, // Turn-by-turn instructions
+    theme, // Selected map theme
+    transportMode, // Transport mode (e.g., pedestrian)
   } = location.state || {};
 
-  const [currentInstruction, setCurrentInstruction] = useState<string>(""); // Current turn-by-turn instruction
+  useEffect(() => {
+    if (user && summary && summary.length && summary.duration) {
+      const updatedTrip: SummaryI = {
+        ...summary,
+        date: format(new Date(), "yyyy_MM_dd"),
 
+      };
+
+      const updatedTripHistory = [...(user.tripHistory), updatedTrip];
+
+      updateUser({
+        _id: user._id,
+        tripHistory: updatedTripHistory,
+      });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+
+  const [currentInstruction, setCurrentInstruction] = useState<string>(""); // Current turn-by-turn instruction
+  console.log(currentInstruction)
   // Set the initial instruction when instructions change
   useEffect(() => {
     if (instructions.length > 0) {
@@ -25,27 +51,25 @@ const NavigationPage: React.FC = () => {
     }
   }, [instructions]);
 
-  // component to automatically follow and fit the map bounds to the route (needs testing)
+  // Component to automatically follow and fit the map bounds to the route
   const AutoFollowMap = () => {
     const map = useMap();
 
-    // Center the map on the route
     useEffect(() => {
       if (route.length > 0) {
-        map.fitBounds(route); 
+        map.fitBounds(route);
       }
-    }, [map, route]);
+    }, [map]);
 
     return null;
   };
 
   // Define tile layer URLs for different themes
   const tileLayerThemes: Record<string, string> = {
-    standard: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", 
-    dark: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", 
-    satellite: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", 
+    standard: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    dark: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+    satellite: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
   };
-
 
   // Handle the "Start Journey" button click
   const handleStartJourney = () => {
@@ -63,42 +87,62 @@ const NavigationPage: React.FC = () => {
   return (
     <div className="navigation-page">
       {route.length > 0 ? (
-        <MapContainer center={route[0]} zoom={15} style={{ height: "60vh" }}>
+        <MapContainer
+          center={route[0]} // Center the map on the start of the route
+          zoom={15}
+          style={{ height: "60vh" }}
+        >
           {/* Add the selected tile layer theme */}
           <TileLayer
             url={tileLayerThemes[theme] || tileLayerThemes["standard"]}
             attribution="&copy; OpenStreetMap contributors"
           />
           {/* Draw the route on the map */}
-          <Polyline positions={route} color="blue" weight={6} />
+          <Polyline
+  positions={route}
+  pathOptions={{
+    color: "pink",
+    weight: 6,
+    lineCap: "square", // Sharp ends
+    lineJoin: "miter", // Sharp corners
+  }}
+  weight={6}
+/>
           {/* Marker for the start point */}
-          <Marker position={route[0]} />
+          <Marker position={route[0]}
+          />
+
           {/* Marker for the end point */}
           <Marker position={route[route.length - 1]} />
           {/* Automatically follow the route */}
           <AutoFollowMap />
         </MapContainer>
       ) : (
-        <p>Loading map...</p> 
+        <p>Loading map...</p> // Display a fallback message while the map is loading
       )}
-      <div className="navigation-info">
-        {/* Display the current instruction */}
-        <h3>{currentInstruction}</h3>
-        {/* Display the next instruction or a default message */}
-        <p>Towards: {instructions?.[1]?.instruction || "Destination"}</p>
-        {/* Display route distance and duration */}
-        <p>
-          {summary.distance / 1000} km • {Math.ceil(summary.duration / 60)} min
-        </p>
-       
-        <button className="start-button" onClick={handleStartJourney}>
-          Start Journey
-        </button>
-       
-        <button className="exit-button" onClick={() => navigate("/")}>
-          Exit
-        </button>
-      </div>
+
+<div className="navigation-info">
+<div className="route-details">
+    <div className="route-step">
+      <span className="route-step-icon">📍</span>
+      <span>Current Location</span>
+    </div>
+    <div className="route-step">
+      <span className="route-step-icon">🏁</span>
+      <span>{location.state?.destinationName || "Destination"}</span>
+    </div>
+  </div>
+  <p>{summary.length / 1000} km • {Math.ceil(summary.duration / 60)} min</p>
+  <div className="button-group">
+    <button className="start-button" onClick={handleStartJourney}>
+      Start Journey
+    </button>
+    <button className="exit-button" onClick={() => navigate("/")}>
+      Exit
+    </button>
+  </div>
+</div>
+<Footer/>
     </div>
   );
 };

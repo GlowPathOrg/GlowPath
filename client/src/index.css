@@ -1,0 +1,52 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@200;300;400;500;600;700&display=swap");
+
+*{
+    font-family: "Open Sans", sans-serif;
+    
+}
+
+  
+  html {
+    box-sizing: border-box;
+    overflow-y: auto;
+  }
+  *, *:before, *:after {
+    box-sizing: inherit;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    
+    overflow-y: auto;
+  }
+
+  /* Footer Styles */
+.footer-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to bottom, #4A464D, #2F2E30);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 1rem 0;
+    box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  .footer-icon {
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .footer-icon:hover {
+    color: #ff6600; /* Optional hover effect */
+  }
+
+  
+  
+  
