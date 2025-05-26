@@ -24,7 +24,7 @@ concurrency:
 
 #Allow repo secrets
 env:
-  VITE_BACKEND_URL: "https://web-production-4659.up.railway.app/"
+  VITE_BACKEND_URL: "https://web-production-4659.up.railway.app"
   VITE_WEATHER_API_KEY: ${{ secrets.VITE_WEATHER_API_KEY }}
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
