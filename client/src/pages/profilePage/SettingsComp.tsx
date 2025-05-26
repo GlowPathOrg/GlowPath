@@ -14,11 +14,12 @@ const SettingsPage: React.FC = () => {
   }; */
   const { user, updateUser } = useUser();
   const settings: SettingsI | undefined = user?.settings;
+  console.log(`settingg is ${settings}`)
 
   const [uiNotifyNearby, setUiNotifyNearby] = useState(true);
   const [uiNotifyAuthorities, setUiNotifyAuthorities] = useState(true);
   const [uiAllowNotifications, setUiAllowNotifications] = useState(true);
-  const [uiSosMessage, setUiSosMessage] = useState("Help me, I am in danger!");
+  const [uiSosMessage, setUiSosMessage] = useState(user?.settings?.defaultSos || "Help me, I am in danger!");
   const [uiTheme, setUiTheme] = useState<string>("dark");
 
   // Load settings from hook

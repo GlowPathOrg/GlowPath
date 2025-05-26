@@ -106,7 +106,8 @@ export const fetchUserProfile = async (): Promise<UserI> => {
     });
 
     if (response?.data?.user) {
-      return response.data.user;
+      const typedUser: UserI = response.data.user;
+      return typedUser
     } else {
       throw new Error("Failed to fetch user profile: no user data in response");
     }

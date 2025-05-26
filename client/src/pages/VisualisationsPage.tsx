@@ -70,7 +70,7 @@ const Visualisations: React.FC = () => {
   };
 
   useEffect(()=>{
-    if (!user || !user?.places || user.places.length === 0) {
+    if (!user || !user.places) {
       console.warn('no user...using mock data')
       setMyPlaces(mockData.myPlaces)
     }

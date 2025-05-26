@@ -7,17 +7,19 @@ import "../../styles/Footer.css";
 import LoginComponent from "./LoginComponent";
 import Footer from "../../components/Footer"
 import InfoComponent from "./InfoComponent";
+import { useUser } from "../../hooks/useUser";
 
 const ProfilePage = () => {
   const [viewOption, setViewOption] = useState("");
-  const { isAuthorized, user, setUser, handleLogoutContext } = useContext(AuthContext)
+  const { isAuthorized, handleLogoutContext } = useContext(AuthContext);
+  const {user} = useUser()
 
   useEffect(() => {
     if (isAuthorized === true && user) {
       setViewOption("settings");
 
     }
-  }, [isAuthorized, user, setUser]);
+  }, [isAuthorized, user]);
 
   const logout = () => {
     handleLogoutContext();

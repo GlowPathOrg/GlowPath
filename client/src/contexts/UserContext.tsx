@@ -55,7 +55,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setIsAuthorized(true);
             (async () => {
                 try {
-                    const fetchedUser = await fetchUserProfile(token);
+                    const fetchedUser = await fetchUserProfile();
                     setUser(fetchedUser);
                 } catch (err) {
                     console.error("Failed to fetch user profile:", err);

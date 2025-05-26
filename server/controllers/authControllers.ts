@@ -91,7 +91,6 @@ export const editController = async (req: Request, res: Response): Promise<void 
         const updated = await UserModel.findOneAndUpdate(filter, update);
 
         if (updated) {
-            console.log('updated')
             const token = jwt.sign({ _id: updated._id, email: updated.email, firstName: updated.firstName, lastName: updated.lastName, telephone: updated.telephone, settings: updated.settings, tripHistory: updated.tripHistory, places: updated.places }, jwtSecret, { expiresIn: '1d' });
             res.status(200).json({
                 token,
@@ -102,7 +101,7 @@ export const editController = async (req: Request, res: Response): Promise<void 
                     lastName: updated.lastName,
                     telephone: updated.telephone,
                     password: '*******',
-                    places: [],
+                    places: updated.places,
                     tripHistory: updated.tripHistory,
                     settings: updated.settings
                 }
@@ -160,11 +159,9 @@ export const loginController = async (req: Request, res: Response): Promise<void
                     firstName: user.firstName,
                     lastName: user.lastName,
                     telephone: user.telephone,
-                    password: '*******',
-                    messages: [],
-                    places: [],
-                    contacts: [],
-                    tripHistory: []
+                    places: user.places,
+                    settings: user.settings,
+                    tripHistory: user.tripHistory
                 }
             });
         }
