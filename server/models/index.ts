@@ -48,7 +48,7 @@ export const getCollection = (dbName: string, collectionName: string) => {
     if (!client) {
         throw new Error("MongoClient is not initialized. Call DBConnect first.");
     }
-    return client.db('glowpath').collection(collectionName);
+    return client.db('Glowpath').collection(collectionName);
 };
 
 /**
@@ -58,7 +58,7 @@ export const getCollection = (dbName: string, collectionName: string) => {
 export const mongooseConnect = async () => {
     try {
         await mongoose.connect(uri, {
-            dbName: 'glowpath',
+            dbName: 'Glowpath',
             serverSelectionTimeoutMS: 30000, // 30 seconds timeout
         });
         console.log("Successfully connected to MongoDB via Mongoose.");
