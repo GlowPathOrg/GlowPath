@@ -15,7 +15,7 @@ export interface UserI {
     firstName: string;
     lastName: string;
     telephone?: string;
-    places?: [][];
+    places?: string[];
     tripHistory: SummaryI[],
     settings: SettingsI;
 }
@@ -58,7 +58,7 @@ const userSchema = new Schema<UserDocument>({
         },
     },
     places: {
-        type: [[]],
+        type: [String],
         required: false
     },
     tripHistory: {

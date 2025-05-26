@@ -5,29 +5,32 @@ import { SettingsI } from "../../Types/User";
 
 
 const SettingsPage: React.FC = () => {
-  const defaultSettings: SettingsI = {
+/*   const defaultSettings: SettingsI = {
     notifyNearby: true,
     notifyAuthorities: true,
     allowNotifications: true,
     defaultSos: "Please contact me, I might be in danger.",
     theme: "dark"
-  };
-  const { user, updateSettings } = useUser();
-  const settings = user?.settings ?? defaultSettings;
+  }; */
+  const { user, updateUser } = useUser();
+  const settings: SettingsI | undefined = user?.settings;
+  console.log(`settingg is ${settings}`)
 
   const [uiNotifyNearby, setUiNotifyNearby] = useState(true);
   const [uiNotifyAuthorities, setUiNotifyAuthorities] = useState(true);
   const [uiAllowNotifications, setUiAllowNotifications] = useState(true);
-  const [uiSosMessage, setUiSosMessage] = useState("Help me, I am in danger!");
+  const [uiSosMessage, setUiSosMessage] = useState(user?.settings?.defaultSos || "Help me, I am in danger!");
   const [uiTheme, setUiTheme] = useState<string>("dark");
 
   // Load settings from hook
   useEffect(() => {
-    setUiNotifyNearby(settings.notifyNearby);
-    setUiNotifyAuthorities(settings.notifyAuthorities);
-    setUiAllowNotifications(settings.allowNotifications);
-    setUiSosMessage(settings.defaultSos);
-    setUiTheme(settings.theme || "dark");
+if (settings) {
+  setUiNotifyNearby(settings.notifyNearby);
+  setUiNotifyAuthorities(settings.notifyAuthorities);
+  setUiAllowNotifications(settings.allowNotifications);
+  setUiSosMessage(settings.defaultSos);
+  setUiTheme(settings.theme || "dark");
+}
   }, [settings]);
 
   // Apply theme to document body
@@ -40,7 +43,7 @@ const SettingsPage: React.FC = () => {
   };
 
   const handleSave = async () => {
-    const newSettings = {
+    const newSettings: SettingsI = {
       notifyNearby: uiNotifyNearby,
       notifyAuthorities: uiNotifyAuthorities,
       allowNotifications: uiAllowNotifications,
@@ -48,7 +51,7 @@ const SettingsPage: React.FC = () => {
       theme: uiTheme,
     };
 
-    await updateSettings(newSettings);
+    await updateUser({settings: newSettings});
     alert("Settings saved!");
   };
 

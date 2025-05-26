@@ -72,18 +72,17 @@
 
 /* Primary Button (e.g., Search) */
 .where-to-page button {
-  width: 100%;
   padding: 1rem;
   margin-bottom: 20px;
   border-radius: 0.8rem;
   border: none;
   background: linear-gradient(135deg, #ff0066, #ff3c99);
+  box-shadow: 0 4px 10px rgba(255, 0, 102, 0.5);
   color: white;
   font-size: 1.2rem;
   font-weight: bold;
   cursor: pointer;
   text-transform: uppercase;
-  box-shadow: 0 4px 10px rgba(255, 0, 102, 0.5);
   margin-top: 1.5rem;
   transition: transform 0.1s ease, box-shadow 0.1s ease;
   text-align: center;
@@ -125,12 +124,14 @@
 }
 
 .search-history ul li {
-  margin: 0.5rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* push button + icon apart */
+
 }
 
-/* Separate Style for History Button */
-#history-btn.primary {
-  width: 100%;
+.history-btn {
+  max-width: 90%;
   padding: 0.8rem;
   border-radius: 0.5rem;
   border: 1px solid #444;
@@ -141,16 +142,69 @@
   transition: background-color 0.2s ease, transform 0.1s ease;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
   font-size: 1rem;
-  font-weight: normal;
+  font-weight: bold;
+  margin-right: 0.5rem; /* add small space between button and icon */
 }
 
-#history-btn:hover {
+.history-btn:hover {
   background-color: #333;
   transform: scale(1.02);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
 }
 
-#history-btn:active {
+.history-btn:active {
   background-color: #444;
   transform: scale(0.98);
 }
+
+.favorite-icon-button {
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .2rem;
+  transition: transform 0.1s ease;
+  box-shadow: none; /* remove any shadow */
+}
+
+.favorite-icon-button:hover {
+  transform: scale(1.2);
+}
+.history-tabs {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.history-tabs button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background-color: #ddd !important;
+  cursor: pointer;
+}
+
+.history-tabs button.active-tab {
+  background-color: #aaa !important;
+  font-weight: bold;
+}
+
+.tab-content ul {
+  list-style: none;
+  padding: 0;
+}
+
+.tab-content li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.favorite-btn, .history-btn {
+  flex-grow: 1;
+  padding: 5px;
+  margin-right: 5px;
+}
+
+

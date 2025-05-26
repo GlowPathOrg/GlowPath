@@ -45,7 +45,7 @@ const InfoComponent: React.FC = () => {
 
     const handleSaveField = (fieldName: string) => {
         setFieldBeingEdited(fieldName);
-
+        console.log(`[handleSaveField]: field is ${fieldName}`)
         if (fieldName === "password") {
             setShowModal(true);
         } else {
@@ -58,7 +58,7 @@ const InfoComponent: React.FC = () => {
     };
 
     const submitData = async (fieldName: string) => {
-
+        console.log(`[submitData]: fieldName is ${fieldName}`)
         if (!user) {
             console.log('no user');
             return};
@@ -77,9 +77,7 @@ const InfoComponent: React.FC = () => {
                 await updateUser({ password: reenteredPassword });
             }
 
-            await updateUser({ firstName: formData.firstName });
-
-            console.log('updateUser complete');
+            await updateUser(payload);
 
 
         } catch (error) {
