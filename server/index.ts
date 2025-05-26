@@ -7,6 +7,8 @@ import authRoutes from "./routes/authRoutes.js";
 import shareRoutes from "./routes/shareRoutes.js";
 import { mongooseConnect, DBConnect } from "./models/index.js";
 import routingRoutes from "./routes/routingRoutes.js";
+import { Request, Response, NextFunction } from 'express';
+
 
 dotenv.config();
 const app = express();
@@ -94,7 +96,7 @@ app.use("/notify-contacts", notifyRoutes);
 app.use("/route", routingRoutes);
 
 // ===== ERROR HANDLING MIDDLEWARE =====
-app.use((err, req, res, next) => {
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error('[server: errorHandler] Express error handler caught:', err.stack);
   res.status(500).json({ error: 'Internal server error', details: err.message });
 });
